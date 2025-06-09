@@ -1,30 +1,19 @@
+import * as dotenv from 'dotenv';
+dotenv.config();                      
+
 import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+import webhookRouter  from './routes/webhook';   
+import messagesRouter from './routes/messages';  
 
-// Configuración de variables de entorno
-dotenv.config();
-
-// Inicialización de Express
 const app = express();
-const prisma = new PrismaClient();
-
-// Middlewares
-app.use(cors());
-app.use(morgan('dev'));
 app.use(express.json());
 
-// Ruta de prueba
-app.get('/', (req, res) => {
-  res.json({ message: 'API funcionando correctamente' });
-});
+app.use('/api', webhookRouter);  
+app.use('/api', messagesRouter);         
 
-// Puerto
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ?? 3000;
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
+console.log('process.cwd() =', process.cwd());
+app.listen(PORT, () =>
+  console.log(`Server corriendo en http://localhost:${PORT}`)
+);
