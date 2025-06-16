@@ -4,10 +4,12 @@ dotenv.config();
 import express from 'express';
 import webhookRouter  from './routes/webhook';   
 import messagesRouter from './routes/messages';  
+import webhookPayment from './routes/webhookPayments.routes'
 
 const app = express();
 app.use(express.json());
 
+app.use('/webhook/stripe', webhookPayment);
 app.use('/api', webhookRouter);  
 app.use('/api', messagesRouter);         
 

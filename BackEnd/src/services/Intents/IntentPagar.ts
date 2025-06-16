@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../db/client';
+import { createStripeLink } from '../payment/stripe';
 
 const randomFromArray = (arr: string[]): string =>
   arr[Math.floor(Math.random() * arr.length)];
@@ -64,7 +65,18 @@ export async function handleIntentPagar(req: Request, res: Response) {
   const deudaReciente = deudasCliente.reduce((prev, curr) =>
     curr.fecha_vencimiento > prev.fecha_vencimiento ? curr : prev
   );
-  const enlacePago = `https://tu-pasarela.com/pago?cliente=${idCliente}&deuda=${deudaReciente.id_deuda}`;
+
+  let enlacePago: string;
+  try {
+    enlacePago = await createStripeLink(deudaReciente.id_deuda);
+  } catch (err) {
+    console.error('Error creando enlace Stripe:', err);
+    return res.json({
+      fulfillmentText:
+        'Lo siento, hubo un problema generando tu enlace de pago. Intenta más tarde.'
+    });
+  }
+  
   const plantilla = randomFromArray(respuestasConDeudaPagar);
   const respuesta = plantilla.replace('${enlace}', enlacePago);
   

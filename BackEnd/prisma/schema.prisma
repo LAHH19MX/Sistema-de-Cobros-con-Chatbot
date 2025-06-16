@@ -15,10 +15,11 @@ model Admin {
   email_admin            String   @unique
   telefono_admin         String?
   direccion_admin        String?
-  contrase_a_admin       String   @map("contraseña_admin")
+  password               String
   fecha_registro         DateTime @default(now()) @db.Timestamptz(6)
   id_empresa             String   @db.Uuid
   Empresa                Empresa  @relation(fields: [id_empresa], references: [id_empresa], onDelete: NoAction, onUpdate: NoAction, map: "fk_admin_empresa")
+
   @@map("admin")
 }
 
@@ -33,76 +34,64 @@ model Blog {
   estado_blog       String
   id_empresa        String   @db.Uuid
   Empresa           Empresa  @relation(fields: [id_empresa], references: [id_empresa], onDelete: NoAction, onUpdate: NoAction, map: "fk_blog_empresa")
+
   @@map("blog")
 }
 
 model Cliente {
-  id_cliente          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nombre_cliente      String
-  apellido_paterno    String
-  apellido_materno    String?
-  fecha_registro      DateTime              @default(now()) @db.Timestamptz(6)
-  estado_cliente      String
-  email_cliente       String                @unique
-  telefono_cliente    String?
-  token_cliente       String?
-  direccion_cliente   String?
-  id_inquilino        String                @db.Uuid
+  id_cliente         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre_cliente     String
+  apellido_paterno   String
+  apellido_materno   String?
+  fecha_registro     DateTime             @default(now()) @db.Timestamptz(6)
+  estado_cliente     String
+  email_cliente      String               @unique
+  telefono_cliente   String?
+  token_cliente      String?
+  direccion_cliente  String?
+  id_inquilino       String               @db.Uuid
   Inquilino          Inquilino            @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction, map: "fk_clientes_inquilino")
   Deuda              Deuda[]
-  RecordatorioEmail     RecordatorioEmail[]
-  HistorialPago     HistorialPago[]
+  RecordatorioEmail  RecordatorioEmail[]
+  HistorialPago      HistorialPago[]
   InteraccionChatbot InteraccionChatbot[]
+
   @@map("clientes")
 }
 
 model Configuracion {
-  id_configuracion         String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_configuracion         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   motivo                   String
   mensaje_pre_vencimiento  String
   mensaje_post_vencimiento String
   medio                    String
-  id_inquilino             String            @db.Uuid
+  id_inquilino             String              @db.Uuid
   frecuencia               Int?
-  Inquilino               Inquilino        @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction, map: "fk_configuracion_inquilino")
-  RecordatorioEmail          RecordatorioEmail[]
+  Inquilino                Inquilino           @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction, map: "fk_configuracion_inquilino")
+  RecordatorioEmail        RecordatorioEmail[]
+
   @@map("configuracion")
 }
 
-model CuentasPago {
-  id_cuenta           String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  id_inquilino        String             @db.Uuid
-  numero_cuenta       String             @unique
-  fecha_registro      DateTime           @default(now()) @db.Timestamptz(6)
-  fecha_actualizacion DateTime           @default(now()) @db.Timestamptz(6)
-  nombre_banco        String
-  titular_cuenta      String
-  Inquilino          Inquilino         @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction, map: "fk_cuentas_inquilino")
-  Deuda              Deuda[]
-  TransaccionPago    TransaccionPago[]
-  @@map("cuentas_pago")
-}
-
 model Deuda {
-  id_deuda          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  monto_original    Decimal            @db.Decimal(12, 2)
-  saldo_pendiente   Decimal            @db.Decimal(12, 2)
+  id_deuda          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  monto_original    Decimal         @db.Decimal(12, 2)
+  saldo_pendiente   Decimal         @db.Decimal(12, 2)
   descripcion       String?
-  fecha_emision     DateTime           @db.Date
-  fecha_vencimiento DateTime           @db.Date
+  fecha_emision     DateTime        @db.Date
+  fecha_vencimiento DateTime        @db.Date
   estado_deuda      String
-  tasa_interes      Decimal            @default(0) @db.Decimal(5, 2)
-  id_cliente        String             @db.Uuid
-  id_cuenta         String             @db.Uuid
-  Cliente          Cliente           @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_deudas_cliente")
-  CuentasPago      CuentasPago       @relation(fields: [id_cuenta], references: [id_cuenta], onDelete: NoAction, onUpdate: NoAction, map: "fk_deudas_cuenta")
-  HistorialPago   HistorialPago[]
-  TransaccionPago  TransaccionPago[]
+  tasa_interes      Decimal         @default(0) @db.Decimal(5, 2)
+  id_cliente        String          @db.Uuid
+  Cliente           Cliente         @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_deudas_cliente")
+  EnlacePago       EnlacePago[]
+  HistorialPago     HistorialPago[]
+
   @@map("deudas")
 }
 
 model Empresa {
-  id_empresa           String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_empresa           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nombre_empresa       String
   direccion_empresa    String?
   logo_empresa         String?
@@ -112,10 +101,11 @@ model Empresa {
   vision_empresa       String?
   terminos_condiciones String?
   politicas            String?
-  fecha_actualizacion  DateTime         @default(now()) @db.Timestamptz(6)
+  fecha_actualizacion  DateTime    @default(now()) @db.Timestamptz(6)
   Admin                Admin[]
   Blog                 Blog[]
-  RedSocial       RedSocial[]
+  RedSocial            RedSocial[]
+
   @@map("empresa")
 }
 
@@ -130,27 +120,29 @@ model HistorialPago {
   intentos_fallidos Int      @default(0)
   id_cliente        String   @db.Uuid
   id_deuda          String   @db.Uuid
-  Cliente          Cliente @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_historial_cliente")
-  Deuda            Deuda   @relation(fields: [id_deuda], references: [id_deuda], onDelete: NoAction, onUpdate: NoAction, map: "fk_historial_deuda")
+  Cliente           Cliente  @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_historial_cliente")
+  Deuda             Deuda    @relation(fields: [id_deuda], references: [id_deuda], onDelete: NoAction, onUpdate: NoAction, map: "fk_historial_deuda")
+
   @@map("historial_pagos")
 }
 
 model Inquilino {
-  id_inquilino               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nombre_inquilino           String
-  apellido_paterno_inquilino String
-  apellido_materno_inquilino String?
-  email_inquilino            String            @unique
-  telefono_inquilino         String?
-  direccion_inquilino        String?
-  estado_inquilino           Boolean           @default(true)
-  fecha_registro             DateTime          @default(now()) @db.Timestamptz(6)
-  contrase_a_inquilino       String            @map("contraseña_inquilino")
-  foto_inquilino             String?
-  Cliente                   Cliente[]
-  Configuracion              Configuracion[]
-  CuentasPago               CuentasPago[]
-  RecordatorioEmail            RecordatorioEmail[]
+  id_inquilino        String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre_inquilino    String
+  apellido_paterno    String
+  apellido_materno    String?
+  email_inquilino     String              @unique
+  telefono_inquilino  String?
+  direccion_inquilino String?
+  estado_inquilino    Boolean             @default(true)
+  fecha_registro      DateTime            @default(now()) @db.Timestamptz(6)
+  password            String
+  foto_inquilino      String?
+  ClavePasarela     ClavePasarela[]
+  Cliente             Cliente[]
+  Configuracion       Configuracion[]
+  RecordatorioEmail   RecordatorioEmail[]
+
   @@map("inquilinos")
 }
 
@@ -160,17 +152,9 @@ model InteraccionChatbot {
   mensaje_recibido  String?
   fecha_interaccion DateTime @default(now()) @db.Timestamptz(6)
   id_cliente        String   @db.Uuid
-  Cliente          Cliente @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_interaccion_cliente")
-  @@map("interaccion_chatbot")
-}
+  Cliente           Cliente  @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_interaccion_cliente")
 
-model PasarelaPago {
-  id_pasarela      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  proveedor        String
-  config_api       Json?
-  fecha_registro   DateTime           @default(now()) @db.Timestamptz(6)
-  TransaccionPago TransaccionPago[]
-  @@map("pasarelas_pago")
+  @@map("interaccion_chatbot")
 }
 
 model RedSocial {
@@ -180,24 +164,8 @@ model RedSocial {
   enlace     String
   id_empresa String  @db.Uuid
   Empresa    Empresa @relation(fields: [id_empresa], references: [id_empresa], onDelete: NoAction, onUpdate: NoAction, map: "fk_redes_empresa")
-  @@map("redes_sociales")
-}
 
-model TransaccionPago {
-  id_transaccion     String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  importe            Decimal        @db.Decimal(12, 2)
-  moneda             String
-  estado             String
-  referencia_gateway String?
-  respuesta_raw      Json?
-  fecha_intento      DateTime       @default(now()) @db.Timestamptz(6)
-  id_pasarela        String         @db.Uuid
-  id_cuenta          String         @db.Uuid
-  id_deuda           String         @db.Uuid
-  CuentasPago       CuentasPago   @relation(fields: [id_cuenta], references: [id_cuenta], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_cuenta")
-  Deuda             Deuda         @relation(fields: [id_deuda], references: [id_deuda], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_deuda")
-  PasarelaPago     PasarelaPago @relation(fields: [id_pasarela], references: [id_pasarela], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_pasarela")
-  @@map("transaccion_pago")
+  @@map("redes_sociales")
 }
 
 model RecordatorioEmail {
@@ -207,10 +175,60 @@ model RecordatorioEmail {
   id_configuracion String        @db.Uuid
   siguiente_email  DateTime      @db.Timestamptz(6)
   ultimo_email     DateTime?     @db.Timestamptz(6)
-  Cliente         Cliente      @relation(fields: [id_cliente], references: [id_cliente], onDelete: Cascade, onUpdate: NoAction)
+  Cliente          Cliente       @relation(fields: [id_cliente], references: [id_cliente], onDelete: Cascade, onUpdate: NoAction)
   Configuracion    Configuracion @relation(fields: [id_configuracion], references: [id_configuracion], onUpdate: NoAction)
-  Inquilino       Inquilino    @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: Cascade, onUpdate: NoAction)
+  Inquilino        Inquilino     @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([siguiente_email], map: "ix_emails_siguiente")
   @@map("emails_enviados")
+}
+
+model ClavePasarela {
+  id_credencial       String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_inquilino        String        @db.Uuid
+  pasarela            pasarela_t
+  credenciales_api    String        @db.VarChar(512)
+  fecha_registro      DateTime      @default(now()) @db.Timestamptz(6)
+  fecha_actualizacion DateTime?     @db.Timestamptz(6)
+  estado              estado_cred_t @default(ACTIVO)
+  inquilinos          Inquilino     @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction, map: "fk_clave_inquilino")
+  EnlacePago         EnlacePago[]
+  @@map("clave_pasarela")
+}
+
+model EnlacePago {
+  id_enlace       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_exterior     String?         @unique @db.VarChar(120)
+  url             String
+  monto           Decimal?        @db.Decimal(10, 2)
+  moneda          String          @default("MXN") @db.Char(3)
+  estado          estado_enlace_t @default(pendiente)
+  comision        Decimal?        @db.Decimal(10, 2)
+  monto_neto      Decimal?        @db.Decimal(10, 2)
+  creado_en       DateTime        @default(now()) @db.Timestamptz(6)
+  pagado_en       DateTime?       @db.Timestamptz(6)
+  vence_en        DateTime?       @db.Timestamptz(6)
+  id_deuda        String          @db.Uuid
+  id_credencial   String          @db.Uuid
+  ClavePasarela ClavePasarela @relation(fields: [id_credencial], references: [id_credencial], onDelete: NoAction, onUpdate: NoAction, map: "fk_enlace_credencial")
+  deudas          Deuda           @relation(fields: [id_deuda], references: [id_deuda], onDelete: NoAction, onUpdate: NoAction, map: "fk_enlace_deuda")
+  @@map("EnlacePago")
+}
+
+enum estado_cred_t {
+  ACTIVO
+  INACTIVO
+}
+
+enum estado_enlace_t {
+  pendiente
+  pagado
+  expirado
+  cancelado
+}
+
+enum pasarela_t {
+  stripe
+  mercadopago
+  paypal
 }
