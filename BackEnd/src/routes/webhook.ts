@@ -17,12 +17,10 @@ router.post('/webhook', async (req: Request, res: Response) => {
       return contexts.some((c: any) => c.name.endsWith(`/contexts/${ctxName}`));
     };
 
-    //Flujo de identificación (awaiting_identificacion)
     if (hasContext('awaiting_identificacion')) {
       return handleIntentIdentificar(req, res);
     }
 
-    //Intents que requieren cliente_identificado (Consultar_Deuda, Fecha_Vencimiento, Pagar)
     if (['Consultar_Deuda', 'Fecha_Vencimiento', 'Pagar'].includes(intentName)) {
       const contextoIdentificado = contexts.find((c: any) =>
         c.name.endsWith('/contexts/cliente_identificado')
@@ -50,7 +48,6 @@ router.post('/webhook', async (req: Request, res: Response) => {
       }
     }
 
-    //Intents dinámicos sin contexto: Horario_Atencion y Soporte_Humano
     if (intentName === 'Horario_Atencion') {
       return handleIntentHorario(req, res);
     }
@@ -58,7 +55,6 @@ router.post('/webhook', async (req: Request, res: Response) => {
       return handleIntentSoporte(req, res);
     }
 
-    //Fallback
     return res.json({
       fulfillmentText:
         'Lo siento, no entendí tu solicitud. ¿Podrías reformularla, por favor?'

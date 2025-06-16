@@ -1,11 +1,9 @@
-// File: src/services/intents/IntentPagar.ts
 import { Request, Response } from 'express';
 import { prisma } from '../../db/client';
 
 const randomFromArray = (arr: string[]): string =>
   arr[Math.floor(Math.random() * arr.length)];
 
-// Respuestas para cuando no hay deudas que pagar
 const respuestasSinDeudaPagar: string[] = [
   "No hay deudas activas para pagar actualmente.",
   "¡Estás al corriente! No tienes pagos pendientes.",
@@ -15,7 +13,6 @@ const respuestasSinDeudaPagar: string[] = [
   "En este momento no hay ninguna deuda que requiera tu pago."
 ];
 
-// Respuestas para cuando sí hay deuda (inserta ${enlace})
 const respuestasConDeudaPagar: string[] = [
   "Para saldar tu deuda, ingresa al siguiente enlace: ${enlace}.",
   "Puedes realizar tu pago aquí: ${enlace}.",
@@ -52,7 +49,7 @@ export async function handleIntentPagar(req: Request, res: Response) {
     });
   }
 
-  const deudasCliente = await prisma.deudas.findMany({
+  const deudasCliente = await prisma.deuda.findMany({
     where: {
       id_cliente: idCliente,
       estado_deuda: "PENDIENTE"  
@@ -70,6 +67,6 @@ export async function handleIntentPagar(req: Request, res: Response) {
   const enlacePago = `https://tu-pasarela.com/pago?cliente=${idCliente}&deuda=${deudaReciente.id_deuda}`;
   const plantilla = randomFromArray(respuestasConDeudaPagar);
   const respuesta = plantilla.replace('${enlace}', enlacePago);
-
+  
   return res.json({ fulfillmentText: respuesta });
 }

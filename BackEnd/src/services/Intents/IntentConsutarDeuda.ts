@@ -51,7 +51,7 @@ export async function handleIntentConsultarDeuda(
     });
   }
 
-  const deudasCliente = await prisma.deudas.findMany({
+  const deudasCliente = await prisma.deuda.findMany({
     where: {
       id_cliente: idCliente,
       estado_deuda: "PENDIENTE" 

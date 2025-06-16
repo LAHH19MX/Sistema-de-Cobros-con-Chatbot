@@ -1,12 +1,9 @@
-// File: src/services/intents/IntentIdentificar.ts
 import { Request, Response } from 'express';
 import { prisma } from '../../db/client';
 
-// Función auxiliar para seleccionar un elemento aleatorio de un array
 const randomFromArray = (arr: string[]): string =>
   arr[Math.floor(Math.random() * arr.length)];
 
-// Respuestas de saludo
 const saludosIdentificado: string[] = [
   "¡Hola ${nombre}! ¿En qué puedo ayudarte hoy?",
   "Saludos ${nombre}, estoy aquí para asistirte. ¿Qué necesitas?",
@@ -41,16 +38,15 @@ export async function handleIntentIdentificar(req: Request, res: Response) {
     });
   }
 
-  // Buscar cliente por correo o teléfono
   let clienteDB: { id_cliente: string; nombre_cliente: string } | null = null;
   if (email) {
-    clienteDB = await prisma.clientes.findUnique({
+    clienteDB = await prisma.cliente.findUnique({
       where: { email_cliente: email },
       select: { id_cliente: true, nombre_cliente: true }
     });
   }
   if (!clienteDB && telefono) {
-    clienteDB = await prisma.clientes.findFirst({
+    clienteDB = await prisma.cliente.findFirst({
       where: { telefono_cliente: telefono },
       select: { id_cliente: true, nombre_cliente: true }
     });
@@ -69,7 +65,6 @@ export async function handleIntentIdentificar(req: Request, res: Response) {
     });
   }
 
-  // Cliente válido: generar saludo aleatorio e incluir contexto cliente_identificado
   const plantillaSaludo: string = randomFromArray(saludosIdentificado);
   const saludo = plantillaSaludo.replace('${nombre}', clienteDB.nombre_cliente);
 

@@ -6,22 +6,18 @@ import { twiml as TwilioTwiml } from 'twilio';
 
 const router = Router();
 
-// Twilio envía application/x-www-form-urlencoded
 router.post(
   '/messages',
   bodyParser.urlencoded({ extended: false }),
   async (req: Request, res: Response) => {
     try {
-      /* 1.  Extraer texto y n.º de WhatsApp */
       const incomingText = req.body.Body  as string;
       const fromNumber   = req.body.From  as string;
 
-      /* 2.  Construir cliente Dialogflow */
       const keyFile = path.resolve(process.cwd(), process.env.GOOGLE_CREDENCIALES!);
       const client  = new SessionsClient({ keyFilename: keyFile });
-      const projectId = await client.getProjectId(); // evita errores de ID
+      const projectId = await client.getProjectId(); 
 
-      /* 3.  detectIntent() */
       const sessionPath = client.projectAgentSessionPath(projectId, fromNumber);
       const [dfRes] = await client.detectIntent({
         session: sessionPath,
@@ -32,7 +28,6 @@ router.post(
         dfRes.queryResult?.fulfillmentText ??
         'Lo siento, no entendí tu mensaje.';
 
-      /* 4.  Preparar TwiML */
       const twiml = new TwilioTwiml.MessagingResponse();
       twiml.message(reply);
 
