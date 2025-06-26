@@ -32,8 +32,6 @@ model Blog {
   material_visual   String?
   fecha_publicacion DateTime @default(dbgenerated("CURRENT_DATE")) @db.Date
   estado_blog       String
-  id_empresa        String   @db.Uuid
-  Empresa           Empresa  @relation(fields: [id_empresa], references: [id_empresa], onDelete: NoAction, onUpdate: NoAction, map: "fk_blog_empresa")
 
   @@map("blog")
 }
@@ -84,27 +82,29 @@ model Deuda {
   tasa_interes      Decimal         @default(0) @db.Decimal(5, 2)
   id_cliente        String          @db.Uuid
   Cliente           Cliente         @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_deudas_cliente")
-  EnlacePago       EnlacePago[]
+  enlace_pago       enlace_pago[]
   HistorialPago     HistorialPago[]
 
   @@map("deudas")
 }
 
 model Empresa {
-  id_empresa           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nombre_empresa       String
-  direccion_empresa    String?
-  logo_empresa         String?
-  telefono_empresa     String?
-  email_empresa        String
-  mision_empresa       String?
-  vision_empresa       String?
-  terminos_condiciones String?
-  politicas            String?
-  fecha_actualizacion  DateTime    @default(now()) @db.Timestamptz(6)
-  Admin                Admin[]
-  Blog                 Blog[]
-  RedSocial            RedSocial[]
+  id_empresa            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre_empresa        String
+  logo_empresa          String?
+  telefono_empresa      String?
+  email_empresa         String
+  fecha_actualizacion   DateTime    @default(now()) @db.Timestamptz(6)
+  estado_empresa        String?
+  ciudad_empresa        String?
+  codigo_postal_empresa String?
+  calle_empresa         String?
+  colonia_empresa       String?
+  latitud_empresa       String?
+  longitud_empresa      String?
+  Admin                 Admin[]
+  Apartado              Apartado[]
+  RedSocial             RedSocial[]
 
   @@map("empresa")
 }
@@ -138,7 +138,7 @@ model Inquilino {
   fecha_registro      DateTime            @default(now()) @db.Timestamptz(6)
   password            String
   foto_inquilino      String?
-  ClavePasarela     ClavePasarela[]
+  clave_pasarelas     clave_pasarelas[]
   Cliente             Cliente[]
   Configuracion       Configuracion[]
   RecordatorioEmail   RecordatorioEmail[]
@@ -183,7 +183,7 @@ model RecordatorioEmail {
   @@map("emails_enviados")
 }
 
-model ClavePasarela {
+model clave_pasarelas {
   id_credencial       String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   id_inquilino        String        @db.Uuid
   pasarela            pasarela_t
@@ -191,12 +191,12 @@ model ClavePasarela {
   fecha_registro      DateTime      @default(now()) @db.Timestamptz(6)
   fecha_actualizacion DateTime?     @db.Timestamptz(6)
   estado              estado_cred_t @default(ACTIVO)
+  client_secret       String?       @db.VarChar(120)
   inquilinos          Inquilino     @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction, map: "fk_clave_inquilino")
-  EnlacePago         EnlacePago[]
-  @@map("clave_pasarela")
+  enlace_pago         enlace_pago[]
 }
 
-model EnlacePago {
+model enlace_pago {
   id_enlace       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   id_exterior     String?         @unique @db.VarChar(120)
   url             String
@@ -210,9 +210,72 @@ model EnlacePago {
   vence_en        DateTime?       @db.Timestamptz(6)
   id_deuda        String          @db.Uuid
   id_credencial   String          @db.Uuid
-  ClavePasarela ClavePasarela @relation(fields: [id_credencial], references: [id_credencial], onDelete: NoAction, onUpdate: NoAction, map: "fk_enlace_credencial")
+  clave_pasarelas clave_pasarelas @relation(fields: [id_credencial], references: [id_credencial], onDelete: NoAction, onUpdate: NoAction, map: "fk_enlace_credencial")
   deudas          Deuda           @relation(fields: [id_deuda], references: [id_deuda], onDelete: NoAction, onUpdate: NoAction, map: "fk_enlace_deuda")
-  @@map("EnlacePago")
+}
+
+model Apartado {
+  id_apartado       String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_empresa        String      @db.Uuid
+  nombre_apartado   String
+  activo_apartado   Boolean     @default(true)
+  mostrar_categoria Boolean     @default(false)
+  id_plantilla      String      @db.Uuid
+  fecha_creacion    DateTime    @default(now()) @db.Timestamptz(6)
+  Empresa           Empresa     @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade, onUpdate: NoAction, map: "fk_apartado_empresa")
+  Plantilla         Plantilla   @relation(fields: [id_plantilla], references: [id_plantilla], onUpdate: NoAction, map: "fk_apartado_plantilla")
+  categoria         categoria[]
+
+  @@map("apartado")
+}
+
+model Contenido {
+  id_contenido     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_seccion       String  @db.Uuid
+  titulo_contenido String
+  texto_contenido  String?
+  multimedia_url   String?
+  Seccion          Seccion @relation(fields: [id_seccion], references: [id_seccion], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("contenido")
+}
+
+model Seccion {
+  id_seccion     String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  titulo_seccion String
+  texto_seccion  String?
+  imagen_url     String?
+  activo_seccion Boolean     @default(true)
+  fecha_creacion DateTime    @default(now()) @db.Timestamptz(6)
+  tipo_seccion   String      @default("general")
+  id_categoria   String?     @db.Uuid
+  Contenido      Contenido[]
+  Categoria      categoria?  @relation(fields: [id_categoria], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "seccion_categoria_fkey")
+
+  @@map("seccion")
+}
+
+model Plantilla {
+  id_plantilla          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre_plantilla      String     @db.VarChar(255)
+  descripcion_plantilla String?
+  fecha_creacion        DateTime?  @default(now()) @db.Timestamptz(6)
+  Apartado              Apartado[]
+
+  @@map("plantilla")
+}
+
+model categoria {
+  id_categoria     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre_categoria String
+  titulo_categoria String?
+  texto_categoria  String?
+  imagen_categoria String?
+  fecha_creacion   DateTime  @default(now()) @db.Timestamp(6)
+  activo_categoria Boolean   @default(true)
+  id_apartado      String    @db.Uuid
+  apartado         Apartado  @relation(fields: [id_apartado], references: [id_apartado], onDelete: NoAction, onUpdate: NoAction)
+  Seccion          Seccion[]
 }
 
 enum estado_cred_t {
