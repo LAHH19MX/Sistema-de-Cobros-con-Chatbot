@@ -1,0 +1,69 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --hover-secondary:  #f8b3b9;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+/*SECCION 1*/
+.custom-section-general .custom-section__title.custom-section__title {
+  color: var(--color-white) !important;
+  font-size: 3.1rem !important;
+  text-align: center !important;
+  font-family: var(--text-seccion) !important;
+  font-weight: 700 !important;
+}
+
+.custom-section-general .custom-section__subtitle-section1.custom-section__subtitle-section1 {
+  color: var(--color-textContent) !important;
+  text-align: center !important;
+  font-size: 1.25rem !important;
+  margin-bottom: 4rem !important;
+  font-family: var(--text-normal) !important;
+}
+
+.custom-section-general .custom-section--features__media.custom-section--features__media {
+  display: flex !important;                
+  justify-content: center !important;      
+  align-items: center !important;
+  width: 100% !important;                  
+  max-width: 400px !important;             
+  height: 400px !important;                
+  margin: 0 auto !important;               
+  overflow: hidden !important;
+  border-radius: 10px !important;
+}
+
+.custom-section-general .custom-section--features__img.custom-section--features__img {
+  width: 100% !important;                  
+  height: auto !important;
+  object-fit: cover !important;            
+}
+
+.custom-section-general .custom-section--features__heading.custom-section--features__heading {
+  font-family: var(--text-seccion) !important;
+  font-size: 1.75rem !important;
+  color: var(--color-accent) !important;
+  margin-bottom: 2rem !important;
+}
+
+.custom-section-general .custom-section--features__text.custom-section--features__text {
+  font-family: var(--text-normal) !important;
+  font-size: 1rem !important;
+  color: var(--color-white) !important;
+  line-height: 1.6 !important;
+}
+
+/*FIN DE SECCION 1*/

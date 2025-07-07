@@ -1,0 +1,129 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+/* HEADER - Especificidad alta para sobrescribir Bootstrap */
+header.custom-header.custom-header {
+  background-color: var(--color-primary) !important;
+  padding: 1.5rem 0 !important;
+}
+
+/* Logo - Especificidad alta */
+.custom-header .custom-header__logoImg.custom-header__logoImg {
+  max-height: 40px !important;
+}
+
+/* Nav links - Especificidad alta para sobrescribir Bootstrap */
+.custom-header .navbar-nav .nav-link.custom-header__navLink {
+  color: var(--color-white) !important;
+  font-weight: 500 !important;
+  transition: color 0.2s !important;
+  font-family: var(--text-normal) !important;
+  font-size: 1.1rem !important;
+}
+
+.custom-header .navbar-nav .nav-link.custom-header__navLink:hover,
+.custom-header .navbar-nav .nav-item .nav-link.custom-header__navLink:hover {
+  color: var(--color-secondary) !important;
+}
+
+.custom-header .navbar-nav .nav-link.custom-header__navLink:link,
+.custom-header .navbar-nav .nav-link.custom-header__navLink:visited,
+.custom-header .navbar-nav .nav-link.custom-header__navLink:active,
+.custom-header .navbar-nav .nav-link.custom-header__navLink:focus {
+  color: var(--color-white) !important;
+}
+
+/* Dropdown states - Especificidad alta */
+.custom-header .navbar-nav .nav-item.custom-header__navItem.show > .nav-link.custom-header__navLink {
+  color: var(--color-white) !important;
+}
+
+.custom-header .navbar-nav .nav-link.custom-header__navLink.dropdown-toggle:focus,
+.custom-header .navbar-nav .nav-link.custom-header__navLink.dropdown-toggle:active {
+  color: var(--color-white) !important;
+}
+
+/* Dropdown menu - Especificidad alta para sobrescribir Bootstrap */
+.custom-header .dropdown-menu.custom-header__dropdownMenu {
+  background-color: var(--color-primary) !important;
+  border: none !important;
+}
+
+.custom-header .dropdown-menu .dropdown-item.custom-header__dropdownItem {
+  color: var(--color-white) !important;
+  transition: background 0.2s, color 0.2s !important;
+  font-family: var(--text-normal) !important;
+}
+
+.custom-header .dropdown-menu .dropdown-item.custom-header__dropdownItem:hover,
+.custom-header .dropdown-menu .dropdown-item.custom-header__dropdownItem:focus {
+  background-color: var(--color-hover-btn) !important;
+  color: var(--color-secondary) !important;
+}
+
+/* Botón "Acceder" - Especificidad alta */
+.custom-header .btn.custom-header__btnLogin.custom-header__btnLogin {
+  background: transparent !important;
+  color: var(--color-white) !important;
+  font-size: 1.1rem !important;
+  border: 1px solid var(--color-white) !important;
+  transition: background 0.2s, color 0.2s !important;
+  font-family: var(--text-normal) !important;
+}
+
+.custom-header .btn.custom-header__btnLogin.custom-header__btnLogin:hover,
+.custom-header .btn.custom-header__btnLogin.custom-header__btnLogin:focus {
+  background-color: var(--color-white) !important;
+  border: 1px solid var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+/* Botón "Empezar" - Especificidad alta */
+.custom-header .btn.custom-header__btnStart.custom-header__btnStart {
+  background-color: var(--color-secondary) !important;
+  color: var(--color-white) !important;
+  font-size: 1.1rem !important;
+  border: none !important;
+  transition: background 0.2s !important;
+  font-family: var(--text-normal) !important;
+}
+
+.custom-header .btn.custom-header__btnStart.custom-header__btnStart:hover,
+.custom-header .btn.custom-header__btnStart.custom-header__btnStart:focus {
+  background-color: var(--secondary-hover) !important;
+}
+
+/* Contenedor de acciones */
+.custom-header .custom-header__actions.custom-header__actions {
+  gap: 0.5rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .custom-header .custom-header__actions.custom-header__actions {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .custom-header .btn.custom-header__btnLogin.custom-header__btnLogin,
+  .custom-header .btn.custom-header__btnStart.custom-header__btnStart {
+    width: 100% !important;
+  }
+}
+
+/*FIN DEL HEADER*/

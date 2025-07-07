@@ -1,0 +1,211 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --hover-secondary:  #f8b3b9;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+/* POST DESTACADO */
+.blog-primary-item {
+  background-color: var(--color-secondary);
+  padding: 1rem;
+  /* Sin bordes redondeados */
+  border-radius: 0;
+  transition: background .2s;
+  /* Altura fija igual que la suma de los laterales */
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+.blog-primary-item:hover {
+  background-color: var(--secondary-hover);
+}
+.blog-primary-item h2 {
+  font-family: var(--text-normal);
+  font-size: 1.75rem;
+  margin-bottom: .5rem;
+}
+.blog-primary-item .blog-desc {
+  font-family: var(--text-normal);
+  font-size: 1rem;
+  margin-bottom: auto;
+
+  /* Truncado a 2 líneas con puntos suspensivos */
+  display: -webkit-box;
+  display: box;
+  -webkit-box-orient: vertical;
+  box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.blog-primary-item time {
+  font-family: var(--text-normal);
+  font-size: .875rem;
+  opacity: .8;
+}
+
+/* POSTS LATERALES */
+.blog-side-list .blog-side-item {
+  background-color: rgba(255,255,255,0.05);
+  padding: .75rem;
+  border-radius: 0;
+  transition: background .2s;
+  min-height: 120px;
+  display: flex;
+  align-items: stretch;
+}
+.blog-side-list .blog-side-item:hover {
+  background-color: var(--color-white);
+  color: var(--color-primary);
+}
+.blog-side-item img {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 0;
+}
+.blog-side-item h5 {
+  font-family: var(--text-normal);
+  font-size: 1.25rem;
+  margin-bottom: .25rem;
+}
+.blog-side-item .blog-desc {
+  font-family: var(--text-normal);
+  font-size: .9rem;
+  margin-bottom: auto;
+
+  /* Truncado a 2 líneas con puntos suspensivos */
+  display: -webkit-box;
+  display: box;
+  -webkit-box-orient: vertical;
+  box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.blog-side-item time {
+  font-family: var(--text-normal);
+  font-size: .75rem;
+  opacity: .8;
+}
+
+/*-----------------------------------------------*/
+/* TEXTOS EN BLANCO */
+.blog-primary-item,
+.blog-side-item {
+  color: var(--color-white);
+}
+
+/* Separador general */
+.section-divider {
+  border: none;
+  height: 1px;
+  background-color: var(--color-textContent);
+  margin: 3rem 0 0 0;
+}
+
+/* BLOQUES DE BLOG */
+.blog-item {
+  background: transparent;
+  padding: 1rem 0;
+  border-radius: 0;
+}
+.blog-item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+.blog-item time {
+  font-family: var(--text-normal);
+  font-size: .875rem;
+  opacity: .8;
+}
+.blog-item h3 {
+  font-family: var(--text-normal);
+  font-size: 1.5rem;
+  margin-bottom: .5rem;
+}
+
+/* truncado a 2 líneas: versiones vendor + estándar */
+.blog-desc {
+  font-family: var(--text-normal);
+  font-size: 1rem;
+  margin-bottom: .5rem;
+  display: -webkit-box;            
+  -webkit-box-orient: vertical;    
+  -webkit-line-clamp: 2;           
+  line-clamp: 2;                   
+  box-orient: vertical;            
+  overflow: hidden;
+}
+
+/* línea bajo cada blog */
+.blog-item-divider {
+  border: none;
+  height: 3px;
+  background-color: var(--color-textContent);
+  margin: .5rem 0 0;
+}
+/* al hover cambiar color de la línea */
+.blog-item:hover .blog-item-divider {
+  background-color: var(--color-secondary);
+}
+
+.ad-placeholder {
+  background-color: var(--color-textContent);
+  min-height: 200px;
+  border-radius: .5rem;
+  font-family: var(--text-normal);
+}
+
+/* TEXTOS EN BLANCO */
+.blog-item,
+.blog-item a,
+.ad-placeholder,
+.footer__social-link {
+  color: var(--color-white);
+}
+
+.blog-grid-and-aside .col-lg-4 {
+  background-color: var(--color-white);
+  padding: 1rem;
+  border-radius: 0; 
+}
+
+.blog-grid-and-aside .footer__social-link {
+  color: var(--color-primary);
+  font-size: 1.75rem;
+  padding: 0.5rem;
+  transition: color 0.2s;
+}
+.blog-grid-and-aside .footer__social-link:hover {
+  color: var(--color-secondary);
+}
+
+.blog-grid-and-aside .ad-placeholder {
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0; 
+  font-family: var(--text-normal);
+  font-size: 1rem;
+}
+
+ .ad-placeholder{
+    background: var(--color-textContent);
+ } 

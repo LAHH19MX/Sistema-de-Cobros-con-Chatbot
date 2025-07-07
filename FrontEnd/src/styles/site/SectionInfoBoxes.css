@@ -1,0 +1,72 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --hover-secondary:  #f8b3b9;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+/*INICIO DE SECCION 7*/
+
+/* Título de la sección */
+.custom-section--infoBoxes .custom-section__title.custom-section__title {
+  color: var(--color-white) !important;
+  font-family: var(--text-seccion) !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+}
+
+/* Subtítulo de la sección */
+.custom-section--infoBoxes .custom-section__subtitle.custom-section__subtitle {
+  color: var(--color-textContent) !important;
+  font-size: 1.25rem !important;
+  text-align: center !important;
+  font-family: var(--text-normal) !important;
+}
+
+/* Cada caja */
+.custom-section--infoBoxes .custom-info-box.custom-info-box {
+  background-color: var(--color-secondary) !important;
+  color: var(--color-white) !important;
+  border: none !important;
+  height: 250px !important; /* ← AQUÍ CAMBIAS LA ALTURA: 200px, 300px, 350px, etc. */
+  border-radius: 0 !important;
+}
+
+/* Título de la caja */
+.custom-section--infoBoxes .custom-info-box__heading.custom-info-box__heading {
+  font-family: var(--text-seccion) !important;
+  font-size: 1.5rem !important;
+  color: var(--color-white) !important;
+  font-weight: 600 !important;
+}
+
+/* Texto de la caja */
+.custom-section--infoBoxes .custom-info-box__text.custom-info-box__text {
+  font-family: var(--text-normal) !important;
+  font-size: 1rem !important;
+  margin: 0 !important;
+  color: var(--color-white) !important;
+  line-height: 1.5 !important;
+}
+
+/* Divisor de sección */
+.custom-section--infoBoxes .custom-section-divider.custom-section-divider {
+  border: none !important;
+  height: 2px !important;
+  background: var(--color-textContent) !important;
+  margin: 3rem 0 !important;
+}
+/*FIN DE SECCION 7*/

@@ -1,0 +1,129 @@
+/* ========== NOSOTROS PAGE STYLES ========== */
+
+/* Variables CSS reutilizadas */
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+body{
+  background-color: #1B1C1E;
+}
+
+/* About Inner Container - Especificidad alta */
+.about .about__inner.about__inner {
+  display: grid !important;
+  gap: 2rem !important;
+  align-items: center !important;
+}
+
+/* Dos columnas en pantallas ≥768px */
+@media (min-width: 768px) {
+  .about .about__inner.about__inner {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Contenido de texto - Especificidad alta */
+.about .about__content .section__title.section__title {
+  color: var(--color-secondary) !important;
+  font-family: var(--text-categoria) !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+  line-height: 1.2 !important;
+}
+
+.about .about__content .section__text.section__text {
+  font-family: var(--text-normal) !important;
+  color: var(--color-white) !important;
+  line-height: 1.6 !important;
+  margin-top: 1rem !important;
+  font-size: 1.1rem !important;
+  margin-bottom: 0 !important;
+}
+
+/* Contenedor de medios - Especificidad alta */
+.about .about__media.about__media {
+  text-align: center !important;
+}
+
+/* Imágenes - Especificidad alta */
+.about .about__media .about__img.about__img {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  transition: transform 0.3s ease !important;
+}
+
+.about .about__media .about__img.about__img:hover {
+  transform: scale(1.02) !important;
+}
+
+/* Empty State - Especificidad alta */
+section.about-empty.about-empty {
+  background: var(--color-light-gray) !important;
+  color: var(--color-white) !important;
+  text-align: center !important;
+  min-height: 400px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.about-empty .section__title.section__title {
+  color: var(--color-white) !important;
+  font-family: var(--text-categoria) !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.about-empty .section__text.section__text {
+  font-family: var(--text-normal) !important;
+  color: var(--color-white) !important;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
+  opacity: 0.9 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .about .about__content .section__title.section__title {
+    font-size: 2rem !important;
+    text-align: center !important;
+  }
+  
+  .about .about__content .section__text.section__text {
+    font-size: 1rem !important;
+    text-align: center !important;
+  }
+  
+  .about-empty .section__title.section__title {
+    font-size: 2rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .about .about__content .section__title.section__title {
+    font-size: 1.75rem !important;
+  }
+  
+  .about-empty .section__title.section__title {
+    font-size: 1.75rem !important;
+  }
+}
+

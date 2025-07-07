@@ -1,0 +1,145 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+body{
+  background-color: #1B1C1E!important;
+}
+
+/*CARRUSEL*/
+.carousel-fade {
+  position: relative;
+  overflow: hidden;
+  height: 600px;
+}
+
+.carousel-fade__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: carousel-fade 12s infinite;
+  animation-fill-mode: both;
+  /* Por defecto sin eventos - React lo controlará */
+  pointer-events: none;
+  z-index: 1;
+}
+
+.carousel-fade__img {
+  position: absolute;
+  inset: 0;               
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  /* Imagen nunca interfiere con eventos */
+  pointer-events: none;
+}
+
+.carousel-fade__overlay { 
+  z-index: 2; 
+  /* Overlay nunca interfiere con eventos */
+  pointer-events: none;
+}
+
+.carousel-fade__content { 
+  z-index: 3; 
+  /* Contenido puede recibir eventos cuando el slide esté activo */
+  pointer-events: inherit;
+}
+
+@keyframes carousel-fade {
+  0%, 45%, 100%   { opacity: 0; }
+  5%, 40%         { opacity: 1; }
+}
+
+/* Overlay semi-oscuro */
+.carousel-fade__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Contenido centrado */
+.carousel-fade__content {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Tipografías */
+.carousel-fade__title {
+  font-family: var(--text-apartado);
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.carousel-fade__description {
+  font-family: var(--text-normal);
+  font-size: 1.6rem;
+  margin-bottom: 2rem;
+}
+
+/* Botones del carousel - Solución para hover persistente */
+.btn--info.btn--info {
+  background: transparent !important;
+  font-size: 1.5rem !important;
+  color: var(--color-white) !important;
+  border: 1px solid var(--color-white) !important;
+  transition: background 0.2s, color 0.2s, opacity 0.2s !important;
+  padding-bottom: 15px !important;
+}
+
+/* Cambio importante: eliminar :not(:disabled) y usar opacity para controlar la apariencia */
+.btn--info.btn--info:hover {
+  background-color: var(--color-white) !important;
+  color: var(--color-primary) !important;
+}
+
+.btn--info.btn--info:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  /* Forzar que el hover funcione visualmente aunque esté deshabilitado */
+  pointer-events: auto !important;
+}
+
+.btn--start.btn--start {
+  background-color: var(--color-secondary) !important;
+  color: var(--color-white) !important;
+  font-size: 1.5rem !important;
+  border: none !important;
+  transition: background 0.2s, opacity 0.2s !important;
+  padding-bottom: 15px !important;
+}
+
+/* Cambio importante: eliminar :not(:disabled) */
+.btn--start.btn--start:hover {
+  background-color: var(--secondary-hover) !important;
+  color: var(--color-primary) !important;
+}
+
+.btn--start.btn--start:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  /* Forzar que el hover funcione visualmente aunque esté deshabilitado */
+  pointer-events: auto !important;
+}
+
+/* Clase adicional para controlar la interactividad real */
+.btn--disabled {
+  pointer-events: none !important;
+}

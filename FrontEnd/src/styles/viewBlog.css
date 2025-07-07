@@ -1,0 +1,107 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --hover-secondary:  #f8b3b9;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+.blog-grid-and-aside__text-block {
+  /* sin fondo, ocupa todo el ancho de su columna */
+  padding: 1rem;
+}
+.blog-grid-and-aside__big-text {
+  font-family: var(--text-normal);
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.blog-grid-and-aside__aside {
+  /* fondo blanco para el aside */
+  background-color: var(--color-white);
+  padding: 1rem;
+  border-radius: 0;
+}
+
+/* Iconos de redes en el aside */
+.blog-grid-and-aside__aside .footer__social-link {
+  color: var(--color-primary);
+  font-size: 1.75rem;
+  transition: color 0.2s;
+}
+.blog-grid-and-aside__aside .footer__social-link:hover {
+  color: var(--secondary-hover);
+}
+
+/* Reutiliza tu placeholder de anuncios */
+.blog-grid-and-aside__ad .ad-placeholder {
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  min-height: 200px;
+  border-radius: 0;
+  font-family: var(--text-normal);
+  font-size: 1rem;
+}
+/* ─────────────────────────────────────────────────────
+   BLOQUE: blog-hero
+───────────────────────────────────────────────────── */
+.blog-hero {
+  background-color: var(--hover-secondary);
+  /* que el bloque sea más alto que la imagen */
+  min-height: 400px;       
+  display: flex;
+  align-items: center;     /* centra verticalmente el contenido */
+}
+
+/* La row debe ocupar todo el alto del blog-hero */
+.blog-hero .row {
+  width: 100%;
+}
+
+/* Columna de texto centrada verticalmente */
+.blog-hero__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Título y fecha */
+.blog-hero__title {
+  font-family: var(--text-normal);
+  color: var(--color-secondary);
+  font-size: 2.5rem;
+  margin: 0;
+}
+.blog-hero__date {
+  font-family: var(--text-normal);
+  color: var(--color-textContent);
+  margin-top: 0.5rem;
+}
+
+/* Contenedor de la imagen como flex para centrarla */
+.blog-hero__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem; /* igual que el texto para mantener márgenes */
+}
+
+/* Imagen, que no ocupe todo el alto */
+.blog-hero__img {
+  max-height: 250px;  /* ajústalo según lo “grande” que quieras el bloque */
+  width: auto;
+  display: block;
+}

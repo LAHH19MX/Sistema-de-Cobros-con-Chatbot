@@ -1,0 +1,137 @@
+/* ========== FAQ PAGE STYLES ========== */
+
+/* Variables CSS reutilizadas */
+:root {
+  --color-primary: #141416;
+  --color-secondary: #F07177;
+  --secondary-hover: #d85f6a;
+  --color-white: #FFFFFF;
+  --color-textContent: #8A8A8A;
+  --text-normal: 'Poppins', sans-serif;
+}
+
+/* Título principal - Especificidad alta */
+.faq-title.faq-title {
+  color: var(--color-white) !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 2rem !important;
+  font-family: var(--text-normal) !important;
+}
+
+/* Títulos de categoría - Especificidad alta */
+.category-title.category-title {
+  color: var(--color-white) !important;
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  margin-top: 2.5rem !important;
+  margin-bottom: 1.5rem !important;
+  border-bottom: 2px solid var(--color-secondary) !important;
+  padding-bottom: 0.5rem !important;
+  font-family: var(--text-normal) !important;
+}
+
+/* Preguntas - Especificidad alta */
+.question.question {
+  color: var(--color-secondary) !important;
+  font-size: 1.2rem !important;
+  font-weight: 500 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.8rem !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s !important;
+  font-family: var(--text-normal) !important;
+}
+
+.question.question:hover {
+  opacity: 0.8 !important;
+}
+
+/* Respuestas - Especificidad alta */
+.answer.answer {
+  color: var(--color-white) !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+  margin-bottom: 1rem !important;
+  padding-left: 1rem !important;
+  display: none !important;
+  margin-top: 0.5rem !important;
+  font-family: var(--text-normal) !important;
+}
+
+.answer.answer.show {
+  display: block !important;
+}
+
+/* Título del sidebar - Especificidad alta */
+.sidebar-title.sidebar-title {
+  color: #000000 !important;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 1.5rem !important;
+  font-family: var(--text-normal) !important;
+}
+
+/* Enlaces del temario - Especificidad alta */
+.topic-link.topic-link {
+  display: block !important;
+  color: var(--color-secondary) !important;
+  text-decoration: none !important;
+  padding: 0.8rem 0 !important;
+  margin-bottom: 0.5rem !important;
+  transition: color 0.2s !important;
+  background: none !important;
+  border: none !important;
+  text-align: left !important;
+  width: 100% !important;
+  font-family: var(--text-normal) !important;
+  font-size: 1.25rem !important;
+  cursor: pointer !important;
+}
+
+.topic-link.topic-link:hover {
+  text-decoration: underline !important;
+  color: var(--color-secondary) !important;
+}
+
+/* Sidebar container - Especificidad alta */
+.sidebar.sidebar {
+  background-color: var(--color-white) !important;
+  border-radius: 0.2rem !important;
+  padding: 1.5rem !important;
+  height: fit-content !important;
+  position: sticky !important;
+  top: 2rem !important;
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+  .sidebar.sidebar {
+    position: static !important;
+    margin-top: 2rem !important;
+  }
+  
+  .faq-title.faq-title {
+    font-size: 2rem !important;
+    text-align: center !important;
+  }
+  
+  .category-title.category-title {
+    font-size: 1.5rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .faq-title.faq-title {
+    font-size: 1.8rem !important;
+  }
+  
+  .category-title.category-title {
+    font-size: 1.3rem !important;
+    margin-top: 2rem !important;
+  }
+  
+  .question.question {
+    font-size: 1.1rem !important;
+  }
+}

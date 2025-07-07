@@ -18,7 +18,9 @@ export const getApartado = async (req: Request<{ id: string }>, res: Response) =
 
 export const getAllApartados = async (_req: Request, res: Response) => {
   try {
-    const apartados = await prisma.apartado.findMany();
+    const apartados = await prisma.apartado.findMany({
+      orderBy: { orden: 'asc' }
+    });
     res.json(apartados);
   } catch {
     res.status(500).json({ error: 'Error obteniendo apartados' });
@@ -34,8 +36,19 @@ export const createApartado = async (req: Request, res: Response) => {
       activo_apartado,
       mostrar_categoria
     } = createApartadoSchema.parse(req.body);
+    const maxOrden = await prisma.apartado.aggregate({
+      _max: { orden: true }
+    });
+    const nuevoOrden = (maxOrden._max.orden || 0) + 10;
     const apartado = await prisma.apartado.create({
-      data: { nombre_apartado, id_empresa, id_plantilla, activo_apartado, mostrar_categoria }
+      data: { 
+        nombre_apartado, 
+        id_empresa, 
+        id_plantilla, 
+        activo_apartado, 
+        mostrar_categoria,
+        orden: nuevoOrden
+      }
     });
     res.status(201).json(apartado);
   } catch {
@@ -75,7 +88,8 @@ export const deleteApartado = async (req: Request<{ id: string }>, res: Response
 export const getAllCategorias = async (req: Request<{ apartadoId: string }>, res: Response) => {
   try {
     const categorias = await prisma.categoria.findMany({
-      where: { id_apartado: req.params.apartadoId }
+      where: { id_apartado: req.params.apartadoId},
+      orderBy: { orden: 'asc' }
     });
     res.json(categorias);
   } catch {
@@ -104,6 +118,11 @@ export const createCategoria = async (req: Request<{ apartadoId: string }>, res:
       imagen_categoria,
       activo_categoria
     } = createCategoriaSchema.parse(req.body);
+    const maxOrden = await prisma.categoria.aggregate({
+      where: { id_apartado: req.params.apartadoId },
+      _max: { orden: true }
+    });
+    const nuevoOrden = (maxOrden._max.orden || 0) + 10;
     const categoria = await prisma.categoria.create({
       data: {
         nombre_categoria,
@@ -111,7 +130,8 @@ export const createCategoria = async (req: Request<{ apartadoId: string }>, res:
         texto_categoria,
         imagen_categoria,
         activo_categoria,
-        id_apartado: req.params.apartadoId
+        id_apartado: req.params.apartadoId,
+        orden: nuevoOrden
       }
     });
     res.status(201).json(categoria);

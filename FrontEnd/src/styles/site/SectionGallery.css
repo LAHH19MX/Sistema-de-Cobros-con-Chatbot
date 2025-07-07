@@ -1,0 +1,43 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --hover-secondary:  #f8b3b9;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+/*INICIO DE SECCION 4*/
+
+/* Título de la sección */
+.custom-section--galeria .custom-section__title.custom-section__title {
+  color: var(--color-white) !important;
+  font-family: var(--text-seccion) !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+}
+
+.custom-section--galeria .custom-bg-light-gray.custom-bg-light-gray {
+  background: var(--color-light-gray) !important;
+}
+
+.custom-section--galeria .custom-section--galeria__img.custom-section--galeria__img {
+  display: block !important;
+  margin: 0 auto !important;
+  height: 80% !important;   
+  object-fit: contain !important;  
+  width: 80% !important;
+}
+
+/*FIN DE SECCION 4*/

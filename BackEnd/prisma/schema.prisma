@@ -222,10 +222,12 @@ model Apartado {
   mostrar_categoria Boolean     @default(false)
   id_plantilla      String      @db.Uuid
   fecha_creacion    DateTime    @default(now()) @db.Timestamptz(6)
+  orden             Int         @default(0)
   Empresa           Empresa     @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade, onUpdate: NoAction, map: "fk_apartado_empresa")
-  Plantilla         Plantilla   @relation(fields: [id_plantilla], references: [id_plantilla], onUpdate: NoAction, map: "fk_apartado_plantilla")
+  Plantilla         Plantilla   @relation(fields: [id_plantilla], references: [id_plantilla], onDelete: Cascade, onUpdate: NoAction, map: "fk_apartado_plantilla")
   categoria         categoria[]
 
+  @@index([orden], map: "idx_apartado_orden")
   @@map("apartado")
 }
 
@@ -235,8 +237,10 @@ model Contenido {
   titulo_contenido String
   texto_contenido  String?
   multimedia_url   String?
+  orden            Int     @default(0)
   Seccion          Seccion @relation(fields: [id_seccion], references: [id_seccion], onDelete: Cascade, onUpdate: NoAction)
 
+  @@index([id_seccion, orden], map: "idx_contenido_orden")
   @@map("contenido")
 }
 
@@ -249,15 +253,17 @@ model Seccion {
   fecha_creacion DateTime    @default(now()) @db.Timestamptz(6)
   tipo_seccion   String      @default("general")
   id_categoria   String?     @db.Uuid
+  orden          Int         @default(0)
   Contenido      Contenido[]
-  Categoria      categoria?  @relation(fields: [id_categoria], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "seccion_categoria_fkey")
+  Categoria      categoria?  @relation(fields: [id_categoria], references: [id_categoria], onDelete: Cascade, onUpdate: NoAction, map: "seccion_categoria_fkey")
 
+  @@index([id_categoria, orden], map: "idx_seccion_orden")
   @@map("seccion")
 }
 
 model Plantilla {
   id_plantilla          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nombre_plantilla      String     @db.VarChar(255)
+  nombre_plantilla      String
   descripcion_plantilla String?
   fecha_creacion        DateTime?  @default(now()) @db.Timestamptz(6)
   Apartado              Apartado[]
@@ -274,8 +280,11 @@ model categoria {
   fecha_creacion   DateTime  @default(now()) @db.Timestamp(6)
   activo_categoria Boolean   @default(true)
   id_apartado      String    @db.Uuid
-  apartado         Apartado  @relation(fields: [id_apartado], references: [id_apartado], onDelete: NoAction, onUpdate: NoAction)
+  orden            Int       @default(0)
+  apartado         Apartado  @relation(fields: [id_apartado], references: [id_apartado], onDelete: Cascade, onUpdate: NoAction)
   Seccion          Seccion[]
+
+  @@index([id_apartado, orden], map: "idx_categoria_orden")
 }
 
 enum estado_cred_t {

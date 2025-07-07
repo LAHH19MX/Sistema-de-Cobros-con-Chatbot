@@ -1,0 +1,90 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --hover-secondary:  #f8b3b9;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+/*INICIO DE SECCION 2*/
+.custom-section--cards2 .custom-section__subtitle.custom-section__subtitle {
+  color: var(--color-textContent) !important;
+  font-size: 1.30rem !important;
+  text-align: center !important;
+}
+
+.custom-section__title{
+      color: var(--color-white);
+  font-size: 3.1rem;
+  text-align: center;
+}
+
+/* Tarjeta */
+.custom-section--cards2 .card.custom-section--cards__card.custom-section--cards__card {
+  background-color: var(--color-secondary) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  transition: transform 0.3s ease, background-color 0.3s ease !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  text-align: center !important;
+  min-height: 400px !important;
+}
+
+/* Hover: zoom y fondo secundario */
+.custom-section--cards2 .card.custom-section--cards__card.custom-section--cards__card:hover {
+  transform: scale(1.1) !important;
+  background-color: #00000000 !important;
+}
+
+.custom-section--cards2 .card.custom-section--cards__card:hover .custom-section--cards__title,
+.custom-section--cards2 .card.custom-section--cards__card:hover .custom-section--cards__text {
+  color: var(--color-secondary) !important;
+  transition: color 0.2s !important;
+}
+
+/* Imagen dentro de tarjeta */
+.custom-section--cards2 .custom-section--cards__img.custom-section--cards__img {
+  width: 150px !important;
+  height: 150px !important;
+  object-fit: contain !important;
+}
+
+/* Título tarjeta */
+.custom-section--cards2 .custom-section--cards__title.custom-section--cards__title {
+  font-family: var(--text-categoria) !important;
+  font-size: 1.5rem !important;
+  font-weight: bold !important;
+  color: var(--color-white) !important;
+  margin-top: 20px !important;
+}
+
+/* Descripción tarjeta */
+.custom-section--cards2 .custom-section--cards__text.custom-section--cards__text {
+  font-family: var(--text-normal) !important;
+  font-size: 0.9rem !important;
+  color: var(--color-white) !important;
+  margin: 0 !important;
+}
+
+.custom-section-divider {
+  border: none !important;
+  height: 2px !important;
+  background: var(--color-textContent) !important;
+  margin: 3rem 0 !important;
+}
+
+/*FIN DE SECCION 2*/

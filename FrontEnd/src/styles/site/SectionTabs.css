@@ -1,0 +1,99 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --hover-secondary:  #f8b3b9;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+/*INICIO DE SECCION 6*/
+
+/* Título de la sección */
+.custom-section--tabs .custom-section__title.custom-section__title {
+  color: var(--color-white) !important;
+  font-family: var(--text-seccion) !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+}
+
+/* Subtítulo de la sección */
+.custom-section--tabs .custom-section__subtitle.custom-section__subtitle {
+  color: var(--color-textContent) !important;
+  font-size: 1.25rem !important;
+  text-align: center !important;
+  font-family: var(--text-normal) !important;
+}
+
+/* SECCIÓN 6: APARTADOS CON BARRAS VERTICALES */
+.custom-section--tabs .custom-tabs__list.custom-tabs__list {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+}
+
+.custom-section--tabs .custom-tabs__item.custom-tabs__item {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+  padding: 1rem 2rem !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+}
+
+/* A partir de pantallas md (≥768px), 3 columnas */
+@media (min-width: 768px) {
+  .custom-section--tabs .custom-tabs__item.custom-tabs__item {
+    flex: 0 0 33.333% !important;
+    max-width: 33.333% !important;
+  }
+  /* Separa con línea vertical todos menos el primero de cada grupo de 3 */
+  .custom-section--tabs .custom-tabs__item.custom-tabs__item:not(:nth-child(3n+1)) {
+    border-left: 1px solid var(--color-secondary) !important;
+  }
+}
+
+/* Estilos internos */
+.custom-section--tabs .custom-tabs__img.custom-tabs__img {
+  width: 100px !important;     /* ← AQUÍ CAMBIAS EL TAMAÑO: 60px, 100px, 120px, etc. */
+  height: 100px !important;    /* ← AQUÍ CAMBIAS EL TAMAÑO: 60px, 100px, 120px, etc. */
+  object-fit: cover !important;
+}
+
+.custom-section--tabs .custom-tabs__heading.custom-tabs__heading {
+  font-family: var(--text-categoria) !important;
+  color: var(--color-accent) !important;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+}
+
+.custom-section--tabs .custom-tabs__text.custom-tabs__text {
+  font-family: var(--text-normal) !important;
+  color: var(--color-white) !important;
+  font-size: 1rem !important;
+  margin: 0 !important;
+  line-height: 1.5 !important;
+}
+
+/* Divisor de sección */
+.custom-section--tabs .custom-section-divider.custom-section-divider {
+  border: none !important;
+  height: 2px !important;
+  background: var(--color-textContent)!important;
+  margin: 3rem 0 !important;
+}
+
+/*FIN DE SECCION 6*/

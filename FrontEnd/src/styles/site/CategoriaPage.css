@@ -1,0 +1,155 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --hover-secondary:  #f8b3b9;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+/* Container principal de la página de categoría */
+.custom-categoria-page.custom-categoria-page {
+  width: 100% !important;
+  min-height: 100vh !important;
+}
+
+/* Estados de carga y error con especificidad alta */
+.custom-categoria-page .custom-categoria-loading.custom-categoria-loading {
+  color: var(--color-white) !important;
+  font-family: var(--text-normal) !important;
+  font-size: 1.2rem !important;
+}
+
+.custom-categoria-page .custom-categoria-error.custom-categoria-error {
+  color: var(--color-secondary) !important;
+  font-family: var(--text-normal) !important;
+  font-size: 1.2rem !important;
+}
+
+/* BLOQUE: custom-ad-banner - Especificidad alta para sobrescribir Bootstrap */
+.custom-categoria-page .custom-ad-banner.custom-ad-banner {
+  position: relative !important;
+  width: 100% !important;
+  height: 400px !important;
+  overflow: hidden !important;
+  margin-bottom: 0 !important;
+}
+
+/* La imagen ocupa todo el contenedor */
+.custom-categoria-page .custom-ad-banner .custom-ad-banner__img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 1 !important;
+}
+
+/* Capa oscura encima de la imagen */
+.custom-categoria-page .custom-ad-banner .custom-ad-banner__overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  z-index: 2 !important;
+}
+
+/* Contenido centrado - Especificidad alta */
+.custom-categoria-page .custom-ad-banner .custom-ad-banner__content.custom-ad-banner__content {
+  position: relative !important;
+  z-index: 3 !important;
+  color: var(--color-white) !important;
+  text-align: center !important;
+  padding: 6rem 1rem !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Título - Especificidad alta para sobrescribir Bootstrap */
+.custom-categoria-page .custom-ad-banner .custom-ad-banner__title.custom-ad-banner__title {
+  font-family: var(--text-seccion) !important;
+  font-size: 2.5rem !important;
+  margin-bottom: 1rem !important;
+  color: var(--color-white) !important;
+  font-weight: 700 !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Descripción - Especificidad alta */
+.custom-categoria-page .custom-ad-banner .custom-ad-banner__text.custom-ad-banner__text {
+  font-family: var(--text-normal) !important;
+  font-size: 1.125rem !important;
+  max-width: 600px !important;
+  margin: 0 auto !important;
+  line-height: 1.5 !important;
+  color: var(--color-white) !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Container de secciones */
+.custom-categoria-page .custom-categoria-sections.custom-categoria-sections {
+  width: 100% !important;
+}
+
+/* Responsive del banner */
+@media (max-width: 768px) {
+  .custom-categoria-page .custom-ad-banner.custom-ad-banner {
+    height: 300px !important;
+  }
+  
+  .custom-categoria-page .custom-ad-banner .custom-ad-banner__content.custom-ad-banner__content {
+    padding: 4rem 1rem !important;
+  }
+  
+  .custom-categoria-page .custom-ad-banner .custom-ad-banner__title.custom-ad-banner__title {
+    font-size: 2rem !important;
+  }
+  
+  .custom-categoria-page .custom-ad-banner .custom-ad-banner__text.custom-ad-banner__text {
+    font-size: 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-categoria-page .custom-ad-banner.custom-ad-banner {
+    height: 250px !important;
+  }
+  
+  .custom-categoria-page .custom-ad-banner .custom-ad-banner__content.custom-ad-banner__content {
+    padding: 3rem 0.5rem !important;
+  }
+  
+  .custom-categoria-page .custom-ad-banner .custom-ad-banner__title.custom-ad-banner__title {
+    font-size: 1.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .custom-categoria-page .custom-ad-banner .custom-ad-banner__text.custom-ad-banner__text {
+    font-size: 0.9rem !important;
+    line-height: 1.4 !important;
+  }
+}
+
+/* Mejoras visuales adicionales */
+.custom-categoria-page .custom-ad-banner .custom-ad-banner__content.custom-ad-banner__content::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%) !important;
+  z-index: -1 !important;
+}

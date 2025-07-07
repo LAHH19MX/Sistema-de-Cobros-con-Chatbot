@@ -1,0 +1,176 @@
+/* Variables CSS reutilizadas */
+:root {
+  --color-primary: #141416;
+  --color-secondary: #F07177;
+  --secondary-hover: #d85f6a;
+  --color-white: #FFFFFF;
+  --color-textContent: #8A8A8A;
+  --text-normal: 'Poppins', sans-serif;
+}
+
+/* Wrapper principal para solucionar el fondo negro */
+.politicas-wrapper {
+  background-color: var(--color-white);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Contenedor del contenido */
+.politicas-content {
+  background-color: var(--color-white);
+  padding-bottom: 0;
+}
+
+/* Header de políticas */
+.privacy-header {
+  background-color: var(--color-white);
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.privacy-title {
+  color: #333;
+  font-size: 2.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-family: var(--text-normal, 'Poppins', sans-serif);
+}
+
+.privacy-subtitle {
+  color: var(--color-textContent);
+  font-size: 1.1rem;
+  margin-bottom: 0;
+  font-family: var(--text-normal, 'Poppins', sans-serif);
+}
+
+/* Secciones de políticas */
+.policy-section {
+  padding: 3rem 2rem;
+  background-color: var(--color-white);
+  margin: 0 auto;
+  max-width: calc(100% - 4rem);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.policy-section:last-child {
+  border-bottom: none;
+  padding-bottom: 2rem;
+}
+
+.policy-title {
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  font-family: var(--text-normal);
+}
+
+.policy-description {
+  color: #555;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  font-family: var(--text-normal);
+}
+
+.policy-date {
+  color: var(--color-textContent, #8A8A8A);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  font-style: italic;
+  font-family: var(--text-normal);
+}
+
+/* Puntos de política (secciones) */
+.policy-point {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+
+.policy-point:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.point-title {
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.8rem;
+  font-family: var(--text-normal);
+}
+
+.point-content {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 0;
+  padding-left: 1rem;
+  line-height: 1.6;
+  font-family: var(--text-normal);
+}
+
+/* Footer de contacto */
+.footer-contact {
+  background-color: var(--color-white);
+  padding: 2rem 0;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 0; /* Sin margen para que quede pegado */
+  text-align: center;
+}
+
+.footer-contact p {
+  font-family: var(--text-normal);
+  color: #333;
+}
+
+.footer-contact strong {
+  font-weight: 600;
+}
+
+.contact-link {
+  color: var(--color-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.contact-link:hover {
+  text-decoration: underline;
+  color: var(--color-secondary);
+  opacity: 0.8;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .privacy-title {
+    font-size: 2rem;
+  }
+  
+  .privacy-subtitle {
+    font-size: 1rem;
+  }
+  
+  .policy-title {
+    font-size: 1.5rem;
+  }
+  
+  .policy-description {
+    font-size: 1rem;
+  }
+  
+  .point-title {
+    font-size: 1.05rem;
+  }
+  
+  .point-content {
+    font-size: 0.95rem;
+    padding-left: 0.5rem;
+  }
+  
+  .policy-section {
+    padding: 2rem 1rem;
+    max-width: calc(100% - 2rem);
+  }
+}

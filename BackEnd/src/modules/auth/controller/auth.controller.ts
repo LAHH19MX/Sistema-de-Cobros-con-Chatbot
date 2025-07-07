@@ -7,7 +7,7 @@ import { loginSchema } from '../schemas/auth.schemas'
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, contra } = loginSchema.parse(req.body)
-
+    
     // si es admin...
     const admin = await prisma.admin.findUnique({ where: { email_admin: email } })
     if (admin) {
