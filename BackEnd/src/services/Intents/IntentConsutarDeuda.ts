@@ -5,7 +5,6 @@ import { prisma } from '../../db/client';
 const randomFromArray = (arr: string[]): string =>
   arr[Math.floor(Math.random() * arr.length)];
 
-// Respuestas para cuando no hay deudas
 const respuestasSinDeudaConsultar: string[] = [
   "¡Excelente! No tienes deudas pendientes en este momento.",
   "No se encontraron deudas a tu nombre. ¡Buen trabajo!",
@@ -15,7 +14,6 @@ const respuestasSinDeudaConsultar: string[] = [
   "Tus registros muestran que no hay deuda asociada a ti."
 ];
 
-// Respuestas para cuando sí hay deudas (inserta ${saldo})
 const respuestasConDeudaConsultar: string[] = [
   "Tu saldo pendiente es de $${saldo}.",
   "Actualmente debes $${saldo}.",
@@ -63,7 +61,6 @@ export async function handleIntentConsultarDeuda(
     return res.json({ fulfillmentText: textoAleatorio });
   }
 
-  // Seleccionar deuda con fecha_vencimiento más reciente
   const deudaReciente = deudasCliente.reduce((prev, curr) =>
     curr.fecha_vencimiento > prev.fecha_vencimiento ? curr : prev
   );

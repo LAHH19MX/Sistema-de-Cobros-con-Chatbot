@@ -15,7 +15,7 @@ export async function runRecordatorios() {
     });
 
     const limit = pLimit(5);
-
+    
     await Promise.all(
         pendientes.map(r =>
             limit(async () => {

@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import { createAccessToken } from '../../../common/libs/jwt'
 import { prisma } from '../../../db/client'
 import { loginSchema } from '../schemas/auth.schemas'
+import jwt from 'jsonwebtoken';
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -71,3 +72,62 @@ export const logout = (_: Request, res: Response) => {
   res.cookie('token', '', { expires: new Date(0) })
   return res.sendStatus(200)
 }
+
+
+export const verify = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.cookies;
+    
+    if (!token) {
+      return res.status(401).json({ message: "No autorizado" });
+    }
+
+    jwt.verify(token, process.env.TOKEN_SECRET as string, async (err: any, user: any) => {
+      if (err) {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+
+      // Ahora busca el usuario según el rol
+      if (user.rol === 'admin') {
+        const admin = await prisma.admin.findUnique({ 
+          where: { id_admin: user.id } 
+        });
+        
+        if (!admin) {
+          return res.status(401).json({ message: "No autorizado" });
+        }
+        
+        return res.json({
+          id: admin.id_admin,
+          rol: 'admin',
+          nombre: admin.nombre_admin,
+          apellido_paterno: admin.apellido_paterno_admin,
+          apellido_materno: admin.apellido_materno_admin,
+          email: admin.email_admin
+        });
+      }
+      
+      // Si es inquilino
+      const inquilino = await prisma.inquilino.findUnique({ 
+        where: { id_inquilino: user.id } 
+      });
+      
+      if (!inquilino) {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      return res.json({
+        id: inquilino.id_inquilino,
+        rol: 'inquilino',
+        nombre: inquilino.nombre_inquilino,
+        apellido_paterno: inquilino.apellido_paterno,
+        apellido_materno: inquilino.apellido_materno,
+        email: inquilino.email_inquilino
+      });
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al verificar token' });
+  }
+};
+
+//register

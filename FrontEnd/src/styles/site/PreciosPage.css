@@ -1,0 +1,284 @@
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+body {
+  background-color: #1B1C1E;
+}
+
+.section__title {
+  color: var(--color-white);
+  font-size: 3.1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.section__subtitle {
+  color: var(--color-textContent);
+  font-size: 1.25rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* HEADER */
+.header {
+  background-color: var(--color-primary);
+  padding: 1.5rem 0;
+}
+
+/* Logo */
+.header__logo-img {
+  max-height: 40px;
+}
+
+/* Nav links */
+.header__nav-link {
+  color: var(--color-white);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.header__nav-link:hover {
+  color: var(--color-secondary);
+}
+
+.header__nav-link:link,
+.header__nav-link:visited,
+.header__nav-link:active,
+.header__nav-link:focus {
+  color: var(--color-white);
+}
+
+.header__nav-link:hover {
+  color: var(--color-secondary);
+}
+
+.header__nav-item.show > .header__nav-link {
+  color: var(--color-white) !important;
+}
+
+.header__nav-link.dropdown-toggle:focus,
+.header__nav-link.dropdown-toggle:active {
+  color: var(--color-white) !important;
+}
+
+/* Dropdown menu */
+.header__dropdown-menu {
+  background-color: var(--color-primary);
+  border: none;
+}
+.header__dropdown-item {
+  color: var(--color-white);
+  transition: background 0.2s, color 0.2s;
+}
+.header__dropdown-item:hover {
+  background-color: var(--color-hover-btn);
+  color: var(--color-secondary);
+}
+
+/* Botón "Acceder" */
+.header__btn--login {
+  background: transparent;
+  color: var(--color-white);
+  font-size: 1.1rem;
+  border: 1px solid var(--color-white);
+  transition: background 0.2s, color 0.2s;
+}
+.header__btn--login:hover {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Botón "Empezar" */
+.header__btn--start {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  font-size: 1.1rem;
+  border: none;
+  transition: background 0.2s;
+}
+.header__btn--start:hover {
+  background-color: var(--secondary-hover);
+}
+/*FIN DEL HEADER*/
+
+/* ─────────────────────────────────────────────────────
+   BLOQUE: section--plans
+───────────────────────────────────────────────────── */
+
+.section--plans {
+  padding: 4rem 0;
+}
+
+.section--plans .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.section--plans__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  align-items: stretch;
+  max-width: 1000px; /* Limita el ancho total del grid */
+  margin: 0 auto;
+}
+
+/* Responsive: asegura máximo 3 columnas */
+@media (min-width: 768px) {
+  .section--plans__grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 320px));
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1200px) {
+  .section--plans__grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 960px;
+  }
+}
+
+/* Tarjeta */
+.plan-card {
+  background-color: var(--color-white);
+  border-radius: .75rem;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: transform .3s, box-shadow .3s;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.plan-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Encabezado */
+.plan-card__header {
+  background: var(--color-secondary);
+  color: var(--color-white);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.plan-card__name {
+  font-family: var(--text-seccion);
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.plan-card__tag {
+  font-family: var(--text-normal);
+  font-size: .9rem;
+  opacity: .9;
+  margin: .5rem 0 0;
+  font-weight: 400;
+}
+
+/* Cuerpo */
+.plan-card__body {
+  padding: 2rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.plan-card__price {
+  font-family: var(--text-apartado);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.plan-card__currency { 
+  font-size: 1.5rem; 
+  vertical-align: top;
+  font-weight: 500;
+}
+
+.plan-card__decimals { 
+  font-size: 1rem; 
+  vertical-align: baseline;
+  font-weight: 400;
+  color: var(--color-textContent);
+}
+
+.plan-card__benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.plan-card__benefit {
+  font-family: var(--text-normal);
+  font-size: .95rem;
+  color: var(--color-textContent);
+  margin-bottom: .75rem;
+  position: relative;
+  padding-left: 1.5rem;
+  line-height: 1.4;
+}
+
+.plan-card__benefit::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--color-secondary);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Pie */
+.plan-card__footer {
+  padding: 1rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.plan-card__cta {
+  width: 100%;
+  font-family: var(--text-normal);
+  font-size: 1rem;
+  font-weight: 500;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  border: none;
+  border-radius: .5rem;
+  padding: .875rem 1rem;
+  transition: background .2s, transform .2s;
+  cursor: pointer;
+}
+
+.plan-card__cta:hover {
+  background-color: var(--secondary-hover);
+  transform: translateY(-2px);
+}
+
+.plan-card__cta:active {
+  transform: translateY(0);
+}

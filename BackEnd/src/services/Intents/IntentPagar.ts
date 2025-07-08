@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../db/client';
 import { createStripeLink } from '../payment/stripe';
+import { createPaypalLink } from '../payment/paypal';
 
 const randomFromArray = (arr: string[]): string =>
   arr[Math.floor(Math.random() * arr.length)];

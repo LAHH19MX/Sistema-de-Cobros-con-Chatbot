@@ -1,16 +1,16 @@
-// src/context/AuthContext.tsx
+// AuthContext.tsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import Cookies from 'js-cookie';
-import { loginRequest, logoutRequest } from '../api/auth';
+import { loginRequest, logoutRequest, verifyRequest } from '../api/auth';
 import type { LoginData, User } from '../types/auth';
+import Cookies from "js-cookie"
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
   signin: (data: LoginData) => Promise<void>;
-  signout: () => Promise<void>;
+  logout: () => void; // Cambié de signout a logout
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,54 +26,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Al montar, lee la cookie y decodifica el JWT manualmente
   useEffect(() => {
-    const token = Cookies.get('token');
-    if (token) {
+    const checkLogin = async () => {
+      console.log('Intentando verificar autenticación...');
       try {
-        const base64Payload = token.split('.')[1];
-        const payloadJson   = atob(base64Payload);
-        const payload: User = JSON.parse(payloadJson);
-        setUser(payload);
+        const res = await verifyRequest();
+        console.log('Verify exitoso:', res.data);
+        setUser(res.data);
         setIsAuthenticated(true);
-      } catch {
-        setUser(null);
+      } catch (error: any) {
+        console.error('Error en verify:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
+        });
         setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    checkLogin();
   }, []);
 
   const signin = async (data: LoginData) => {
-    setLoading(true);
-    await loginRequest(data);
-    const token = Cookies.get('token');
-    if (token) {
-      try {
-        const base64Payload = token.split('.')[1];
-        const payloadJson   = atob(base64Payload);
-        const payload: User = JSON.parse(payloadJson);
-        setUser(payload);
-        setIsAuthenticated(true);
-      } catch {
-        setUser(null);
-        setIsAuthenticated(false);
-      }
-    }
-    setLoading(false);
+    const res = await loginRequest(data);
+    setUser(res.data);
+    setIsAuthenticated(true);
   };
 
-  const signout = async () => {
-    setLoading(true);
-    await logoutRequest();
+  // Una sola función logout que hace todo
+  const logout = () => {
+    // Intentar llamar al endpoint de logout (opcional)
+    logoutRequest().catch(error => {
+      console.error('Error en logout endpoint:', error);
+    });
+    
+    // Limpiar todo localmente
     Cookies.remove('token');
-    setUser(null);
     setIsAuthenticated(false);
-    setLoading(false);
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, signin, signout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, signin, logout }}>
       {children}
     </AuthContext.Provider>
   );

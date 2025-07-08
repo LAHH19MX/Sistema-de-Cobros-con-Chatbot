@@ -1,18 +1,44 @@
-import { useState } from 'react';
+// src/pages/auth/LoginPage.tsx
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Swal from 'sweetalert2';
 import '../../styles/auth/login.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { signin } = useAuth();
+  const { signin, isAuthenticated, user } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    contra: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Bienvenido',
+        text: `${user.nombre}`,
+        toast: true,
+        position: 'top-end',
+        timer: 3000,
+        showConfirmButton: false,
+        timerProgressBar: true
+      });
+      
+      if (user.rol === 'admin') {
+        navigate('/admin');
+      } else if (user.rol === 'tenant') {
+        navigate('/tenant');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -20,15 +46,13 @@ export default function LoginPage() {
       ...prev,
       [name]: value
     }));
-    // Limpiar error al escribir
     if (error) setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validación básica
-    if (!formData.email || !formData.password) {
+    if (!formData.email || !formData.contra) {
       setError('Por favor completa todos los campos');
       return;
     }
@@ -39,12 +63,24 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
+    setError('');
+    
     try {
-      // Aquí conectarás con el backend
-    //   await signin(formData);
-      navigate('/');
-    } catch (err) {
-      setError('Email o contraseña incorrectos');
+      await signin(formData);
+    } catch (err: any) {
+      if (err.response) {
+        if (err.response.status === 400) {
+          setError(err.response.data.message || 'Credenciales incorrectas');
+        } else if (err.response.status === 500) {
+          setError('Error en el servidor. Por favor intenta más tarde.');
+        } else {
+          setError('Error al iniciar sesión');
+        }
+      } else if (err.request) {
+        setError('No se pudo conectar con el servidor');
+      } else {
+        setError('Error al procesar la solicitud');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -53,23 +89,20 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-container">
-        {/* Lado izquierdo - Formulario */}
+        {/* Formulario principal */}
         <div className="login-form-section">
           <div className="login-form-wrapper">
-            {/* Logo */}
-            <div className="login-logo">
-              <Link to="/">
-                <div className="logo-circle">
-                  <span className="logo-text">LOGO</span>
-                </div>
-              </Link>
-            </div>
+            {/* Botón de volver */}
+            <Link to="/" className="back-button">
+              <i className="fas fa-arrow-left"></i>
+              <span>Volver al inicio</span>
+            </Link>
 
             {/* Título */}
             <div className="login-header">
-              <h1 className="login-title">Bienvenido de vuelta</h1>
+              <h1 className="login-title">Iniciar Sesión</h1>
               <p className="login-subtitle">
-                Ingresa tus credenciales para acceder a tu cuenta
+                Accede a tu cuenta
               </p>
             </div>
 
@@ -78,7 +111,7 @@ export default function LoginPage() {
               {/* Campo Email */}
               <div className="form-group">
                 <label htmlFor="email" className="form-label">
-                  Correo electrónico
+                  Email
                 </label>
                 <div className="input-wrapper">
                   <i className="fas fa-envelope input-icon"></i>
@@ -91,32 +124,34 @@ export default function LoginPage() {
                     placeholder="correo@ejemplo.com"
                     className="form-input"
                     required
+                    disabled={isLoading}
                   />
                 </div>
               </div>
 
               {/* Campo Password */}
               <div className="form-group">
-                <label htmlFor="password" className="form-label">
+                <label htmlFor="contra" className="form-label">
                   Contraseña
                 </label>
                 <div className="input-wrapper">
                   <i className="fas fa-lock input-icon"></i>
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    id="password"
-                    name="password"
-                    value={formData.password}
+                    id="contra"
+                    name="contra"
+                    value={formData.contra}
                     onChange={handleChange}
                     placeholder="••••••••"
                     className="form-input"
                     required
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="password-toggle"
-                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    disabled={isLoading}
                   >
                     <i className={`fas fa-eye${showPassword ? '-slash' : ''}`}></i>
                   </button>
@@ -131,10 +166,10 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {/* Opciones adicionales */}
+              {/* Recordarme y Forgot Password */}
               <div className="form-options">
                 <label className="remember-me">
-                  <input type="checkbox" />
+                  <input type="checkbox" disabled={isLoading} />
                   <span>Recordarme</span>
                 </label>
                 <Link to="/restablecer" className="forgot-password">
@@ -151,54 +186,19 @@ export default function LoginPage() {
                 {isLoading ? (
                   <>
                     <i className="fas fa-spinner fa-spin"></i>
-                    <span>Iniciando sesión...</span>
+                    <span>Iniciando...</span>
                   </>
                 ) : (
-                  <>
-                    <span>Iniciar sesión</span>
-                    <i className="fas fa-arrow-right"></i>
-                  </>
+                  <span>Iniciar sesión</span>
                 )}
               </button>
             </form>
 
             {/* Link a registro */}
             <div className="register-link">
-              <span>¿No tienes una cuenta?</span>
-              <Link to="/register">Regístrate aquí</Link>
+              <span>¿No tienes cuenta?</span>
+              <Link to="/register">Regístrate</Link>
             </div>
-          </div>
-        </div>
-
-        {/* Lado derecho - Decorativo */}
-        <div className="login-decoration">
-          <div className="decoration-content">
-            <h2>Gestiona tus cobros de manera inteligente</h2>
-            <p>
-              Automatiza recordatorios, genera enlaces de pago y mantén 
-              el control de tus finanzas con nuestro sistema integrado.
-            </p>
-            <div className="decoration-features">
-              <div className="feature">
-                <i className="fas fa-chart-line"></i>
-                <span>Análisis en tiempo real</span>
-              </div>
-              <div className="feature">
-                <i className="fas fa-bell"></i>
-                <span>Recordatorios automáticos</span>
-              </div>
-              <div className="feature">
-                <i className="fas fa-shield-alt"></i>
-                <span>Seguridad garantizada</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Elementos decorativos */}
-          <div className="decoration-shapes">
-            <div className="shape shape-1"></div>
-            <div className="shape shape-2"></div>
-            <div className="shape shape-3"></div>
           </div>
         </div>
       </div>

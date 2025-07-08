@@ -142,6 +142,7 @@ model Inquilino {
   Cliente             Cliente[]
   Configuracion       Configuracion[]
   RecordatorioEmail   RecordatorioEmail[]
+  Suscripciones       Suscripciones[]
 
   @@map("inquilinos")
 }
@@ -285,6 +286,58 @@ model categoria {
   Seccion          Seccion[]
 
   @@index([id_apartado, orden], map: "idx_categoria_orden")
+}
+
+model Planes {
+  id_plan            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre_plan        String          @db.VarChar(50)
+  descripcion_plan   String?
+  precio_plan        Decimal         @db.Decimal(10, 2)
+  whatsapp_incluidos Int
+  emails_incluidos   Int
+  acceso_api         Boolean         @default(false)
+  max_clientes       Int?
+  stripe_price_id    String?         @db.VarChar(255)
+  paypal_plan_id     String?         @db.VarChar(255)
+  creado_en          DateTime        @default(now()) @db.Timestamptz(6)
+  actualizado_en     DateTime        @default(now()) @db.Timestamptz(6)
+  Suscripciones      Suscripciones[]
+}
+
+model Recursos {
+  id_recurso     String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_suscripcion String        @db.Uuid
+  mes            Int
+  whatsapp       Int
+  emails         Int
+  creado_en      DateTime      @default(now()) @db.Timestamptz(6)
+  actualizado_en DateTime      @default(now()) @db.Timestamptz(6)
+  Suscripciones  Suscripciones @relation(fields: [id_suscripcion], references: [id_suscripcion], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([id_suscripcion, mes])
+  @@index([id_suscripcion, mes], map: "idx_recursos_mes")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Suscripciones {
+  id_suscripcion         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  estado_suscripcion     String     @db.VarChar(20)
+  fecha_inicio           DateTime   @default(now()) @db.Timestamptz(6)
+  fecha_renovacion       DateTime   @db.Timestamptz(6)
+  stripe_subscription_id String?    @db.VarChar(255)
+  paypal_subscription_id String?    @db.VarChar(255)
+  creado_en              DateTime   @default(now()) @db.Timestamptz(6)
+  actualizado_en         DateTime   @default(now()) @db.Timestamptz(6)
+  id_inquilino           String     @db.Uuid
+  id_plan                String     @db.Uuid
+  Recursos               Recursos[]
+  inquilinos             Inquilino  @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction)
+  Planes                 Planes     @relation(fields: [id_plan], references: [id_plan], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([estado_suscripcion], map: "idx_suscripciones_estado")
+  @@index([id_inquilino], map: "idx_suscripciones_inquilino")
+  @@index([paypal_subscription_id], map: "idx_suscripciones_paypal")
+  @@index([stripe_subscription_id], map: "idx_suscripciones_stripe")
 }
 
 enum estado_cred_t {

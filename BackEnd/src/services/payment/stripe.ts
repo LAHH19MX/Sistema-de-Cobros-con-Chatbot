@@ -1,13 +1,9 @@
-// src/services/payments/stripe.ts
 import Stripe from 'stripe';
 import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../../db/client';
 
-/*──────────────────────────────────────────────
-  1. CREAR LINK DE PAGO – PRISMA
-──────────────────────────────────────────────*/
 export async function createStripeLink(idDeuda: string): Promise<string> {
-  /* a) Deuda + credencial */
+  
   const deuda = await prisma.deuda.findUnique({
     where: { id_deuda: idDeuda }
   });
@@ -23,25 +19,25 @@ export async function createStripeLink(idDeuda: string): Promise<string> {
   });
   if (!cred) throw new Error('Credencial de Stripe no encontrada');
 
-  /* b) Stripe con la clave de ese inquilino */
+  // Busca la credencial
   const stripe = new Stripe(cred.credenciales_api, {
     apiVersion: '2025-05-28.basil'
   });
 
-  /* c) Precio ad-hoc */
+  //Monto en pesos
   const price = await stripe.prices.create({
     currency: 'mxn',
     unit_amount: deuda.saldo_pendiente.toNumber() * 100,
     product_data: { name: `Deuda ${idDeuda}` }
   });
 
-  /* d) Payment Link (sin expiración configurable en la API actual) */
+  // trae el link
   const link = await stripe.paymentLinks.create({
     line_items: [{ price: price.id, quantity: 1 }],
     metadata: { id_deuda: idDeuda }
   });
 
-  /* e) Guarda enlace */
+  // Guarda el enlace
   await prisma.enlace_pago.create({
     data: {
       id_enlace:     uuidv4(),
@@ -51,19 +47,15 @@ export async function createStripeLink(idDeuda: string): Promise<string> {
       url:           link.url,
       monto:         deuda.saldo_pendiente,
       estado:        'pendiente',
-      vence_en:      null               // Stripe ya lo desactiva automáticamente
+      vence_en:      null              
     }
   });
 
   return link.url;
 }
 
-/*──────────────────────────────────────────────
-  2. HANDLER WEBHOOK – PRISMA
-──────────────────────────────────────────────*/
 export async function handleStripeEvent(event: Stripe.Event): Promise<void> {
 
-  /* A. Enlace expirado (Payment Link pasa a inactive) */
   if (event.type === 'payment_link.updated') {
     const pl = event.data.object as Stripe.PaymentLink;
     if (!pl.active) {
@@ -75,17 +67,16 @@ export async function handleStripeEvent(event: Stripe.Event): Promise<void> {
     return;
   }
 
-  /* B. Pago completado */
+  // Si el pago se completa
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    // 1. Localiza tu enlace pendiente
+
     const enlace = await prisma.enlace_pago.findFirst({
       where: { id_exterior: session.payment_link as string, estado: 'pendiente' }
     });
-    if (!enlace) return;                    // idempotencia
+    if (!enlace) return;               
 
-    // 2. Obtén la credencial Stripe de ese enlace
     const cred = await prisma.clave_pasarelas.findUnique({
       where: { id_credencial: enlace.id_credencial }
     });
@@ -93,7 +84,6 @@ export async function handleStripeEvent(event: Stripe.Event): Promise<void> {
 
     const stripe = new Stripe(cred.credenciales_api, { apiVersion: '2025-05-28.basil' });
 
-    // 3. Helper: reintenta hasta obtener balance_transaction
     async function getBalanceTx(piId: string, max = 3): Promise<Stripe.BalanceTransaction> {
       for (let i = 0; i < max; i++) {
         const pi = await stripe.paymentIntents.retrieve(
@@ -102,17 +92,15 @@ export async function handleStripeEvent(event: Stripe.Event): Promise<void> {
         );
         const tx = (pi.latest_charge as any)?.balance_transaction as Stripe.BalanceTransaction;
         if (tx) return tx;
-        await new Promise(r => setTimeout(r, 1000));   // espera 1 s
+        await new Promise(r => setTimeout(r, 1000));   
       }
       throw new Error('balance_transaction no disponible tras reintentos');
     }
 
-    // 4. Carga PaymentIntent → comisión y neto
     const balTx = await getBalanceTx(session.payment_intent as string);
     const fee   = balTx.fee / 100;
     const net   = balTx.net / 100;
 
-    // 5. Actualiza enlace y deuda
     await prisma.$transaction([
       prisma.enlace_pago.update({
         where: { id_enlace: enlace.id_enlace },

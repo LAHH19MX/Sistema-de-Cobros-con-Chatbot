@@ -10,3 +10,18 @@ export interface User {
   nombre: string;
   rol: 'admin' | 'tenant';
 }
+
+// src/types/auth.ts
+export interface LoginData {
+  email: string;
+  contra: string;
+}
+
+export interface User {
+  id: string;
+  rol: 'admin' | 'tenant';
+  nombre: string;
+  apellido_paterno?: string;
+  apellido_materno?: string;
+  email: string;
+}
