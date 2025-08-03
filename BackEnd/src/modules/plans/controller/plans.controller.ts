@@ -2,20 +2,20 @@ import { Request, Response } from 'express';
 import { prisma } from '../../../db/client';
 import { CreatePlanSchema, UpdatePlanSchema } from '../schemas/plans.schemas';
 
-export const getAllPlans = async (_: Request, res: Response) => {
-  try {
-    const plans = await prisma.planes.findMany({
-      orderBy: { creado_en: 'desc' }
-    });
-    res.json(plans);
-  } catch (error: any) {
-    console.error('Error:', error.message);
-    res.status(500).json({ 
-      error: 'Error al obtener planes',
-      detalles: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
+// export const getAllPlans = async (_: Request, res: Response) => {
+//   try {
+//     const plans = await prisma.planes.findMany({
+//       orderBy: { creado_en: 'desc' }
+//     });
+//     res.json(plans);
+//   } catch (error: any) {
+//     console.error('Error:', error.message);
+//     res.status(500).json({ 
+//       error: 'Error al obtener planes',
+//       detalles: process.env.NODE_ENV === 'development' ? error.message : undefined
+//     });
+//   }
+// };
 
 export const getPlanById = async (req: Request, res: Response) => {
   try {
@@ -38,22 +38,65 @@ export const getPlanById = async (req: Request, res: Response) => {
   }
 };
 
-export const createPlan = async (req: Request, res: Response) => {
+// export const createPlan = async (req: Request, res: Response) => {
+//   try {
+//     const data = CreatePlanSchema.parse(req.body);
+//     const newPlan = await prisma.planes.create({
+//       data: {
+//         ...data,
+//         creado_en: new Date(),
+//         actualizado_en: new Date()
+//       }
+//     });
+//     res.status(201).json(newPlan);
+//   } catch (error: any) {
+//     console.error('Error al crear plan:', error.message);
+//     res.status(400).json({ 
+//       error: 'Error al crear el plan',
+//       detalles: error.message
+//     });
+//   }
+// };
+
+export const getActivePlans = async (req: Request, res: Response) => {
   try {
-    const data = CreatePlanSchema.parse(req.body);
-    const newPlan = await prisma.planes.create({
-      data: {
-        ...data,
-        creado_en: new Date(),
-        actualizado_en: new Date()
+    const planes = await prisma.planes.findMany({
+      where: {
+        estado_plan: true // Solo planes activos
+      },
+      select: {
+        id_plan: true,
+        nombre_plan: true,
+        descripcion_plan: true,
+        precio_plan: true,
+        limites_whatsapp: true,
+        limites_email: true,
+        limites_api: true,
+        limites_clientes: true,
+        stripe_price_id: true,
+        paypal_plan_id: true
+      },
+      orderBy: {
+        precio_plan: 'asc' // Del más barato al más caro
       }
     });
-    res.status(201).json(newPlan);
-  } catch (error: any) {
-    console.error('Error al crear plan:', error.message);
-    res.status(400).json({ 
-      error: 'Error al crear el plan',
-      detalles: error.message
+
+    // Convertir Decimal a number para el frontend
+    const planesFormatted = planes.map(plan => ({
+      ...plan,
+      precio_plan: Number(plan.precio_plan)
+    }));
+
+    return res.json({
+      success: true,
+      planes: planesFormatted
+    });
+
+  } catch (error) {
+    console.error('Error obteniendo planes:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
     });
   }
 };

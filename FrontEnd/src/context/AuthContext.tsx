@@ -1,4 +1,3 @@
-// AuthContext.tsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { loginRequest, logoutRequest, verifyRequest } from '../api/auth';
@@ -10,7 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   signin: (data: LoginData) => Promise<void>;
-  logout: () => void; // Cambié de signout a logout
+  logout: () => void; 
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,11 +34,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(res.data);
         setIsAuthenticated(true);
       } catch (error: any) {
-        console.error('Error en verify:', {
-          status: error.response?.status,
-          data: error.response?.data,
-          message: error.message
-        });
         setIsAuthenticated(false);
         setUser(null);
       } finally {
@@ -52,21 +46,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signin = async (data: LoginData) => {
     const res = await loginRequest(data);
-    setUser(res.data);
+    const userData = res.data;
+    
+    setUser(userData);
     setIsAuthenticated(true);
+
+    // Redirección simple sin delays
+    if (userData.rol === 'admin') {
+      window.location.href = '/admin';
+    } else if (userData.rol === 'inquilino') {
+      // SIEMPRE ir a dashboard, ProtectedRoute decidirá si redirigir a planes
+      window.location.href = '/tenant/dashboard';
+    }
   };
 
-  // Una sola función logout que hace todo
   const logout = () => {
-    // Intentar llamar al endpoint de logout (opcional)
     logoutRequest().catch(error => {
       console.error('Error en logout endpoint:', error);
     });
     
-    // Limpiar todo localmente
     Cookies.remove('token');
     setIsAuthenticated(false);
     setUser(null);
+    window.location.href = '/';
   };
 
   return (

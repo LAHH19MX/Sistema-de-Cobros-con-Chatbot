@@ -20,12 +20,12 @@
 /*INICIO DE SECCION 2*/
 .custom-section--cards2 .custom-section__subtitle.custom-section__subtitle {
   color: var(--color-textContent) !important;
-  font-size: 1.30rem !important;
+  font-size: 1.25rem !important;
   text-align: center !important;
 }
 
 .custom-section__title{
-      color: var(--color-white);
+  color: var(--color-white);
   font-size: 3.1rem;
   text-align: center;
 }
@@ -41,7 +41,7 @@
   justify-content: flex-start !important;
   align-items: center !important;
   text-align: center !important;
-  min-height: 400px !important;
+  height: 515px !important;
 }
 
 /* Hover: zoom y fondo secundario */
@@ -69,7 +69,7 @@
   font-size: 1.5rem !important;
   font-weight: bold !important;
   color: var(--color-white) !important;
-  margin-top: 20px !important;
+  margin-top: 10px !important;
 }
 
 /* Descripción tarjeta */

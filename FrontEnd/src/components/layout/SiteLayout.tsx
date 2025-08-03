@@ -49,7 +49,7 @@ const SiteLayout: React.FC = () => {
       links: categorias
         .filter(cat => cat.id_apartado === apartado.id_apartado && cat.activo_categoria)
         .map(cat => ({
-          name: cat.titulo_categoria || cat.nombre_categoria,
+          name: cat.nombre_categoria,
           url: `/categoria/${cat.id_categoria}`
         }))
     }))

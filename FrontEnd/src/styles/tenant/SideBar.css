@@ -1,0 +1,74 @@
+:root {
+  --color-primary: #141416 !important;
+  --color-secondary: #f07177 !important;
+  --color-font: #e6eaf0 !important;
+  --color-white: #ffffff !important;
+  --color-border: #e0e0e0 !important;
+  --sidebar-width: 250px !important;
+}
+
+/* Bloque */
+.tenant-sidebar {
+  width: var(--sidebar-width) !important;
+  height: 100vh !important;
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  background: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.3s !important;
+  z-index: 1000 !important;
+}
+
+/* Modificador: abierto */
+.tenant-sidebar--open {
+  transform: translateX(0) !important;
+}
+
+/* Elementos */
+.tenant-sidebar__logo {
+  padding: 1.5rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  text-align: center !important;
+}
+
+.tenant-sidebar__logo img {
+  height: 50px !important;
+  margin-left: -0.7rem;
+}
+
+.tenant-sidebar__menu {
+  padding: 1rem 0 !important;
+}
+
+.tenant-sidebar__link {
+  color: var(--color-white) !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 500 !important;
+  border-left: 3px solid transparent !important;
+  display: block;                   /* refuerzo */
+}
+
+.tenant-sidebar__link:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-left-color: var(--color-secondary) !important;
+}
+
+.tenant-sidebar__link--active {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-left-color: var(--color-secondary) !important;
+}
+
+.tenant-sidebar__link i {
+  margin-right: 10px !important;
+  width: 20px !important;
+  text-align: center !important;
+}
+
+/* Desktop: siempre visible */
+@media (min-width: 992px) {
+  .tenant-sidebar {
+    transform: translateX(0) !important;
+  }
+}

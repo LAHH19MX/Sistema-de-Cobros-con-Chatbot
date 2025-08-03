@@ -23,7 +23,7 @@
 .custom-section--two-col .custom-section__title.custom-section__title {
   color: var(--color-white) !important;
   font-family: var(--text-seccion) !important;
-  font-size: 2.5rem !important;
+  font-size: 3.1rem !important;
   font-weight: 700 !important;
   text-align: center !important;
 }
@@ -66,14 +66,13 @@
 .custom-section--two-col .custom-two-col__heading.custom-two-col__heading {
   font-family: var(--text-seccion) !important;
   color: var(--color-primary) !important;
-  font-size: 2rem !important;      
-  margin-bottom: 1rem !important;
+  font-size: 1.25rem !important;   
 }
 
 .custom-section--two-col .custom-two-col__text.custom-two-col__text {
   font-family: var(--text-normal) !important;
   color: var(--color-white) !important;
-  font-size: 1.125rem !important;  
+  font-size: 0.85rem !important;  
   line-height: 1.6 !important;
 }
 

@@ -32,8 +32,8 @@ export default function LoginPage() {
       
       if (user.rol === 'admin') {
         navigate('/admin');
-      } else if (user.rol === 'tenant') {
-        navigate('/tenant');
+      } else if (user.rol === 'inquilino') {
+        navigate('/inquilino');
       } else {
         navigate('/');
       }

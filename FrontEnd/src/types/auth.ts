@@ -8,7 +8,7 @@ export interface LoginData {
 export interface User {
   id: string;
   nombre: string;
-  rol: 'admin' | 'tenant';
+  rol: 'admin' | 'inquilino';
 }
 
 // src/types/auth.ts
@@ -19,9 +19,10 @@ export interface LoginData {
 
 export interface User {
   id: string;
-  rol: 'admin' | 'tenant';
+  rol: 'admin' | 'inquilino';
   nombre: string;
   apellido_paterno?: string;
   apellido_materno?: string;
   email: string;
+  hasSubscription: boolean;
 }

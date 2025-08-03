@@ -1,0 +1,299 @@
+/* src/styles/tenant/IngresosTenant.css */
+:root {
+    --color-primary: #141416;
+    --color-secondary: #F07177;
+    --color-font: #e6eaf0c7;
+    --color-white: #ffffff;
+    --color-border: #e0e0e0;
+    --color-success: #2ecc71;
+    --color-btn-edit: #3498db;
+    --color-warning: #ffc107;
+    --color-danger: #dc3545;
+    --font-base: 'Poppins', sans-serif;
+}
+
+/* ───────── Bloque raíz ───────── */
+.tenant-inc {
+  font-family: var(--font-base) !important;
+}
+
+/* ───────── Header ───────── */
+.tenant-inc__header {
+  padding: 2rem 2rem 1rem !important;
+  background: var(--color-white) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.tenant-inc__title {
+  margin: 0 !important;
+  font-size: 1.75rem !important;
+  font-weight: 600 !important;
+  color: var(--color-primary) !important;
+}
+
+.tenant-inc__subtitle {
+  margin: 0.5rem 0 0 !important;
+  font-size: 0.95rem !important;
+  color: #6c757d !important;
+}
+
+/* ───────── Main Content ───────── */
+.tenant-inc__main-content {
+  padding: 2rem !important;
+  background-color: #f5f7fa !important;
+}
+
+/* ───────── Gráfico de ingresos ───────── */
+.tenant-inc__chart-container {
+  background-color: var(--color-white) !important;
+  padding: 1.5rem !important;
+  margin-bottom: 2rem !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+}
+
+.tenant-inc__chart-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.tenant-inc__chart-period-selector {
+  display: flex !important;
+  gap: 0.5rem !important;
+}
+
+.tenant-inc__period-btn {
+  padding: 0.4rem 0.8rem !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 20px !important;
+  background: var(--color-white) !important;
+  font-size: 0.8rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.tenant-inc__period-btn.active {
+  background-color: var(--color-secondary) !important;
+  color: var(--color-white) !important;
+  border-color: var(--color-secondary) !important;
+}
+
+.tenant-inc__chart-placeholder {
+  background-color: #f8f9fa !important;
+  height: 300px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #6c757d !important;
+  font-weight: 500 !important;
+}
+
+/* ───────── Filtros de fechas ───────── */
+.tenant-inc__date-filters {
+  background-color: var(--color-white) !important;
+  border-radius: 8px !important;
+  padding: 1.5rem !important;
+  margin: 2rem !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+}
+
+.tenant-inc__date-filters-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 1rem !important;
+}
+
+.tenant-inc__date-range-selector {
+  display: flex !important;
+  gap: 1rem !important;
+  flex-wrap: wrap !important;
+}
+
+.tenant-inc__date-filter-group {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-width: 200px !important;
+}
+
+.tenant-inc__date-filter-group label {
+  font-size: 0.85rem !important;
+  color: #6c757d !important;
+  margin-bottom: 0.3rem !important;
+  font-weight: 500 !important;
+}
+
+.tenant-inc__date-filter-group input,
+.tenant-inc__date-filter-group select {
+  padding: 0.6rem !important;
+  border: 1px solid var(--color-border) !important;
+  font-size: 0.9rem !important;
+}
+
+.tenant-inc__btn-filter {
+  background-color: var(--color-secondary) !important;
+  color: var(--color-white) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 0.6rem 1.5rem !important;
+  font-weight: 500 !important;
+  margin-top: 1.7rem !important;
+  transition: all 0.3s !important;
+  cursor: pointer !important;
+}
+
+.tenant-inc__btn-filter:hover {
+  background-color: #d85a60 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 15px rgba(240, 113, 119, 0.3) !important;
+}
+
+/* ───────── Tabla de ingresos recientes ───────── */
+.tenant-inc__recent-income {
+  margin: 0 2rem 2rem !important;
+  background-color: var(--color-font) !important;
+  overflow: hidden !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.tenant-inc__recent-header {
+  padding: 1.2rem 1.5rem !important;
+  background-color: #f8f9fa !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.tenant-inc__recent-header h3 {
+  margin: 0 !important;
+  font-size: 1.1rem !important;
+  color: var(--color-primary) !important;
+  font-weight: 600 !important;
+}
+
+.tenant-inc__table {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.tenant-inc__table thead th {
+  background-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  font-weight: 600 !important;
+  padding: 1rem !important;
+  border: none !important;
+  text-transform: uppercase !important;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.5px !important;
+}
+
+.tenant-inc__table tbody td {
+  padding: 1rem !important;
+  vertical-align: middle !important;
+  color: #5a5a5a !important;
+  border-top: 1px solid #f0f0f0 !important;
+}
+
+.tenant-inc__table tbody tr {
+  transition: all 0.3s !important;
+}
+
+.tenant-inc__table tbody tr:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* ───────── Estado y botón de detalles ───────── */
+.tenant-inc__status-text {
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  color: var(--color-success) !important;
+}
+
+.tenant-inc__status-pending {
+  color: var(--color-warning) !important;
+}
+
+.tenant-inc__status-cancelled {
+  color: var(--color-danger) !important;
+}
+
+.tenant-inc__view-btn {
+  padding: 0.25rem 0.6rem !important;
+  font-size: 0.75rem !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--color-success) !important;
+  background: transparent !important;
+  color: var(--color-success) !important;
+  transition: all 0.3s !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.tenant-inc__view-btn:hover {
+  background-color: var(--color-success) !important;
+  color: white !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ───────── Footer ───────── */
+.tenant-inc__footer {
+  padding: 1.5rem 2rem !important;
+  text-align: center !important;
+  color: #6c757d !important;
+  font-size: 0.9rem !important;
+  background-color: var(--color-white) !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+/* ───────── Responsive ───────── */
+@media (max-width: 992px) {
+  .tenant-inc__main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .tenant-inc__date-range-selector {
+    flex-direction: column !important;
+    gap: 0.8rem !important;
+  }
+  .tenant-inc__btn-filter {
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tenant-inc__table thead {
+    display: none !important;
+  }
+  .tenant-inc__table tbody td {
+    display: block !important;
+    padding: 0.8rem !important;
+    text-align: right !important;
+    position: relative !important;
+    padding-left: 40% !important;
+  }
+  .tenant-inc__table tbody td::before {
+    content: attr(data-label) !important;
+    position: absolute !important;
+    left: 0.8rem !important;
+    width: 35% !important;
+    text-align: left !important;
+    font-weight: 600 !important;
+    color: var(--color-primary) !important;
+  }
+  .tenant-inc__table tbody tr {
+    border: 1px solid var(--color-border) !important;
+    margin-bottom: 1rem !important;
+    display: block !important;
+  }
+  .tenant-inc__view-btn {
+    justify-content: flex-end !important;
+    width: 100% !important;
+  }
+  .tenant-inc__table tbody tr {
+    border-radius: 0 !important;
+  }
+}

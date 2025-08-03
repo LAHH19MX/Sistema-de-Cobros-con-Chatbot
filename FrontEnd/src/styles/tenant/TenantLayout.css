@@ -1,0 +1,32 @@
+:root {
+  --sidebar-width: 250px;
+}
+
+.tenant-layout {
+  width: 100%;
+}
+
+.tenant-main {
+  display: flex;
+  flex-direction: column;  
+  min-height: 100vh;
+  width: 100%;
+  background: var(--color-font);
+  transition: margin-left 0.3s;   
+}
+
+.tenant-content {
+  flex: 1 0 auto;                    
+}
+
+.tenant-header,
+.tenant-footer {
+  flex: 0 0 auto;
+}
+
+@media (min-width: 992px) {
+  .tenant-main {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+  }
+}

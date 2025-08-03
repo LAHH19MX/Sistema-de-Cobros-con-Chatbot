@@ -1,0 +1,311 @@
+:root {
+  --color-primary: #141416;
+  --color-secondary: #F07177;
+  --color-light: #f8f9fa;
+  --color-white: #ffffff;
+  --color-border: #e0e0e0;
+  --color-success: #2ecc71;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545;
+  --color-btn-edit: #3498db;
+  --font-base: 'Poppins', sans-serif;
+}
+
+/* ───────── Bloque raíz ───────── */
+.tenant-deudas {
+  font-family: var(--font-base) !important;
+}
+
+/* ───────── Encabezado ───────── */
+.tenant-deudas__header {
+  padding: 2rem 2rem 1rem !important;
+  background: var(--color-white) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.tenant-deudas__title {
+  margin: 0 !important;
+  font-size: 1.75rem !important;
+  font-weight: 600 !important;
+  color: var(--color-primary) !important;
+}
+
+.tenant-deudas__subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+/* Márgenes laterales uniformes */
+.tenant-deudas__stats,
+.tenant-deudas__actions,
+.tenant-deudas__table {
+  padding: 0 2rem !important;
+}
+
+.tenant-deudas__stats{
+    margin-top: 2rem !important;
+}
+
+
+/* ───────── Tarjetas de estado ───────── */
+.tenant-deudas-card {
+  background: var(--color-white) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+  overflow: hidden !important;
+  margin-bottom: 2rem !important;
+}
+
+.tenant-deudas-card__main {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.tenant-deudas-card__icon {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 1.5rem !important;
+  font-size: 1.5rem !important;
+}
+
+.tenant-deudas-card__icon--pending {
+  background: rgba(255, 193, 7, 0.1) !important;
+  color: var(--color-warning) !important;
+}
+
+.tenant-deudas-card__icon--paid {
+  background: rgba(46, 204, 113, 0.1) !important;
+  color: var(--color-success) !important;
+}
+
+.tenant-deudas-card__icon--overdue {
+  background: rgba(220, 53, 69, 0.1) !important;
+  color: var(--color-danger) !important;
+}
+
+.tenant-deudas-card__info h3 {
+  margin: 0 0 0.25rem !important;
+  font-size: 1.8rem !important;
+  color: var(--color-primary) !important;
+}
+
+.tenant-deudas-card__info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.tenant-deudas-card__footer {
+  border-top: 1px solid var(--color-border) !important;
+  background: var(--color-light) !important;
+}
+
+.tenant-deudas-card__link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: var(--color-secondary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.tenant-deudas-card__link:hover {
+  background: rgba(240, 113, 119, 0.05);
+}
+
+.tenant-deudas-card__link i {
+  transition: transform 0.3s;
+}
+
+.tenant-deudas-card__link:hover i {
+  transform: translateX(5px);
+}
+
+/* ───────── Barra de acciones ───────── */
+.tenant-deudas__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tenant-deudas__actions-left {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Botones reutilizados */
+.btn-primary-custom {
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: var(--color-white);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.btn-primary-custom:hover {
+  background-color: #d85a60;
+  border-color: #d85a60;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(240, 113, 119, 0.3);
+}
+
+.btn-report {
+  background-color: transparent !important;
+  border: 1px solid var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.btn-report:hover {
+  background-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(20, 20, 22, 0.3);
+}
+
+.tenant-deudas__search {
+  position: relative;
+  width: 350px;
+  flex-shrink: 0;
+}
+.tenant-deudas__search input {
+  width: 100%;
+  padding: 0.6rem 2.5rem 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+}
+.tenant-deudas__search i {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+/* ───────── Tabla ───────── */
+.tenant-deudas-table {
+  width: 100%;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+}
+
+.tenant-deudas-table thead th {
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 1.2rem 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tenant-deudas-table tbody td {
+  padding: 1rem;
+  border-top: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.tenant-deudas-status--pending { color: var(--color-warning); font-weight: 500; }
+.tenant-deudas-status--paid    { color: var(--color-success); font-weight: 500; }
+.tenant-deudas-status--overdue { color: var(--color-danger);  font-weight: 500; }
+
+.tenant-deudas-actionsbtn {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.tenant-deudas-btn {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  transition: transform 0.3s;
+}
+.tenant-deudas-btn:hover {
+  transform: translateY(-2px);
+}
+.tenant-deudas-btn--view {
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+.tenant-deudas-btn--view:hover {
+  background: var(--color-success);
+  color: var(--color-white);
+}
+.tenant-deudas-btn--edit {
+  color: var(--color-btn-edit);
+  border-color: var(--color-btn-edit);
+}
+.tenant-deudas-btn--edit:hover {
+  background: var(--color-btn-edit);
+  color: var(--color-white);
+}
+
+/* ───────── Pie de tabla ───────── */
+.tenant-deudas__table-footer {
+  padding: 1.5rem;
+  background: var(--color-light);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tenant-deudas__entries {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* ───────── Responsive ───────── */
+@media (max-width: 992px) {
+  .tenant-deudas__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tenant-deudas__search {
+    width: 100%;
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tenant-deudas-table thead {
+    display: none;
+  }
+  .tenant-deudas-table tbody tr {
+    display: block;
+    border: 1px solid var(--color-border);
+    margin-bottom: 1rem;
+    border-radius: 8px;
+  }
+  .tenant-deudas-table tbody td {
+    display: block;
+    text-align: right;
+    padding: 0.5rem 1rem 0.5rem 40%;
+    position: relative;
+  }
+  .tenant-deudas-table tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0.5rem;
+    width: 35%;
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+  .tenant-deudas__actions-left {
+    flex-direction: column;
+  }
+}

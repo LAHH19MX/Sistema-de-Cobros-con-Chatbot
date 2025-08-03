@@ -1,0 +1,303 @@
+/* src/styles/auth/register.css */
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  font-family: var(--text-normal);
+  padding: 2rem;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.register-form-section {
+  padding: 2.5rem;
+}
+
+.register-form-wrapper {
+  width: 100%;
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.register-title {
+  color: var(--color-white);
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+  color: var(--color-textContent);
+  font-size: 1rem;
+}
+
+.register-link {
+  color: var(--color-secondary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.register-link:hover {
+  color: var(--secondary-hover);
+  text-decoration: underline;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+}
+
+.form-row + .form-row {
+  margin-top: 0.25rem;
+}
+
+/* Separación extra antes de secciones diferentes */
+.form-row:nth-child(3),
+.form-row:nth-child(4) {
+  margin-top: 1rem;
+}
+
+@media (min-width: 600px) {
+  .form-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  /* Campos que deben ocupar ancho completo */
+  .form-row:nth-child(1) .form-group,
+  .form-row:nth-child(3) .form-group,
+  .form-row:nth-child(6) .form-group {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 900px) {
+  /* Primera fila: Nombre, Apellido Paterno, Apellido Materno (3 columnas) */
+  .form-row:nth-child(1),
+  .form-row:nth-child(2) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Email y Dirección siguen ocupando ancho completo */
+  .form-row:nth-child(3) .form-group,
+  .form-row:nth-child(6) .form-group {
+    grid-column: 1 / -1;
+  }
+  
+  /* Resto de filas mantienen 2 columnas */
+  .form-row:nth-child(4),
+  .form-row:nth-child(5) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  color: var(--color-white);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.optional-text {
+  color: var(--color-textContent);
+  font-size: 0.8rem;
+  font-weight: normal;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-textContent);
+  font-size: 0.9rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.85rem 0.875rem 0.85rem 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: var(--color-white);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.9rem;
+}
+
+.form-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px var(--color-hover-btn);
+}
+
+/* Error styling */
+.input-error {
+  border-color: var(--color-secondary) !important;
+  box-shadow: 0 0 0 2px rgba(240, 113, 119, 0.3) !important;
+}
+
+.field-error {
+  color: var(--color-secondary);
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+
+/* Submit button */
+.submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  background: var(--color-secondary);
+  border: none;
+  border-radius: 10px;
+  color: var(--color-white);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--secondary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(240, 113, 119, 0.4);
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Terms */
+.terms-text {
+  text-align: center;
+  color: var(--color-textContent);
+  font-size: 0.85rem;
+  margin-top: 1rem;
+}
+
+.terms-text a {
+  color: var(--color-secondary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.terms-text a:hover {
+  color: var(--secondary-hover);
+  text-decoration: underline;
+}
+
+/* Back button */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-textContent);
+  text-decoration: none;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  color: var(--color-white);
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: translateX(-4px);
+}
+
+.back-button i {
+  font-size: 0.95rem;
+}
+
+.back-button span {
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .register-form-section {
+    padding: 1.8rem;
+  }
+  
+  .register-title {
+    font-size: 1.7rem;
+  }
+  
+  .form-input {
+    padding: 0.75rem 0.875rem 0.75rem 2.5rem;
+  }
+  
+  .submit-button {
+    padding: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-page {
+    padding: 1rem;
+  }
+  
+  .register-container {
+    border-radius: 12px;
+  }
+  
+  .register-form-section {
+    padding: 1.5rem;
+  }
+  
+  .register-title {
+    font-size: 1.5rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+}

@@ -1,0 +1,255 @@
+:root {
+  --color-primary: #141416;
+  --color-secondary: #f07177;
+  --color-white: #ffffff;
+  --color-font: #e6eaf0;
+  --color-border: #e0e0e0;
+  --color-success: #2ecc71;
+  --color-btn-edit: #3498db;
+  --color-warning: #ffc107;
+  --color-danger:  #dc3545;
+  --font-base: 'Poppins', sans-serif;
+}
+
+.tenant-clients {
+  font-family: var(--font-base);
+}
+
+.tenant-clients__header {
+  background: var(--color-white) !important;
+  padding: 2rem 2rem 1rem !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.tenant-clients__title   { 
+  font-size: 1.75rem !important; 
+  font-weight: 600 !important; 
+  color: var(--color-primary) !important; 
+  margin: 0 !important; 
+}
+.tenant-clients__subtitle{ 
+  font-size: 0.95rem !important; 
+  color: #6c757d !important; 
+  margin: 0.5rem 0 0 !important; 
+}
+
+.tenant-clients__main {
+  padding: 2rem !important;
+  background: var(--color-font) !important;
+}
+
+.tenant-clients__actions {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 2rem !important;
+}
+
+/* Botón “Registrar Nuevo Cliente” */
+.btn-primary-custom {
+  background: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+  color: var(--color-white) !important;
+  padding: 0.6rem 1.5rem !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  transition: all 0.3s !important;
+}
+.btn-primary-custom:hover {
+  background: #d85a60 !important;
+  border-color: #d85a60 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 15px rgba(240,113,119,0.3) !important;
+}
+
+/* Buscador */
+.search-box {
+  position: relative !important;
+  width: 350px !important;
+}
+.search-box input {
+  width: 100% !important;
+  padding: 0.6rem 2.5rem 0.6rem 1rem !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+  font-size: 0.9rem !important;
+  background: var(--color-white) !important;
+}
+.search-box input:focus {
+  outline: none !important;
+  border-color: var(--color-secondary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(240,113,119,0.15) !important;
+}
+.search-box i {
+  position: absolute !important;
+  right: 1rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #6c757d !important;
+}
+
+/* Tabla de clientes*/
+.tenant-clients__table {
+  background: var(--color-white) !important;
+  border: 1px solid var(--color-border) !important;
+  overflow: hidden !important;
+}
+
+.table {
+  margin-bottom: 0 !important;
+  background: var(--color-white) !important;
+}
+.table thead th {
+  background: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  font-weight: 600 !important;
+  padding: 1.2rem 1rem !important;
+  border: none !important;
+  font-size: 0.8rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+.table tbody td {
+  padding: 1rem !important;
+  vertical-align: middle !important;
+  border-top: 1px solid #f0f0f0 !important;
+}
+.table tbody tr { 
+  transition: background 0.3s !important; 
+}
+.table tbody tr:hover { 
+  background: #f8f9fa !important; 
+}
+
+/* Texto truncado*/
+.text-truncate-custom       { 
+  max-width: 150px !important; 
+  white-space: nowrap !important; 
+  overflow: hidden !important; 
+  text-overflow: ellipsis !important; 
+  display: inline-block !important; 
+  vertical-align: middle !important; 
+}
+.text-truncate-custom.small { 
+  max-width: 120px !important; 
+}
+
+/* Botones de acción */
+.action-buttons { 
+  display: flex !important; 
+  gap: 0.5rem !important; 
+  justify-content: center !important; 
+}
+
+.btn-action {
+  padding: 0.25rem 0.6rem !important;
+  font-size: 0.75rem !important;
+  border-radius: 6px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  transition: transform 0.3s !important;
+}
+.btn-action:hover { 
+  transform: translateY(-2px) !important; 
+}
+
+.btn-view  { 
+  color: var(--color-success) !important;  
+  border-color: var(--color-success) !important; 
+}
+.btn-edit  { 
+  color: var(--color-btn-edit) !important; 
+  border-color: var(--color-btn-edit) !important;
+}
+.btn-delete{ 
+  color: var(--color-danger) !important;   
+  border-color: var(--color-danger) !important; 
+}
+
+.btn-view:hover   { 
+  background: var(--color-success) !important;   
+  color: var(--color-white) !important; 
+}
+.btn-edit:hover   { 
+  background: var(--color-btn-edit) !important;  
+  color: var(--color-white) !important; 
+}
+.btn-delete:hover { 
+  background: var(--color-danger) !important;    
+  color: var(--color-white) !important; 
+}
+
+/*Pie de tabla (info + paginación)*/
+.table-footer {
+  padding: 1.5rem !important;
+  background: #f8f9fa !important;
+  border-top: 1px solid var(--color-border) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+.showing-entries { 
+  font-size: 0.9rem !important; 
+  color: #6c757d !important; 
+}
+
+.page-link {
+  color: var(--color-primary) !important;
+  border-color: var(--color-border) !important;
+  padding: 0.5rem 0.75rem !important;
+  margin: 0 0.25rem !important;
+  border-radius: 6px !important;
+}
+.page-link:hover,
+.page-item.active .page-link {
+  background: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+  color: var(--color-white) !important;
+}
+
+/*Responsive*/
+@media (max-width: 992px) {
+  .tenant-clients__actions { 
+    flex-direction: column !important; 
+    align-items: stretch !important; 
+  }
+  .search-box { 
+    width: 100% !important; 
+    margin-top: 1rem !important; 
+  }
+}
+
+@media (max-width: 768px) {
+  /* Tabla en móvil → formato tarjetas verticales */
+  .table thead{ 
+    display: none !important; 
+  }
+  .table tbody tr{ 
+    display: block !important; 
+    border: 1px solid var(--color-border) !important; 
+    margin-bottom: 1rem !important; border-radius: 8px !important; 
+  }
+  .table tbody td{ 
+    display: block !important; 
+    text-align: right !important; 
+    padding: 0.5rem !important; 
+    position: relative !important; 
+    padding-left: 40% !important; 
+  }
+  .table tbody td::before{
+    content: attr(data-label) !important;
+    position: absolute !important;
+    left: 0.5rem !important;
+    width: 35% !important;
+    text-align: left !important;
+    font-weight: 600 !important;
+    color: var(--color-primary) !important;
+  }
+  .action-buttons { 
+    justify-content: flex-end !important; 
+  }
+}

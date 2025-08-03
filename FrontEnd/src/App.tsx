@@ -12,18 +12,34 @@ import CategoriaPage  from './pages/site/CategoriaPage.tsx';
 import ViewBlogPage  from './pages/site/ViewBlogPage.tsx';
 
 import SiteLayout from './components/layout/SiteLayout.tsx';
+
 // //Para acomodar la vista de los componentes de admin
 import AdminLayout from './components/layout/AdminLayout.tsx';
 import AdminDashboard from './pages/admin/AdminDashboard';
+
 // //Para acomodar la vista de los componentes de inquilino
-// import TenantLayout from './components/layout/TenantLayout';
+import TenantLayout from './components/layout/TenantLayout.tsx';
+import PlanesPage from './pages/tenant/PlanesPage.tsx';
+import ExitoPage from './pages/tenant/ExitoPage.tsx'
+import CancelarPage from './pages/tenant/CancelarPage.tsx'
 
 import DynamicPage from './pages/site/DymanicPage';
 import LoginPage from './pages/auth/LoginPage.tsx';
-// import RegisterPage      from './pages/auth/RegisterPage.tsx';
+import RegisterPage      from './pages/auth/RegisterPage.tsx';
 // import ResetPasswordPage from './pages/auth/ResetPasswordPage.tsx';
 import Error404          from './pages/Error404.tsx';
 import { PlansProvider } from './context/PlansContext.tsx';
+import DashboardTenant from './pages/tenant/DashboardTenant.tsx';
+import ClientesTenant from './pages/tenant/ClientesTenant.tsx';
+import DeudasTenant from './pages/tenant/DeudasTenant.tsx';
+import MorososTenant from './pages/tenant/ClientesMorosos.tsx';
+import IngresosTenant from './pages/tenant/IngresosTenant.tsx';
+import UpdateClient from './pages/tenant/UpdateClient.tsx';
+import AddClient from './pages/tenant/AddClient.tsx';
+import AddDeuda from './pages/tenant/AddDeuda.tsx';
+import UpdateDeuda from './pages/tenant/UpdateDeuda.tsx';
+import ConfiguracionPage from './pages/tenant/ConfiguracionPerfil.tsx';
+import PerfilTenant from './pages/tenant/PerfilTenant.tsx';
 
 export default function App() {
   return (
@@ -56,13 +72,14 @@ export default function App() {
 
                     {/* 2. Login / Registro / Restablecer */}
                     <Route path="/login"      element={<LoginPage />} />
-                    {/* <Route path="/register"   element={<RegisterPage />} />
-                    <Route path="/restablecer" element={<ResetPasswordPage />} /> */}
+                    <Route path="/register"   element={<RegisterPage />} />
+                    {/* <Route path="/restablecer" element={<ResetPasswordPage />} /> */}
 
                     {/* 3. Panel de Admin */}
                     <Route element={<ProtectedRoute allowed={['admin']} />}>
                       <Route path="/admin" element={<AdminLayout />}>
                         <Route index element={<AdminDashboard />} />
+                        <Route path="planes" element={<PlanesPage />} />
                         <Route path="clientes" element={<div>Página de Clientes</div>} />
                         <Route path="suscripciones" element={<div>Página de Suscripciones</div>} />
                         <Route path="ingresos" element={<div>Página de Ingresos</div>} />
@@ -77,8 +94,25 @@ export default function App() {
                     </Route>
 
                     {/* 4. Panel de Tenant */}
-                    <Route element={<ProtectedRoute allowed={['tenant']} />}>
-                      {/* <Route path="/tenant/*" element={<TenantLayout />} /> */}
+                    <Route element={<ProtectedRoute allowed={['inquilino']} />}>
+                      <Route path="/tenant" element={<TenantLayout />}>
+                        <Route path="planes" element={<PlanesPage />} />
+                        <Route element={<ProtectedRoute allowed={['inquilino']} requiresSubscription={true} />}>
+                          <Route path="perfil" element={<PerfilTenant />} />
+                          <Route path="configuracion" element={<ConfiguracionPage />} />
+                          <Route path="dashboard" element={<DashboardTenant />} />
+                          <Route path="clientes/morosos" element={<MorososTenant />} />
+                          <Route path="ingresos" element={<IngresosTenant />  } />
+                          <Route path="clientes" element={<ClientesTenant />} />
+                          <Route path="clientes/nuevo" element={<AddClient />} />
+                          <Route path="clientes/editar/:id" element={<UpdateClient/>} />
+                          <Route path="deudas" element={<DeudasTenant />} />
+                          <Route path="deudas/nueva" element={<AddDeuda />} />
+                          <Route path="deudas/editar/:id" element={<UpdateDeuda />} />
+                          <Route path="suscripcion/exito" element={<ExitoPage />} />
+                          <Route path="suscripcion/cancelar" element={<CancelarPage />} />
+                        </Route>
+                      </Route>
                     </Route>
 
                     {/* 5. Cualquier otra ruta */}

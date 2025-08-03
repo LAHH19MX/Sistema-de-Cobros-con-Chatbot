@@ -54,14 +54,14 @@
 
 .custom-section-general .custom-section--features__heading.custom-section--features__heading {
   font-family: var(--text-seccion) !important;
-  font-size: 1.75rem !important;
+  font-size: 2rem !important;
   color: var(--color-accent) !important;
   margin-bottom: 2rem !important;
 }
 
 .custom-section-general .custom-section--features__text.custom-section--features__text {
   font-family: var(--text-normal) !important;
-  font-size: 1rem !important;
+  font-size: 1.25rem !important;
   color: var(--color-white) !important;
   line-height: 1.6 !important;
 }

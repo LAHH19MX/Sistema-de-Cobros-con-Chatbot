@@ -21,7 +21,7 @@ export async function createStripeLink(idDeuda: string): Promise<string> {
 
   // Busca la credencial
   const stripe = new Stripe(cred.credenciales_api, {
-    apiVersion: '2025-05-28.basil'
+    apiVersion: '2025-06-30.basil'
   });
 
   //Monto en pesos
@@ -82,7 +82,7 @@ export async function handleStripeEvent(event: Stripe.Event): Promise<void> {
     });
     if (!cred) throw new Error('Cred Stripe no encontrada');
 
-    const stripe = new Stripe(cred.credenciales_api, { apiVersion: '2025-05-28.basil' });
+    const stripe = new Stripe(cred.credenciales_api, { apiVersion: '2025-06-30.basil' });
 
     async function getBalanceTx(piId: string, max = 3): Promise<Stripe.BalanceTransaction> {
       for (let i = 0; i < max; i++) {
@@ -113,7 +113,7 @@ export async function handleStripeEvent(event: Stripe.Event): Promise<void> {
       }),
       prisma.deuda.update({
         where: { id_deuda: enlace.id_deuda },
-        data:  { saldo_pendiente: 0, estado_deuda: 'PAGADA' }
+        data:  { saldo_pendiente: 0, estado_deuda: 'pagado' }
       })
     ]);
   }

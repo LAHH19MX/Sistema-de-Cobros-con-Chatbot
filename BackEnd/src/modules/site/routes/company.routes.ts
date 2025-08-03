@@ -1,4 +1,3 @@
-// src/modules/site/routes/company.routes.ts
 import { Router } from 'express'
 import {
   getEmpresa,

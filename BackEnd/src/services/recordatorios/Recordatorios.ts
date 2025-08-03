@@ -20,7 +20,7 @@ export async function runRecordatorios() {
         pendientes.map(r =>
             limit(async () => {
                 const deuda = await prisma.deuda.findFirst({
-                where: { id_cliente: r.id_cliente, estado_deuda: 'PENDIENTE' }
+                where: { id_cliente: r.id_cliente, estado_deuda: 'pendiente' }
                 });
                 if (!deuda) {
                     await prisma.recordatorioEmail.delete({ where: { id_email: r.id_email } });

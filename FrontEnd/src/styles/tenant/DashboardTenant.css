@@ -1,0 +1,241 @@
+:root {
+  --color-primary: #141416;
+  --color-secondary: #f07177;
+  --color-white: #ffffff;
+  --color-font: #e6eaf0;
+  --color-border: #e0e0e0;
+  --font-base: 'Poppins', sans-serif;
+}
+
+/* ─────────── Bloque principal ─────────── */
+.tenant-dashboard {
+  padding: 2rem 0 !important;
+  font-family: var(--font-base);
+}
+
+/* ─────────── Tarjetas de estadísticas ─────────── */
+.tenant-dashboard__stats {
+  padding: 0rem 2rem !important;              
+}
+
+.tenant-card {
+  background: var(--color-white) !important;
+  border: 1px solid var(--color-white) !important;
+  margin-bottom: 2rem !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+  overflow: hidden !important;
+}
+
+.tenant-card__main {
+  padding: 1.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.tenant-card__icon {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 1.5rem !important;
+  font-size: 1.5rem !important;
+}
+
+/* Colores del icono por tipo */
+.tenant-card__icon--clients { 
+  background: rgba(240, 113, 119, 0.1) !important; 
+  color: var(--color-secondary) !important; 
+}
+.tenant-card__icon--paid    { 
+  background: rgba(46, 204, 113, 0.1) !important;  
+  color: #2ecc71 !important; 
+}
+.tenant-card__icon--pending { 
+  background: rgba(255, 193, 7, 0.1) !important;   
+  color: #ffc107 !important; 
+}
+
+.tenant-card__info h3,
+.tenant-card__info p {
+  font-family: var(--font-base) !important;
+}
+
+.tenant-card__info h3 {
+  font-size: 1.8rem !important;
+  margin: 0 0 0.25rem !important;
+  color: var(--color-primary) !important;
+}
+
+.tenant-card__info p {
+  font-size: 0.9rem !important;
+  color: #6c757d !important;
+  margin: 0 !important;
+}
+
+.tenant-card__footer {
+  border-top: 1px solid var(--color-border) !important;
+  background: var(--color-white) !important;
+}
+
+.tenant-card__link {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  color: var(--color-secondary) !important;
+  text-decoration: none !important;
+}
+
+.tenant-card__link:hover {
+  background: rgba(240, 113, 119, 0.05) !important;
+}
+
+.tenant-card__link i {
+  transition: transform 0.3s !important;
+}
+
+.tenant-card__link:hover i {
+  transform: translateX(5px) !important;
+}
+
+@media (max-width: 576px) {
+  .tenant-card__main { padding: 1rem !important; }
+  .tenant-card__icon {
+    width: 50px !important;
+    height: 50px !important;
+    margin-right: 1rem !important;
+    font-size: 1.2rem !important;
+  }
+  .tenant-card__info h3 { font-size: 1.5rem !important; }
+}
+
+.tenant-movements__header {
+  margin: 1rem 0 !important;
+  padding: 0 1.5rem !important;           
+}
+
+.tenant-movements__header h2 {
+  font-family: var(--font-base) !important;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  color: var(--color-primary) !important;
+  border-bottom: 2px solid var(--color-secondary) !important;
+  display: inline-block !important;
+}
+
+.tenant-table__wrapper {
+  padding: 0 1.5rem 1.5rem !important;         
+}
+
+.tenant-table {
+  width: 100% !important;
+  background: var(--color-white) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.tenant-table th {
+  background: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  font-weight: 500 !important;
+  padding: 1rem !important;
+}
+
+.tenant-table td {
+  border-top: 1px solid var(--color-border) !important;
+  padding: 1rem !important;
+  vertical-align: middle !important;
+}
+
+/* Estados */
+.tenant-status--paid    { 
+  color: #2ecc71 !important; 
+  font-weight: 500 !important; 
+}
+.tenant-status--pending { 
+  color: #ffc107 !important; 
+  font-weight: 500 !important; 
+}
+.tenant-status--overdue { 
+  color: #dc3545 !important; 
+  font-weight: 500 !important; 
+}
+
+/* Botón acciones */
+.tenant-btn {
+  padding: 0.25rem 0.5rem !important;
+  font-size: 0.8rem !important;
+  border: 1px solid #2ecc71 !important;
+  color: #2ecc71 !important;
+  background: transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  transition: transform 0.3s !important;
+}
+
+.tenant-btn:hover {
+  background: #2ecc71 !important;
+  color: var(--color-white) !important;
+  transform: translateY(-3px) !important;
+}
+
+/* ───── Tarjetas móviles ───── */
+.tenant-mobile {
+  padding: 0 2rem 2rem !important;
+}
+
+.tenant-mobile-card {
+  display: none;                          
+  background: var(--color-white) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.tenant-mobile-card__row {
+  display: flex !important;
+  justify-content: space-between !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.tenant-mobile-card .label { 
+  font-weight: 600 !important; 
+  color: var(--color-primary) !important; 
+  min-width: 100px !important; 
+}
+.tenant-mobile-card .value { 
+  text-align: right !important; 
+}
+
+/* ───── Breakpoints ───── */
+@media (max-width: 991px) {
+  .tenant-dashboard__stats  { 
+    padding: 1.5rem !important; 
+  }
+  .tenant-table__wrapper    { 
+    padding: 0 1.5rem 1.5rem !important; 
+  }
+  .tenant-movements__header { 
+    padding: 0 1.5rem !important; 
+  }
+  .tenant-mobile { 
+    padding: 0 1.5rem 1.5rem !important; 
+  }
+}
+
+@media (max-width: 768px) {
+  .tenant-table          { 
+    display: none !important; 
+  }
+  .tenant-mobile-card    { 
+    display: block !important; 
+  }
+  .tenant-movements__header { 
+    margin-top: 0.5rem !important; 
+  }
+}

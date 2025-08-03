@@ -1,0 +1,24 @@
+:root {
+  --color-primary: #141416 !important;
+  --color-secondary: #f07177 !important;
+  --color-font: #e6eaf0 !important;
+  --color-white: #ffffff !important;
+  --color-border: #e0e0e0 !important;
+}
+
+/* Bloque Footer */
+.tenant-footer {
+  padding: 1.5rem !important;
+  text-align: center !important;
+  color: #6c757d !important;
+  font-size: 0.9rem !important;
+  background: var(--color-white) !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+/* Compactar en pantallas muy pequeñas */
+@media (max-width: 576px) {
+  .tenant-footer {
+    padding: 1rem !important;
+  }
+}

@@ -1,0 +1,422 @@
+/* src/styles/tenant/ClientesMorososTenant.css */
+:root {
+  --color-primary: #141416;
+  --color-secondary: #F07177;
+  --color-light: #f8f9fa;
+  --color-white: #ffffff;
+  --color-border: #e0e0e0;
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545;
+  --font-base: 'Poppins', sans-serif;
+}
+
+/* ───────── Bloque raíz ───────── */
+.tenant-mor {
+  font-family: var(--font-base) !important;
+}
+
+/* ───────── Header ───────── */
+.tenant-mor__header {
+  padding: 2rem 2rem 1rem !important;
+  background: var(--color-white) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.tenant-mor__title {
+  margin: 0 !important;
+  font-size: 1.75rem !important;
+  font-weight: 600 !important;
+  color: var(--color-primary) !important;
+}
+
+.tenant-mor__subtitle {
+  margin: 0.5rem 0 0 !important;
+  font-size: 0.95rem !important;
+  color: #6c757d !important;
+}
+
+/* ───────── Filtros ───────── */
+.tenant-mor__filters-section {
+  background-color: var(--color-white) !important;
+  border-radius: 12px !important;
+  padding: 1.5rem !important;
+  margin: 2rem !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.tenant-mor__filters-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 1rem !important;
+}
+
+.tenant-mor__filters-title {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  color: var(--color-primary) !important;
+  margin: 0 !important;
+}
+
+.tenant-mor__btn-report {
+  background-color: transparent !important;
+  border: 1px solid var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  padding: 0.5rem 1.2rem !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  transition: all 0.3s !important;
+}
+
+.tenant-mor__btn-report:hover {
+  background-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 15px rgba(20, 20, 22, 0.3) !important;
+}
+
+.tenant-mor__filters-row {
+  display: flex !important;
+  gap: 1rem !important;
+  flex-wrap: wrap !important;
+  align-items: end !important;
+}
+
+.tenant-mor__filter-group {
+  flex: 1 !important;
+  min-width: 200px !important;
+}
+
+.tenant-mor__filter-group label {
+  display: block !important;
+  margin-bottom: 0.5rem !important;
+  color: var(--color-primary) !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+}
+
+.tenant-mor__filter-group select,
+.tenant-mor__filter-group input {
+  width: 100% !important;
+  padding: 0.5rem 1rem !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+  font-size: 0.9rem !important;
+}
+
+.tenant-mor__btn-filter {
+  background-color: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+  color: var(--color-white) !important;
+  padding: 0.5rem 1.5rem !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  transition: all 0.3s !important;
+}
+
+.tenant-mor__btn-filter:hover {
+  background-color: #d85a60 !important;
+  border-color: #d85a60 !important;
+}
+
+/* ───────── Tabla de morosos ───────── */
+.tenant-mor__table-section {
+  overflow: hidden !important;
+  border: 1px solid var(--color-border) !important;
+  margin: 2rem !important;
+}
+
+.tenant-mor__table {
+  width: 100% !important;
+  background-color: var(--color-white) !important;
+  margin-bottom: 0 !important;
+}
+
+.tenant-mor__table thead th {
+  background-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  font-weight: 600 !important;
+  padding: 1.2rem 1rem !important;
+  border: none !important;
+  text-transform: uppercase !important;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.5px !important;
+}
+
+.tenant-mor__table tbody td {
+  background-color: var(--color-white) !important;
+  padding: 1rem !important;
+  vertical-align: middle !important;
+  border-top: 1px solid #f0f0f0 !important;
+}
+
+.tenant-mor__table tbody tr {
+  transition: all 0.3s !important;
+}
+
+.tenant-mor__table tbody tr:hover {
+  background-color: var(--color-light) !important;
+}
+
+.tenant-mor__client-name {
+  color: var(--color-primary) !important;
+}
+
+.tenant-mor__client-email {
+  font-size: 1rem !important;
+}
+
+.tenant-mor__debt-amount {
+  font-size: 1rem !important;
+  color: var(--color-primary) !important;
+}
+
+.tenant-mor__days-overdue {
+  color: var(--color-danger) !important;
+  font-weight: 600 !important;
+}
+
+/* ───────── Botones de acción ───────── */
+.tenant-mor__action-buttons {
+  display: flex !important;
+  gap: 0.5rem !important;
+  justify-content: center !important;
+  margin-top: 0.5rem !important;
+}
+
+.tenant-mor__btn-action {
+  padding: 0.25rem 0.6rem !important;
+  font-size: 0.75rem !important;
+  border-radius: 6px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  transition: all 0.3s !important;
+  cursor: pointer !important;
+}
+
+.tenant-mor__btn-action:hover {
+  transform: translateY(-2px) !important;
+}
+
+.tenant-mor__btn-action--notify {
+  color: #3498db !important;
+  border-color: #3498db !important;
+}
+
+.tenant-mor__btn-action--notify:hover {
+  background-color: #3498db !important;
+  color: var(--color-white) !important;
+}
+
+.tenant-mor__btn-action--detail {
+  color: var(--color-success) !important;
+  border-color: var(--color-success) !important;
+}
+
+.tenant-mor__btn-action--detail:hover {
+  background-color: var(--color-success) !important;
+  color: var(--color-white) !important;
+}
+
+/* ───────── Pie de tabla ───────── */
+.tenant-mor__table-footer {
+  padding: 1.5rem !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  background-color: var(--color-light) !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+.tenant-mor__entries {
+  color: #6c757d !important;
+  font-size: 0.9rem !important;
+}
+
+.tenant-mor__pagination {
+  margin: 0 !important;
+}
+
+.tenant-mor__pagination .page-link {
+  color: var(--color-primary) !important;
+  border-color: var(--color-border) !important;
+  padding: 0.5rem 0.75rem !important;
+  margin: 0 0.25rem !important;
+  border-radius: 6px !important;
+}
+
+.tenant-mor__pagination .page-link:hover {
+  background-color: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+  color: var(--color-white) !important;
+}
+
+.tenant-mor__pagination .page-item.active .page-link {
+  background-color: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+}
+
+/* ───────── Modal de reportes ───────── */
+.tenant-mor__modal-content {
+  border: none !important;
+  border-radius: 12px !important;
+}
+
+.tenant-mor__modal-header {
+  background-color: var(--color-danger) !important;
+  color: var(--color-white) !important;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 1.5rem !important;
+}
+
+.tenant-mor__modal-title {
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.tenant-mor__modal-body {
+  padding: 2rem !important;
+}
+
+.tenant-mor__filter-section {
+  margin-bottom: 2rem !important;
+}
+
+.tenant-mor__filter-section h6 {
+  color: var(--color-primary) !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.tenant-mor__form-label {
+  color: var(--color-primary) !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.tenant-mor__form-control,
+.tenant-mor__form-select {
+  border: 1px solid var(--color-border) !important;
+  padding: 0.6rem 1rem !important;
+  font-size: 0.9rem !important;
+  transition: all 0.3s !important;
+}
+
+.tenant-mor__form-control:focus,
+.tenant-mor__form-select:focus {
+  border-color: var(--color-secondary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(240, 113, 119, 0.15) !important;
+}
+
+.tenant-mor__date-range {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 1rem !important;
+}
+
+.tenant-mor__format-options {
+  display: flex !important;
+  gap: 2rem !important;
+  margin-top: 1rem !important;
+}
+
+.tenant-mor__form-check-input:checked {
+  background-color: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+}
+
+.tenant-mor__form-check-label {
+  margin-left: 0.5rem !important;
+  cursor: pointer !important;
+}
+
+.tenant-mor__modal-footer {
+  border-top: 1px solid var(--color-border) !important;
+  padding: 1.5rem !important;
+}
+
+.tenant-mor__btn-generate {
+  background-color: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-white) !important;
+  padding: 0.6rem 2rem !important;
+  font-weight: 500 !important;
+  transition: all 0.3s !important;
+}
+
+.tenant-mor__btn-generate:hover {
+  background-color: #c82333 !important;
+  border-color: #bd2130 !important;
+  transform: translateY(-2px) !important;
+}
+
+.tenant-mor__btn-cancel {
+  background-color: transparent !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-primary) !important;
+  padding: 0.6rem 2rem !important;
+  font-weight: 500 !important;
+  transition: all 0.3s !important;
+}
+
+.tenant-mor__btn-cancel:hover {
+  background-color: var(--color-light) !important;
+  border-color: var(--color-primary) !important;
+}
+
+/* ───────── Responsive ───────── */
+@media (max-width: 992px) {
+  .tenant-mor__filters-row {
+    flex-direction: column !important;
+  }
+  .tenant-mor__filter-group {
+    width: 100% !important;
+  }
+  .tenant-mor__filters-header {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    align-items: stretch !important;
+  }
+  .tenant-mor__btn-report {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tenant-mor__table thead {
+    display: none !important;
+  }
+  .tenant-mor__table tbody tr {
+    display: block !important;
+    border: 1px solid var(--color-border) !important;
+    margin-bottom: 1rem !important;
+    border-radius: 8px !important;
+  }
+  .tenant-mor__table tbody td {
+    display: block !important;
+    text-align: right !important;
+    padding: 0.5rem 1rem 0.5rem 40% !important;
+    position: relative !important;
+  }
+  .tenant-mor__table tbody td::before {
+    content: attr(data-label) !important;
+    position: absolute !important;
+    left: 0.5rem !important;
+    width: 35% !important;
+    text-align: left !important;
+    font-weight: 600 !important;
+    color: var(--color-primary) !important;
+  }
+  .tenant-mor__action-buttons {
+    justify-content: flex-end !important;
+  }
+}

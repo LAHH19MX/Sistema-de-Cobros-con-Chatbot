@@ -1,0 +1,375 @@
+/* Variables de colores y tipografía */
+:root {
+  --color-primary:    #141416;
+  --color-secondary:  #F07177;
+  --secondary-hover:  #d85f6a;
+  --color-hover-btn:  rgba(240, 113, 119, 0.247);
+  --color-light-gray: linear-gradient(to right, #F07177, #aa66cf, #4D4DEA);
+  --color-white:      #FFFFFF;
+  --color-accent:     #4D4DEA;
+  --color-textContent: #8A8A8A;
+  --color-bg-dark:    #1B1C1E;
+
+  /* Tipografías */
+  --text-apartado:    'Poppins', sans-serif;
+  --text-categoria:   'Poppins', sans-serif;
+  --text-seccion:     'Poppins', sans-serif;
+  --text-contenido:   'Poppins', sans-serif;
+  --text-normal:      'Poppins', sans-serif;
+}
+
+/* Bloque principal */
+.plans-tenant {
+  padding: 4rem 0;
+  background-color: var(--color-bg-dark);
+  min-height: 100vh;
+}
+
+/* Modificadores para estados */
+.plans-tenant--loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plans-tenant--error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plans-tenant--empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Contenedor de spinner */
+.plans-tenant__spinner-container {
+  text-align: center;
+}
+
+.plans-tenant__loading-text {
+  margin-top: 1.5rem;
+  color: var(--color-textContent);
+  font-family: var(--text-normal);
+  font-size: 1.25rem;
+}
+
+/* Contenedor de error */
+.plans-tenant__error-container {
+  max-width: 32rem;
+  text-align: center;
+  background-color: var(--color-primary);
+  border-radius: 1rem;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.plans-tenant__error-icon {
+  width: 5rem;
+  height: 5rem;
+  color: var(--color-secondary);
+  margin: 0 auto 2rem;
+}
+
+.plans-tenant__error-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-white);
+  margin-bottom: 1.25rem;
+  font-family: var(--text-seccion);
+}
+
+.plans-tenant__error-message {
+  color: var(--color-textContent);
+  margin-bottom: 2rem;
+  font-family: var(--text-normal);
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+.plans-tenant__retry-button {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  padding: 1rem 2.5rem;
+  border-radius: 0.6rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: var(--text-normal);
+  font-size: 1.1rem;
+}
+
+.plans-tenant__retry-button:hover {
+  background-color: var(--secondary-hover);
+}
+
+/* Contenedor vacío */
+.plans-tenant__empty-container {
+  max-width: 32rem;
+  text-align: center;
+  background-color: var(--color-primary);
+  border-radius: 1rem;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.plans-tenant__empty-icon {
+  width: 5rem;
+  height: 5rem;
+  color: var(--color-textContent);
+  margin: 0 auto 2rem;
+}
+
+.plans-tenant__empty-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-white);
+  margin-bottom: 1.25rem;
+  font-family: var(--text-seccion);
+}
+
+.plans-tenant__empty-message {
+  color: var(--color-textContent);
+  margin-bottom: 2rem;
+  font-family: var(--text-normal);
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+.plans-tenant__update-button {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  padding: 1rem 2.5rem;
+  border-radius: 0.6rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: var(--text-normal);
+  font-size: 1.1rem;
+}
+
+.plans-tenant__update-button:hover {
+  background-color: var(--secondary-hover);
+}
+
+/* Contenedor principal cuando hay planes */
+.plans-tenant__container {
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 1.5rem;
+  margin: 0 auto;
+}
+
+/* Header */
+.plans-tenant__header {
+  text-align: center;
+  margin-bottom: 4.5rem;
+  padding: 0 1rem;
+}
+
+.plans-tenant__title {
+  font-size: 3.25rem;
+  font-weight: 700;
+  color: var(--color-white);
+  margin-bottom: 1.25rem;
+  font-family: var(--text-seccion);
+  line-height: 1.2;
+}
+
+.plans-tenant__subtitle {
+  font-size: 1.3rem;
+  color: var(--color-textContent);
+  max-width: 50rem;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-family: var(--text-normal);
+}
+
+/* Grid de planes - AHORA CON TAMAÑO FIJO */
+.plans-tenant__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Responsive: máximo 3 columnas */
+@media (min-width: 768px) {
+  .plans-tenant__grid {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 340px));
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1200px) {
+  .plans-tenant__grid {
+    grid-template-columns: repeat(3, 340px);
+    max-width: 1100px;
+  }
+}
+
+/* Tarjeta con tamaño fijo */
+.plans-tenant__card {
+  background-color: var(--color-white);
+  border-radius: 0.85rem;
+  overflow: hidden;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s, box-shadow 0.3s;
+  width: 100%;
+  height: 100%; /* Altura completa del contenedor */
+  position: relative;
+  /* Tamaño fijo */
+  min-height: 580px; /* Altura mínima garantizada */
+  max-height: 600px; /* Altura máxima para consistencia */
+}
+
+.plans-tenant__card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Encabezado */
+.plans-tenant__card-header {
+  background: var(--color-secondary);
+  color: var(--color-white);
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.plans-tenant__card-name {
+  font-family: var(--text-seccion);
+  font-size: 1.85rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.plans-tenant__card-tag {
+  font-family: var(--text-normal);
+  font-size: 1.05rem;
+  opacity: 0.9;
+  margin: 1rem 0 0;
+  font-weight: 400;
+}
+
+/* Cuerpo - tamaño fijo */
+.plans-tenant__card-body {
+  padding: 2.25rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 300px; /* Altura mínima para consistencia */
+}
+
+.plans-tenant__card-price {
+  font-family: var(--text-apartado);
+  font-size: 2.65rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1.75rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.plans-tenant__card-currency { 
+  font-size: 1.6rem; 
+  vertical-align: top;
+  font-weight: 500;
+}
+
+.plans-tenant__card-period { 
+  font-size: 1.05rem; 
+  vertical-align: baseline;
+  font-weight: 400;
+  color: var(--color-textContent);
+}
+
+.plans-tenant__card-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1; /* Ocupa espacio disponible */
+}
+
+.plans-tenant__card-benefit {
+  font-family: var(--text-normal);
+  font-size: 1rem;
+  color: var(--color-textContent);
+  margin-bottom: 1rem;
+  position: relative;
+  padding-left: 1.85rem;
+  line-height: 1.5;
+}
+
+.plans-tenant__card-benefit::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--color-secondary);
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Pie */
+.plans-tenant__card-footer {
+  padding: 1.5rem 2rem 2rem;
+  text-align: center;
+}
+
+.plans-tenant__card-button {
+  width: 100%;
+  font-family: var(--text-normal);
+  font-size: 1.1rem;
+  font-weight: 600;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  border: none;
+  border-radius: 0.55rem;
+  padding: 1.05rem 1.5rem;
+  transition: background 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+
+.plans-tenant__card-button:hover:not(:disabled) {
+  background-color: var(--secondary-hover);
+  transform: translateY(-3px);
+}
+
+.plans-tenant__card-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Overlay de carga */
+.plans-tenant__card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.85rem;
+}
+
+/* Ajustes generales */
+button {
+  font-family: var(--text-normal);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

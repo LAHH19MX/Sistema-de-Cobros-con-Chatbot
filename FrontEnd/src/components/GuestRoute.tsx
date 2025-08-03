@@ -9,7 +9,7 @@ export default function GuestRoute() {
   if (isAuthenticated) {
     return user!.rol === 'admin'
       ? <Navigate to="/admin" replace />
-      : <Navigate to="/tenant" replace />;
+      : <Navigate to="/tenant/planes" replace />
   }
   return <Outlet />; 
 }

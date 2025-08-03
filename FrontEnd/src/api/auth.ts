@@ -3,7 +3,17 @@ import api from './axios';
 import type { LoginData, User } from '../types/auth';
 import type { AxiosResponse } from 'axios';
 
-// El backend devuelve directamente User, no { user: User }
+export interface RegisterData {
+  nombre: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  email: string;
+  password: string;
+  telefono: string;
+  direccion?: string;
+  foto?: string;
+}
+
 export const loginRequest = (
   data: LoginData
 ): Promise<AxiosResponse<User>> =>
@@ -15,4 +25,7 @@ export const logoutRequest = (): Promise<AxiosResponse<void>> =>
 export const verifyRequest = (): Promise<AxiosResponse<User>> =>
   api.get('/verify');
 
-
+export const registerRequest = (
+  data: RegisterData
+): Promise<AxiosResponse<User>> =>
+  api.post('/register', data);

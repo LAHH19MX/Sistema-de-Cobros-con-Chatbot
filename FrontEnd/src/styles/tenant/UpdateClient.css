@@ -1,0 +1,374 @@
+.client-udp {
+  --color-primary: #141416;
+  --color-secondary: #F07177;
+  --color-dark: #1a1a1d;
+  --color-light: #f8f9fa;
+  --color-white: #ffffff;
+  --color-border: #e0e0e0;
+}
+
+.client-udp__container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.client-udp__header {
+  margin-bottom: 2rem;
+}
+
+.client-udp__title {
+  font-size: 1.8rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.client-udp__title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--color-secondary);
+}
+
+.client-udp__description {
+  color: #6c757d;
+  margin-top: 1.5rem;
+}
+
+.client-udp__form {
+  background-color: var(--color-white);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.client-udp__form-header {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 1.2rem 1.5rem;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.client-udp__form-icon {
+  margin-right: 10px;
+}
+
+.client-udp__form-body {
+  padding: 2rem;
+}
+
+.client-udp__form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+.client-udp__form-group {
+  padding: 0 15px;
+  margin-bottom: 1.5rem;
+  width: 33.33%;
+}
+
+.client-udp__form-group--full {
+  width: 100%;
+}
+
+.client-udp__form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  font-size: 0.9rem;
+}
+
+.client-udp__form-control {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.client-udp__form-control:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 0.2rem rgba(240, 113, 119, 0.15);
+}
+
+.client-udp__form-control:disabled {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+select.client-udp__form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+}
+
+.client-udp__form-footer {
+  padding: 1.5rem 2rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid var(--color-border);
+  text-align: right;
+}
+
+.client-udp__btn-update {
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: white;
+  padding: 0.7rem 2rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.client-udp__btn-update:hover {
+  background-color: #d85a60;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(240, 113, 119, 0.3);
+}
+
+.client-udp__btn-icon {
+  margin-right: 8px;
+}
+
+@media (max-width: 992px) {
+  .client-udp__form-group {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .client-udp__container {
+    padding: 1rem;
+  }
+  
+  .client-udp__form-body {
+    padding: 1.5rem;
+  }
+}
+
+/* Estilos adicionales para AddDeuda */
+.client-search-container {
+  position: relative;
+  width: 100%;
+}
+
+.client-search-input {
+  position: relative;
+}
+
+.client-search-input .search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+.client-search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  z-index: 100;
+  margin-top: 5px;
+}
+
+.client-result-item {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.client-result-item:hover {
+  background-color: #f8f9fa;
+}
+
+.client-result-item.selected {
+  background-color: #e6f7ff;
+  border-left: 3px solid var(--color-secondary);
+}
+
+.client-result-item .client-name {
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.client-result-item .client-phone {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.selected-client-info {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid var(--color-secondary);
+  font-size: 0.95rem;
+}
+
+.currency-input {
+  position: relative;
+}
+
+.currency-input .currency-symbol {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.currency-input input {
+  padding-left: 30px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  margin-right: 10px;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+}
+
+.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.invalid-feedback {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #dc3545;
+}
+
+.client-udp__btn-update:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.currency-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 12px;
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.currency-input input {
+  padding-left: 30px;
+}
+
+.client-search-container {
+  position: relative;
+}
+
+.client-search-input {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+.client-search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 4px;
+}
+
+.client-result-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.client-result-item:hover {
+  background-color: #f8f9fa;
+}
+
+.client-result-item.selected {
+  background-color: #e9ecef;
+}
+
+.client-name {
+  font-weight: 500;
+  color: #212529;
+}
+
+.client-phone {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.selected-client-info {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #d1ecf1;
+  border: 1px solid #bee5eb;
+  border-radius: 0.25rem;
+  color: #0c5460;
+  font-size: 0.875rem;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  margin-right: 10px;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+}

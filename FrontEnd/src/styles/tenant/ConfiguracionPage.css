@@ -1,0 +1,304 @@
+.client-config {
+  --color-primary: #141416;
+  --color-secondary: #F07177;
+  --color-dark: #1a1a1d;
+  --color-light: #f8f9fa;
+  --color-white: #ffffff;
+  --color-border: #e0e0e0;
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545;
+  --color-gray: #6c757d;
+}
+
+/* Header de página */
+.client-config__page-header {
+  background-color: var(--color-white);
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.client-config__page-title {
+  font-size: 1.85rem;
+  margin: 0;
+  color: var(--color-primary);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.client-config__title-icon {
+  color: var(--color-secondary);
+}
+
+.client-config__page-subtitle {
+  margin: 0.5rem 0 0 0;
+  color: var(--color-gray);
+  font-size: 1rem;
+}
+
+/* Sección principal */
+.client-config__main-section {
+  padding: 2.5rem;
+}
+
+/* Grid de configuración */
+.client-config__config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+}
+
+.client-config__config-section {
+  background-color: var(--color-white);
+  padding: 2.25rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid #eaeaea;
+}
+
+.client-config__config-section--full-width {
+  grid-column: 1 / -1;
+}
+
+/* Título de sección */
+.client-config__section-title {
+  font-size: 1.3rem;
+  color: var(--color-primary);
+  margin-bottom: 1.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.client-config__section-icon {
+  color: var(--color-secondary);
+  font-size: 1.5rem;
+}
+
+/* Formularios */
+.client-config__form-group {
+  margin-bottom: 1.75rem;
+}
+
+.client-config__form-label {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.client-config__form-control {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.client-config__form-control:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 0.25rem rgba(240, 113, 119, 0.2);
+}
+
+.client-config__form-control textarea {
+  resize: vertical;
+  min-height: 140px;
+  line-height: 1.6;
+}
+
+.client-config__form-text {
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--color-gray);
+}
+
+/* Contenedor de mensajes */
+.client-config__messages-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.client-config__message-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.client-config__message-box .client-config__form-group {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.client-config__message-box textarea {
+  flex-grow: 1;
+}
+
+/* Campos de API con toggle */
+.client-config__input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.client-config__input-group .client-config__form-control {
+  padding-right: 3.5rem;
+}
+
+.client-config__btn-toggle-visibility {
+  position: absolute;
+  right: 1.25rem;
+  background: transparent;
+  border: none;
+  color: var(--color-gray);
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.3s;
+  z-index: 10;
+  font-size: 1.1rem;
+}
+
+.client-config__btn-toggle-visibility:hover {
+  color: var(--color-secondary);
+}
+
+/* Activación y actualización */
+.client-config__activation-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.client-config__activation-label {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.client-config__update-info {
+  background: #f0f8ff;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #e1f0ff;
+}
+
+.client-config__status-info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem 1.75rem;
+  flex-grow: 1;
+}
+
+.client-config__status-label {
+  color: var(--color-gray);
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.client-config__status-icon {
+  width: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.client-config__status-value {
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: right;
+}
+
+/* Botones de acción */
+.client-config__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.client-config__gateway-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.client-config__btn {
+  padding: 0.8rem 2.5rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.client-config__btn--primary {
+  background: linear-gradient(135deg, var(--color-secondary), #e26066);
+  color: white;
+}
+
+.client-config__btn--primary:hover {
+  background: linear-gradient(135deg, #e26066, #d85a60);
+}
+
+.client-config__btn--cancel {
+  background-color: #f8f9fa;
+  border: 1px solid #e2e2e2;
+  color: #6c757d;
+}
+
+.client-config__btn--cancel:hover {
+  background-color: #e9ecef;
+  border-color: #d4d4d4;
+  color: #495057;
+}
+
+.client-config__btn-icon {
+  margin-right: 8px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .client-config__config-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .client-config__main-section {
+    padding: 1.75rem;
+  }
+  
+  .client-config__messages-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .client-config__form-actions,
+  .client-config__gateway-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .client-config__btn {
+    width: 100%;
+    text-align: center;
+  }
+}

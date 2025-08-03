@@ -38,8 +38,7 @@ export const login = async (req: Request, res: Response) => {
     // si no es admin...
     const inq = await prisma.inquilino.findUnique({ where: { email_inquilino: email } })
     if (!inq) return res.status(400).json({ message: 'Usuario no encontrado' })
-    const matchInq = contra === inq.password ? true : false;
-
+    const matchInq = await bcrypt.compare(contra, inq.password)
     if (!matchInq) return res.status(400).json({ message: 'Contraseña incorrecta' })
     const token = createAccessToken({
       id: inq.id_inquilino,
@@ -103,7 +102,8 @@ export const verify = async (req: Request, res: Response) => {
           nombre: admin.nombre_admin,
           apellido_paterno: admin.apellido_paterno_admin,
           apellido_materno: admin.apellido_materno_admin,
-          email: admin.email_admin
+          email: admin.email_admin,
+          hasSubscription: true 
         });
       }
       
@@ -115,6 +115,16 @@ export const verify = async (req: Request, res: Response) => {
       if (!inquilino) {
         return res.status(401).json({ message: "No autorizado" });
       }
+
+      // NUEVO: Verificar si tiene suscripción activa
+      const suscripcion = await prisma.suscripciones.findFirst({
+        where: {
+          id_inquilino: inquilino.id_inquilino,
+          estado_suscripcion: {
+            in: ['activa', 'pago_vencido'] // Incluir período de gracia
+          }
+        }
+      });
       
       return res.json({
         id: inquilino.id_inquilino,
@@ -122,7 +132,8 @@ export const verify = async (req: Request, res: Response) => {
         nombre: inquilino.nombre_inquilino,
         apellido_paterno: inquilino.apellido_paterno,
         apellido_materno: inquilino.apellido_materno,
-        email: inquilino.email_inquilino
+        email: inquilino.email_inquilino,
+        hasSubscription: !!suscripcion
       });
     });
   } catch (error) {
@@ -130,4 +141,75 @@ export const verify = async (req: Request, res: Response) => {
   }
 };
 
-//register
+//registro
+export const register = async (req: Request, res: Response) => {
+  try {
+    const { nombre, apellido_paterno, apellido_materno, email, password, telefono, direccion, foto } = req.body;
+
+    // Verificar si el email ya existe (en admin o inquilino)
+    const adminExiste = await prisma.admin.findUnique({ 
+      where: { email_admin: email } 
+    });
+
+    const inquilinoExiste = await prisma.inquilino.findUnique({ 
+      where: { email_inquilino: email } 
+    });
+
+    if (adminExiste || inquilinoExiste) {
+      return res.status(400).json({ 
+        message: 'El email ya está registrado' 
+      });
+    }
+
+    // Hashear password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear inquilino
+    const nuevoInquilino = await prisma.inquilino.create({
+      data: {
+        nombre_inquilino: nombre,
+        apellido_paterno: apellido_paterno,
+        apellido_materno: apellido_materno,
+        email_inquilino: email,
+        password: hashedPassword,
+        telefono_inquilino: req.body.telefono,
+        direccion_inquilino: req.body.direccion,
+        foto_inquilino: req.body.foto,
+        estado_inquilino: true,
+        fecha_registro: new Date()
+      }
+    });
+
+    // Crear token JWT
+    const token = createAccessToken({
+      id: nuevoInquilino.id_inquilino,
+      rol: 'inquilino',
+      nombre: `${nuevoInquilino.nombre_inquilino} ${nuevoInquilino.apellido_paterno}`
+    });
+
+    // Configurar cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000
+    });
+
+    // Retornar datos del usuario (sin suscripción)
+    return res.json({
+      id: nuevoInquilino.id_inquilino,
+      rol: 'inquilino',
+      nombre: nuevoInquilino.nombre_inquilino,
+      apellido_paterno: nuevoInquilino.apellido_paterno,
+      apellido_materno: nuevoInquilino.apellido_materno,
+      email: nuevoInquilino.email_inquilino,
+      hasSubscription: false
+    });
+  
+  } catch (error) {
+    console.error('Error en registro:', error);
+    return res.status(500).json({ 
+      message: 'Error interno del servidor' 
+    });
+  }
+};

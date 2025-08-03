@@ -1,0 +1,192 @@
+/* ─────────────────────────────────────────────────────
+   Estilos para el componente PlanCard
+───────────────────────────────────────────────────── */
+
+.plan-card {
+  background-color: var(--color-white);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%;
+  position: relative;
+}
+
+.plan-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Badge de "Más Popular" */
+.plan-card--popular {
+  border: 2px solid var(--color-secondary);
+}
+
+.plan-card__badge {
+  position: absolute;
+  top: -1px;
+  right: 20px;
+  background: var(--color-secondary);
+  color: var(--color-white);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0.5rem;
+  font-family: var(--text-normal);
+}
+
+/* Encabezado */
+.plan-card__header {
+  background: var(--color-secondary);
+  color: var(--color-white);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.plan-card__name {
+  font-family: var(--text-seccion);
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.plan-card__tag {
+  font-family: var(--text-normal);
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin: 0.5rem 0 0;
+  font-weight: 400;
+}
+
+/* Cuerpo */
+.plan-card__body {
+  padding: 2rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-card__price {
+  font-family: var(--text-apartado);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.plan-card__currency {
+  font-size: 1.5rem;
+  vertical-align: top;
+  font-weight: 500;
+}
+
+.plan-card__period {
+  font-size: 1rem;
+  vertical-align: baseline;
+  font-weight: 400;
+  color: var(--color-textContent);
+}
+
+/* Lista de beneficios */
+.plan-card__benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  flex: 1;
+}
+
+.plan-card__benefit {
+  font-family: var(--text-normal);
+  font-size: 0.95rem;
+  color: var(--color-textContent);
+  margin-bottom: 0.75rem;
+  position: relative;
+  padding-left: 1.5rem;
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+}
+
+.plan-card__benefit::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--color-secondary);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Pie con botones de pago */
+.plan-card__footer {
+  padding: 0 1.5rem 1.5rem;
+  text-align: center;
+}
+
+/* Botones de método de pago */
+.plan-card__payment-methods {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.plan-card__payment-btn {
+  flex: 1;
+  font-family: var(--text-normal);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: transparent;
+  color: var(--color-textContent);
+  border: 1px solid #e5e5e5;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.plan-card__payment-btn:hover {
+  border-color: var(--color-secondary);
+  color: var(--color-secondary);
+  background-color: var(--color-hover-btn);
+}
+
+.plan-card__payment-btn:active {
+  transform: scale(0.98);
+}
+
+/* Iconos de pago */
+.plan-card__payment-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Texto de ayuda */
+.plan-card__help-text {
+  font-family: var(--text-normal);
+  font-size: 0.75rem;
+  color: var(--color-textContent);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Estado de carga en botones */
+.plan-card__payment-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.plan-card__payment-btn:disabled:hover {
+  border-color: #e5e5e5;
+  color: var(--color-textContent);
+  background-color: transparent;
+  transform: none;
+}

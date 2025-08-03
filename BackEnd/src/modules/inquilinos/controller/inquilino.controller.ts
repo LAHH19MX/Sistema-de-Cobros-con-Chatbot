@@ -14,14 +14,14 @@ export const getAllInquilinosWithPlans = async (_: Request, res: Response) => {
         telefono_inquilino: true,
         estado_inquilino: true,
         fecha_registro: true,
-        suscripciones: {
+        Suscripciones: {
           take: 1,
           orderBy: { fecha_inicio: 'desc' },
           select: {
             estado_suscripcion: true,
             fecha_inicio: true,
             fecha_renovacion: true,
-            planes: {
+            Planes: {
               select: {
                 nombre_plan: true,
                 precio_plan: true
@@ -41,12 +41,12 @@ export const getAllInquilinosWithPlans = async (_: Request, res: Response) => {
       telefono: inq.telefono_inquilino,
       estado: inq.estado_inquilino,
       fecha_registro: inq.fecha_registro,
-      suscripcion: inq.suscripciones[0] ? {
-        estado: inq.suscripciones[0].estado_suscripcion,
-        fecha_inicio: inq.suscripciones[0].fecha_inicio,
-        fecha_renovacion: inq.suscripciones[0].fecha_renovacion,
-        plan: inq.suscripciones[0].planes.nombre_plan,
-        precio: inq.suscripciones[0].planes.precio_plan
+      suscripcion: inq.Suscripciones[0] ? {
+        estado: inq.Suscripciones[0].estado_suscripcion,
+        fecha_inicio: inq.Suscripciones[0].fecha_inicio,
+        fecha_renovacion: inq.Suscripciones[0].fecha_renovacion,
+        plan: inq.Suscripciones[0].Planes.nombre_plan,
+        precio: inq.Suscripciones[0].Planes.precio_plan
       } : null
     }));
 
@@ -76,14 +76,14 @@ export const getInquilinoByIdWithPlan = async (req: Request, res: Response) => {
         estado_inquilino: true,
         fecha_registro: true,
         foto_inquilino: true,
-        suscripciones: {
+        Suscripciones: {
           take: 1,
           orderBy: { fecha_inicio: 'desc' },
           select: {
             estado_suscripcion: true,
             fecha_inicio: true,
             fecha_renovacion: true,
-            planes: {
+            Planes: {
               select: {
                 id_plan: true,
                 nombre_plan: true,
@@ -102,11 +102,11 @@ export const getInquilinoByIdWithPlan = async (req: Request, res: Response) => {
 
     const response = {
       ...inquilino,
-      suscripcion: inquilino.suscripciones[0] ? {
-        estado: inquilino.suscripciones[0].estado_suscripcion,
-        fecha_inicio: inquilino.suscripciones[0].fecha_inicio,
-        fecha_renovacion: inquilino.suscripciones[0].fecha_renovacion,
-        plan: inquilino.suscripciones[0].planes
+      suscripcion: inquilino.Suscripciones[0] ? {
+        estado: inquilino.Suscripciones[0].estado_suscripcion,
+        fecha_inicio: inquilino.Suscripciones[0].fecha_inicio,
+        fecha_renovacion: inquilino.Suscripciones[0].fecha_renovacion,
+        plan: inquilino.Suscripciones[0].Planes
       } : null
     };
 
@@ -173,17 +173,17 @@ export const updateInquilino = async (req: Request, res: Response) => {
     const result = await prisma.inquilino.findUnique({
       where: { id_inquilino: id },
       include: {
-        suscripciones: {
+        Suscripciones: {
           take: 1,
           orderBy: { fecha_inicio: 'desc' },
-          include: { planes: true }
+          include: { Planes: true }
         }
       }
     });
 
     res.json({
       ...result,
-      suscripcion: result?.suscripciones[0] || null
+      suscripcion: result?.Suscripciones[0] || null
     });
   } catch (error: any) {
     console.error('Error al actualizar inquilino:', error);

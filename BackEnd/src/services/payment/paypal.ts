@@ -93,7 +93,7 @@ export async function handlePaypalWebhook(evt: any): Promise<void> {
     }),
     prisma.deuda.update({
       where: { id_deuda: enlace.id_deuda },
-      data : { saldo_pendiente: 0, estado_deuda: 'PAGADA' }
+      data : { saldo_pendiente: 0, estado_deuda: 'pagado' }
     })
   ]);
 }
