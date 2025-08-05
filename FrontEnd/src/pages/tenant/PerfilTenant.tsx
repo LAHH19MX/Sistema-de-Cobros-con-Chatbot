@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faUser, faCamera, faUpload, 
@@ -12,6 +12,23 @@ import {
 } from '../../api/settingsTenant';
 import '../../styles/tenant/PerfilTenant.css';
 
+declare global {
+  interface Window {
+    cloudinary: any;
+  }
+}
+
+interface PerfilData {
+  id_inquilino: string;
+  nombre_inquilino: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  telefono_inquilino: string;
+  direccion_inquilino: string;
+  foto_inquilino: string;
+  email_inquilino: string;
+}
+
 const PerfilTenant = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -23,13 +40,16 @@ const PerfilTenant = () => {
   const [error, setError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState({
-    nombre_inquilino: "",
-    apellido_paterno: "",
-    apellido_materno: "",
-    telefono_inquilino: "",
-    direccion_inquilino: "",
-    foto_inquilino: ""
+  // Estado inicial con todos los campos necesarios
+  const [perfilData, setPerfilData] = useState<PerfilData>({
+    id_inquilino: '',
+    nombre_inquilino: '',
+    apellido_paterno: '',
+    apellido_materno: '',
+    telefono_inquilino: '',
+    direccion_inquilino: '',
+    foto_inquilino: '',
+    email_inquilino: ''
   });
   
   const [passwordData, setPasswordData] = useState({
@@ -37,8 +57,17 @@ const PerfilTenant = () => {
     password_nueva: "",
     confirmar_password: ""
   });
-  
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Cargar script de Cloudinary
+  useEffect(() => {
+    if (!document.getElementById('cloudinary-script')) {
+      const script = document.createElement('script');
+      script.id = 'cloudinary-script';
+      script.src = 'https://widget.cloudinary.com/v2.0/global/all.js';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+  }, []);
 
   // Cargar datos del perfil
   useEffect(() => {
@@ -48,18 +77,20 @@ const PerfilTenant = () => {
         const response = await getPerfil();
         const perfil = response.data;
         
-        setFormData({
+        setPerfilData({
+          id_inquilino: perfil.id_inquilino,
           nombre_inquilino: perfil.nombre_inquilino || "",
           apellido_paterno: perfil.apellido_paterno || "",
           apellido_materno: perfil.apellido_materno || "",
           telefono_inquilino: perfil.telefono_inquilino || "",
           direccion_inquilino: perfil.direccion_inquilino || "",
-          foto_inquilino: perfil.foto_inquilino || ""
+          foto_inquilino: perfil.foto_inquilino || "",
+          email_inquilino: perfil.email_inquilino || ""
         });
         
       } catch (error) {
         setError("Error al cargar el perfil");
-        console.error(error);
+        console.error("Error cargando perfil:", error);
       } finally {
         setLoading(false);
       }
@@ -70,8 +101,8 @@ const PerfilTenant = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setPerfilData({
+      ...perfilData,
       [name]: value
     });
   };
@@ -84,51 +115,118 @@ const PerfilTenant = () => {
     });
   };
   
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      
-      reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          foto_inquilino: reader.result as string
-        });
-      };
-      
-      reader.readAsDataURL(file);
+  // Función para subir imagen a Cloudinary
+  const openCloudinaryWidget = () => {
+    if (window.cloudinary) {
+      const cloudinaryWidget = window.cloudinary.createUploadWidget(
+        {
+          cloudName: 'dca3qcakg', 
+          uploadPreset: 'ml_default',
+          sources: ['local', 'url', 'camera'],
+          multiple: false,
+          cropping: true,
+          showAdvancedOptions: true,
+          styles: {
+            palette: {
+              window: "#FFFFFF",
+              sourceBg: "#F4F4F5",
+              windowBorder: "#90a0b3",
+              tabIcon: "#000000",
+              inactiveTabIcon: "#555a5f",
+              menuIcons: "#555a5f",
+              link: "#000000",
+              action: "#000000",
+              inProgress: "#000000",
+              complete: "#000000",
+              error: "#ff0000",
+              textDark: "#000000",
+              textLight: "#fcfffd"
+            }
+          }
+        },
+        (error: any, result: any) => {
+          if (error) {
+            console.error("Error en Cloudinary:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al subir imagen',
+              text: error.message || "Intenta de nuevo más tarde",
+              confirmButtonColor: '#3085d6',
+            });
+          }
+          else if (result && result.event === 'success') {
+            const imageUrl = result.info.secure_url;
+            setPerfilData({
+              ...perfilData,
+              foto_inquilino: imageUrl
+            });
+            
+            Swal.fire({
+              icon: 'success',
+              title: '¡Imagen subida!',
+              text: 'La foto de perfil se ha actualizado',
+              confirmButtonColor: '#3085d6',
+            });
+          }
+        }
+      );
+
+      cloudinaryWidget.open();
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo cargar el servicio de imágenes',
+        confirmButtonColor: '#3085d6',
+      });
     }
   };
-  
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
-  
+
+  // Guardar datos en la base de datos
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
     
     try {
-      // Enviar solo campos actualizables
-      const { foto_inquilino, ...datosActualizables } = formData;
+      // Verificar que tenemos el ID
+      if (!perfilData.id_inquilino) {
+        throw new Error("No se encontró ID de inquilino");
+      }
+      
+      // Preparar datos para enviar
       const payload = {
-        ...datosActualizables,
-        ...(foto_inquilino && { foto_inquilino })
+        id_inquilino: perfilData.id_inquilino,
+        nombre_inquilino: perfilData.nombre_inquilino,
+        apellido_paterno: perfilData.apellido_paterno,
+        apellido_materno: perfilData.apellido_materno,
+        telefono_inquilino: perfilData.telefono_inquilino,
+        direccion_inquilino: perfilData.direccion_inquilino,
+        foto_inquilino: perfilData.foto_inquilino,
+        email_inquilino: perfilData.email_inquilino
       };
       
-      await updatePerfil(payload);
+      console.log("Enviando a backend:", payload);
       
-      // Mostrar SweetAlert de éxito
+      // Llamar a la API
+      const response = await updatePerfil(payload);
+      
       Swal.fire({
         icon: 'success',
         title: '¡Perfil actualizado!',
         text: 'Tu perfil se ha actualizado exitosamente',
         confirmButtonColor: '#3085d6',
       });
-    } catch (error) {
-      setError("Error al actualizar el perfil");
-      console.error(error);
+      
+      // Actualizar datos locales
+      setPerfilData({
+        ...perfilData,
+        ...response.data.perfil
+      });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || "Error al actualizar";
+      setError(errorMessage);
+      console.error("Error actualizando perfil:", error);
     } finally {
       setSaving(false);
     }
@@ -140,19 +238,22 @@ const PerfilTenant = () => {
     setPasswordError(null);
     
     try {
-      // Validar que las contraseñas coincidan
       if (passwordData.password_nueva !== passwordData.confirmar_password) {
         throw new Error("Las contraseñas no coinciden");
       }
       
-      await changePassword(passwordData);
+      await changePassword({
+        password_actual: passwordData.password_actual,
+        password_nueva: passwordData.password_nueva,
+        confirmar_password: passwordData.confirmar_password
+      });
+      
       setPasswordData({
         password_actual: "",
         password_nueva: "",
         confirmar_password: ""
       });
       
-      // Mostrar SweetAlert de éxito
       Swal.fire({
         icon: 'success',
         title: '¡Contraseña actualizada!',
@@ -162,7 +263,8 @@ const PerfilTenant = () => {
       
       setShowPasswordModal(false);
     } catch (error: any) {
-      setPasswordError(error.message || "Error al cambiar la contraseña");
+      const errorMessage = error.response?.data?.message || error.message || "Error al cambiar contraseña";
+      setPasswordError(errorMessage);
     } finally {
       setChangingPassword(false);
     }
@@ -180,7 +282,6 @@ const PerfilTenant = () => {
 
   return (
     <div className="client-perfil">
-      {/* Header de página */}
       <div className="client-perfil__page-header">
         <h1 className="client-perfil__page-title">
           <FontAwesomeIcon icon={faUser} className="client-perfil__title-icon" />
@@ -193,46 +294,34 @@ const PerfilTenant = () => {
       
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {/* Contenido principal */}
       <div className="client-perfil__main-section">
         <div className="client-perfil__profile-grid">
-          {/* Sección de foto */}
           <div className="client-perfil__photo-section">
             <div className="client-perfil__profile-photo-container">
               <img 
-                src={formData.foto_inquilino || "https://randomuser.me/api/portraits/men/45.jpg"} 
+                src={perfilData.foto_inquilino || "https://marketplace.canva.com/N2Y1c/MAEbiyN2Y1c/1/tl/canva-user-profile-avatar-MAEbiyN2Y1c.png"} 
                 alt="Foto de perfil" 
                 className="client-perfil__profile-photo" 
               />
               <label 
-                htmlFor="photoInput" 
                 className="client-perfil__photo-overlay"
-                onClick={triggerFileInput}
+                onClick={openCloudinaryWidget}
               >
                 <FontAwesomeIcon icon={faCamera} />
               </label>
-              <input 
-                type="file" 
-                id="photoInput" 
-                ref={fileInputRef}
-                className="client-perfil__upload-input" 
-                accept="image/*"
-                onChange={handleImageChange}
-              />
             </div>
             <button 
               className="client-perfil__btn-upload"
-              onClick={triggerFileInput}
+              onClick={openCloudinaryWidget}
             >
               <FontAwesomeIcon icon={faUpload} className="client-perfil__btn-icon" />
               Cambiar Foto
             </button>
             <p className="client-perfil__upload-info">
-              JPG, PNG o GIF. Tamaño máximo 2MB
+              Haz clic para subir una nueva foto de perfil
             </p>
           </div>
 
-          {/* Sección de información */}
           <div className="client-perfil__info-section">
             <h3 className="client-perfil__section-title">Información Personal</h3>
             
@@ -244,7 +333,7 @@ const PerfilTenant = () => {
                     type="text" 
                     className="client-perfil__form-control" 
                     name="nombre_inquilino"
-                    value={formData.nombre_inquilino}
+                    value={perfilData.nombre_inquilino}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -255,7 +344,7 @@ const PerfilTenant = () => {
                     type="text" 
                     className="client-perfil__form-control" 
                     name="apellido_paterno"
-                    value={formData.apellido_paterno}
+                    value={perfilData.apellido_paterno}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -266,7 +355,7 @@ const PerfilTenant = () => {
                     type="text" 
                     className="client-perfil__form-control" 
                     name="apellido_materno"
-                    value={formData.apellido_materno}
+                    value={perfilData.apellido_materno}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -277,7 +366,7 @@ const PerfilTenant = () => {
                     type="tel" 
                     className="client-perfil__form-control" 
                     name="telefono_inquilino"
-                    value={formData.telefono_inquilino}
+                    value={perfilData.telefono_inquilino}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -288,13 +377,23 @@ const PerfilTenant = () => {
                     type="text" 
                     className="client-perfil__form-control" 
                     name="direccion_inquilino"
-                    value={formData.direccion_inquilino}
+                    value={perfilData.direccion_inquilino}
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <div className="client-perfil__form-group client-perfil__form-group--full">
+                  <label className="client-perfil__form-label">Correo Electrónico</label>
+                  <input 
+                    type="email" 
+                    className="client-perfil__form-control" 
+                    name="email_inquilino"
+                    value={perfilData.email_inquilino}
                     onChange={handleInputChange}
                   />
                 </div>
               </div>
 
-              {/* Sección de contraseña */}
               <div className="client-perfil__password-section">
                 <h4 className="client-perfil__section-subtitle">Seguridad</h4>
                 <button 
@@ -307,11 +406,7 @@ const PerfilTenant = () => {
                 </button>
               </div>
 
-              {/* Botones de acción */}
               <div className="client-perfil__form-actions">
-                <button type="button" className="client-perfil__btn client-perfil__btn--secondary">
-                  Cancelar
-                </button>
                 <button 
                   type="submit" 
                   className="client-perfil__btn client-perfil__btn--primary"
@@ -335,7 +430,6 @@ const PerfilTenant = () => {
         </div>
       </div>
 
-      {/* Modal de cambio de contraseña */}
       {showPasswordModal && (
         <div className="client-perfil__modal-overlay">
           <div className="client-perfil__modal">
@@ -386,7 +480,7 @@ const PerfilTenant = () => {
                       value={passwordData.password_nueva}
                       onChange={handlePasswordChange}
                       required
-                      minLength={6}
+                      minLength={8}
                     />
                     <button 
                       type="button" 

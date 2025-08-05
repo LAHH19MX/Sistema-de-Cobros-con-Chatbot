@@ -84,17 +84,6 @@ const SideBarTenant: React.FC<SideBarTenantProps> = ({ isOpen, closeSidebar }) =
                   <i className="fas fa-chart-line"></i> Ingresos
                 </Link>
               </li>
-              <li className="tenant-sidebar__item nav-item">
-                <Link
-                  to="/tenant/api-docs"
-                  onClick={handleLinkClick}
-                  className={`tenant-sidebar__link nav-link ${
-                    location.pathname === '/tenant/api-docs' ? 'tenant-sidebar__link--active' : ''
-                  }`}
-                >
-                  <i className="fas fa-file-code"></i> Documentación&nbsp;API
-                </Link>
-              </li>
             </>
           )}
 
@@ -110,7 +99,7 @@ const SideBarTenant: React.FC<SideBarTenantProps> = ({ isOpen, closeSidebar }) =
             </Link>
           </li>
 
-          {user?.hasSubscription && (
+          {/* {user?.hasSubscription && (
             <li className="tenant-sidebar__item nav-item">
               <Link
                 to="/tenant/suscripcion"
@@ -122,7 +111,7 @@ const SideBarTenant: React.FC<SideBarTenantProps> = ({ isOpen, closeSidebar }) =
                 <i className="fas fa-credit-card"></i> Mi&nbsp;Suscripción
               </Link>
             </li>
-          )}
+          )} */}
         </ul>
       </nav>
     </div>

@@ -392,3 +392,21 @@
     padding: 1rem;
   }
 }
+
+.client-perfil__photo-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+}
+
+.client-perfil__photo-loading p {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #6c757d;
+}

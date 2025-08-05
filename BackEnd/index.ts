@@ -12,6 +12,7 @@ import webhookPayment from './src/routes/webhookStripe.routes'
 import webhookPaypal from './src/routes/webhookPayPal.routes';
 
 import authRouter from './src/modules/auth/routes/auth.routes'
+import recuperacionRouter from './src/modules/auth/routes/recuperacion.routes'
 import companyRouter from './src/modules/site/routes/company.routes'
 import themesRouter from './src/modules/site/routes/dataThemes.routes'
 import contentRouter from './src/modules/site/routes/dataContent.routes'
@@ -62,6 +63,7 @@ app.get('/paypal/cancel', (req, res) => {
 });
 
 app.use('/api', authRouter);
+app.use('/api', recuperacionRouter);
 app.use('/api', companyRouter);
 app.use('/api', contentRouter);
 app.use('/api', themesRouter);

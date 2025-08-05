@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { initializeSocket, disconnectSocket } from '../../config/socket'; // NUEVO
+import { initializeSocket, disconnectSocket } from '../../config/socket';
+import { getPerfil } from '../../api/settingsTenant'; 
 
 import SideBarTenant from '../layout/SideBarTenant';
 import HeaderTenant   from '../layout/HeaderTenant';
@@ -12,18 +13,29 @@ import '../../styles/tenant/TenantLayout.css';
 const TenantLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate        = useNavigate();
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userPhoto, setUserPhoto] = useState<string | undefined>(undefined); // Nuevo estado para la foto
 
   useEffect(() => {
-    console.log('Inquilino autenticado - Conectando Socket.io...')
-    initializeSocket()
+    // Obtener foto del usuario
+    const fetchUserPhoto = async () => {
+      try {
+        const response = await getPerfil();
+        if (response.data.foto_inquilino) {
+          setUserPhoto(response.data.foto_inquilino);
+        }
+      } catch (error) {
+        console.error('Error obteniendo foto de perfil:', error);
+      }
+    };
+    
+    fetchUserPhoto();
+    
+    initializeSocket();
     
     return () => {
-      console.log('Desconectando Socket.io...')
-      disconnectSocket()
+      disconnectSocket();
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 992px)');
@@ -39,6 +51,8 @@ const TenantLayout: React.FC = () => {
         : mq.removeListener(handler);
   }, []);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const toggleSidebar = () => setIsSidebarOpen((p) => !p);
   const handleLogout  = () => {
     logout();
@@ -52,15 +66,14 @@ const TenantLayout: React.FC = () => {
         closeSidebar={() => setIsSidebarOpen(false)}
       />
 
-      {/* contenedor vertical flex */}
       <div className="tenant-main">
         <HeaderTenant
           toggleSidebar={toggleSidebar}
           userName={user?.nombre ?? ''}
+          userPhoto={userPhoto} // Pasar la foto como prop
           onLogout={handleLogout}
         />
 
-        {/* wrapper que empuja el footer */}
         <div className="tenant-content">
           <Outlet />
         </div>

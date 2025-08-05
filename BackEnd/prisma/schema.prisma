@@ -23,36 +23,21 @@ model Admin {
   @@map("admin")
 }
 
-model Blog {
-  id_blog           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  titulo_blog       String
-  contenido_blog    String
-  categoria_blog    String?
-  url_blog          String   @unique
-  material_visual   String?
-  fecha_publicacion DateTime @default(dbgenerated("CURRENT_DATE")) @db.Date
-  estado_blog       String
-
-  @@map("blog")
-}
-
 model Cliente {
-  id_cliente         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nombre_cliente     String
-  apellido_paterno   String
-  apellido_materno   String
-  fecha_registro     DateTime             @default(now()) @db.Timestamptz(6)
-  estado_cliente     String
-  email_cliente      String               @unique
-  telefono_cliente   String?
-  token_cliente      String?
-  direccion_cliente  String?
-  id_inquilino       String               @db.Uuid
-  Inquilino          Inquilino            @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction, map: "fk_clientes_inquilino")
-  Deuda              Deuda[]
-  RecordatorioEmail  RecordatorioEmail[]
-  HistorialPago      HistorialPago[]
-  InteraccionChatbot InteraccionChatbot[]
+  id_cliente        String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre_cliente    String
+  apellido_paterno  String
+  apellido_materno  String?
+  fecha_registro    DateTime            @default(now()) @db.Timestamptz(6)
+  estado_cliente    String
+  email_cliente     String              @unique
+  telefono_cliente  String?
+  direccion_cliente String?
+  id_inquilino      String              @db.Uuid
+  Inquilino         Inquilino           @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction, map: "fk_clientes_inquilino")
+  Deuda             Deuda[]
+  RecordatorioEmail RecordatorioEmail[]
+  HistorialPago     HistorialPago[]
 
   @@map("clientes")
 }
@@ -120,6 +105,7 @@ model HistorialPago {
   intentos_fallidos Int      @default(0)
   id_cliente        String   @db.Uuid
   id_deuda          String   @db.Uuid
+  metodo_pago       String?  @db.VarChar(20)
   Cliente           Cliente  @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_historial_cliente")
   Deuda             Deuda    @relation(fields: [id_deuda], references: [id_deuda], onDelete: NoAction, onUpdate: NoAction, map: "fk_historial_deuda")
 
@@ -145,17 +131,6 @@ model Inquilino {
   Suscripciones       Suscripciones[]
 
   @@map("inquilinos")
-}
-
-model InteraccionChatbot {
-  id_interaccion    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  mensaje_enviado   String?
-  mensaje_recibido  String?
-  fecha_interaccion DateTime @default(now()) @db.Timestamptz(6)
-  id_cliente        String   @db.Uuid
-  Cliente           Cliente  @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_interaccion_cliente")
-
-  @@map("interaccion_chatbot")
 }
 
 model RedSocial {
@@ -307,13 +282,6 @@ model Planes {
   @@map("planes")
 }
 
-model recovery_password {
-  id                  Int       @id @default(autoincrement())
-  correo              String?
-  codigo_verificacion String?
-  fecha               DateTime? @db.Date
-}
-
 model Recursos {
   id_recurso          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   id_suscripcion      String        @db.Uuid
@@ -350,8 +318,22 @@ model Suscripciones {
   @@index([id_inquilino], map: "idx_suscripciones_inquilino")
   @@index([id_cliente_externo], map: "idx_suscripciones_paypal")
   @@index([id_suscripcion_externa], map: "idx_suscripciones_stripe")
-
   @@map("suscripciones")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model codigo_recuperacion {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  codigo           String    @db.VarChar(6)
+  email            String    @db.VarChar(255)
+  tipo_usuario     String    @db.VarChar(20)
+  fecha_expiracion DateTime  @db.Timestamp(6)
+  usado            Boolean?  @default(false)
+  intentos         Int?      @default(0)
+  createdAt        DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([codigo], map: "idx_codigo_recuperacion_codigo")
+  @@index([email], map: "idx_codigo_recuperacion_email")
 }
 
 enum estado_cred_t {

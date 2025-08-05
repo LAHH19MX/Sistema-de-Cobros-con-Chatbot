@@ -4,16 +4,17 @@ import '../../styles/tenant/HeaderTenant.css';
 export interface HeaderTenantProps {
   toggleSidebar: () => void;
   userName: string;
+  userPhoto?: string; 
   onLogout: () => void;
 }
 
 const HeaderTenant: React.FC<HeaderTenantProps> = ({
   toggleSidebar,
   userName,
+  userPhoto, 
   onLogout,
 }) => (
   <header className="tenant-header">
-    {/* Botón hamburguesa */}
     <div className="tenant-header__left">
       <button
         className="tenant-header__toggle d-md-none"
@@ -23,7 +24,6 @@ const HeaderTenant: React.FC<HeaderTenantProps> = ({
       </button>
     </div>
 
-    {/* Menú de usuario */}
     <div className="dropdown tenant-header__user">
       <a
         className="dropdown-toggle tenant-header__user-toggle"
@@ -34,7 +34,7 @@ const HeaderTenant: React.FC<HeaderTenantProps> = ({
         aria-expanded="false"
       >
         <img
-          src="https://randomuser.me/api/portraits/men/45.jpg"
+          src={userPhoto || "https://marketplace.canva.com/N2Y1c/MAEbiyN2Y1c/1/tl/canva-user-profile-avatar-MAEbiyN2Y1c.png"} 
           alt="Usuario"
           className="tenant-header__avatar"
         />
