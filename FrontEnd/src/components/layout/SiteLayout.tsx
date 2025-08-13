@@ -16,7 +16,6 @@ const SiteLayout: React.FC = () => {
   
   useEffect(() => {
     const loadInitialData = async () => {
-      // Cargar todos los datos necesarios
       await loadApartados();
       await loadEmpresa('7c4fe9f1-b602-46c5-8ac3-2021cfe7245d'); // Tu ID de empresa
       await loadRedes();

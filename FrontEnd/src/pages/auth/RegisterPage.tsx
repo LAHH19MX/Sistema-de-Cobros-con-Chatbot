@@ -18,13 +18,15 @@ const RegisterPage: React.FC = () => {
     password: '',
     telefono: '',
     direccion: '',
-    foto: '',
+    foto:'', 
   });
   
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -81,8 +83,12 @@ const RegisterPage: React.FC = () => {
     setFieldErrors({});
 
     try {
+      // Crear copia del formData sin la propiedad foto
+      const { foto, ...dataWithoutFoto } = formData;
+      const dataToSend = foto ? formData : dataWithoutFoto;
+      
       // Registrar usuario
-      await registerRequest(formData);
+      await registerRequest(dataToSend);
       
       // Auto-login después del registro
       await signin({
@@ -258,7 +264,7 @@ const RegisterPage: React.FC = () => {
                       <input
                         id="password"
                         name="password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         required
                         value={formData.password}
                         onChange={handleChange}
@@ -266,12 +272,20 @@ const RegisterPage: React.FC = () => {
                         placeholder="Mínimo 8 caracteres"
                         disabled={loading}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="password-toggle"
+                        disabled={loading}
+                      >
+                        <i className={`fas fa-eye${showPassword ? '-slash' : ''}`}></i>
+                      </button>
                     </div>
                     {fieldErrors.password && <div className="field-error">{fieldErrors.password}</div>}
                   </div>
                 </div>
 
-                {/* Fila 5: Confirmar Contraseña y Foto */}
+                {/* Fila 5: Confirmar Contraseña */}
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="confirmPassword" className="form-label">
@@ -282,7 +296,7 @@ const RegisterPage: React.FC = () => {
                       <input
                         id="confirmPassword"
                         name="confirmPassword"
-                        type="password"
+                        type={showConfirmPassword ? 'text' : 'password'}
                         required
                         value={confirmPassword}
                         onChange={handleConfirmPasswordChange}
@@ -290,27 +304,16 @@ const RegisterPage: React.FC = () => {
                         placeholder="Confirma tu contraseña"
                         disabled={loading}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="password-toggle"
+                        disabled={loading}
+                      >
+                        <i className={`fas fa-eye${showConfirmPassword ? '-slash' : ''}`}></i>
+                      </button>
                     </div>
                     {fieldErrors.confirmPassword && <div className="field-error">{fieldErrors.confirmPassword}</div>}
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="foto" className="form-label">
-                      Foto <span className="optional-text">(opcional)</span>
-                    </label>
-                    <div className="input-wrapper">
-                      <i className="fas fa-camera input-icon"></i>
-                      <input
-                        id="foto"
-                        name="foto"
-                        type="text"
-                        value={formData.foto}
-                        onChange={handleChange}
-                        className="form-input"
-                        placeholder="URL de tu foto"
-                        disabled={loading}
-                      />
-                    </div>
                   </div>
                 </div>
 

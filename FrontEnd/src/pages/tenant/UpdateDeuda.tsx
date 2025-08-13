@@ -4,7 +4,6 @@ import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileInvoiceDollar, faSave } from '@fortawesome/free-solid-svg-icons';
 import { getDeudaById, updateDeuda } from '../../api/deudasTenant';
-import { validateDeudaForm, formatCurrency } from '../../utils/deudaValidation';
 import type { Deuda } from '../../api/deudasTenant';
 import type { DeudaValidationErrors } from '../../utils/deudaValidation';
 import '../../styles/tenant/UpdateClient.css';
@@ -33,6 +32,28 @@ const UpdateDeuda: React.FC = () => {
   const [errors, setErrors] = useState<DeudaValidationErrors>({});
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
 
+  // Función para agregar 24 horas a una fecha y convertirla a UTC (para la API)
+  const add24HoursToDateForAPI = (dateString: string): string => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return new Date(date.getTime() + 24 * 60 * 60 * 1000).toISOString();
+  };
+
+  // Función para agregar 24 horas a una fecha y mantenerla en formato local (para visualización)
+  const add24HoursToDateForDisplay = (dateString: string): Date => {
+    if (!dateString) return new Date();
+    const date = new Date(dateString);
+    return new Date(date.getTime() + 24 * 60 * 60 * 1000);
+  };
+
+  // Función para convertir fecha UTC a string en formato local (YYYY-MM-DD)
+  const toLocalDateString = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // Cargar datos de la deuda
   useEffect(() => {
     const cargarDeuda = async () => {
@@ -51,7 +72,8 @@ const UpdateDeuda: React.FC = () => {
           monto_original: deuda.monto_original.toString(),
           saldo_pendiente: deuda.saldo_pendiente.toString(),
           descripcion: deuda.descripcion,
-          fecha_vencimiento: deuda.fecha_vencimiento.split('T')[0],
+          // Convertir fecha UTC a fecha local YYYY-MM-DD
+          fecha_vencimiento: toLocalDateString(new Date(deuda.fecha_vencimiento)),
           estado_deuda: deuda.estado_deuda
         });
       } catch (error) {
@@ -73,51 +95,67 @@ const UpdateDeuda: React.FC = () => {
 
   // Validar cambios en los campos editables
   useEffect(() => {
-    if (Object.keys(touched).length > 0) {
-      const validationErrors: DeudaValidationErrors = {};
-      
-      // Validar monto original
-      const montoOriginal = parseFloat(formData.monto_original);
-      if (!formData.monto_original || isNaN(montoOriginal)) {
-        validationErrors.monto_original = 'El monto es requerido';
-      } else if (montoOriginal <= 0) {
-        validationErrors.monto_original = 'El monto debe ser mayor a 0';
-      }
-
-      // Validar saldo pendiente
-      const saldoPendiente = parseFloat(formData.saldo_pendiente);
-      if (!formData.saldo_pendiente || isNaN(saldoPendiente)) {
-        validationErrors.saldo_pendiente = 'El saldo es requerido';
-      } else if (saldoPendiente < 0) {
-        validationErrors.saldo_pendiente = 'El saldo no puede ser negativo';
-      } else if (saldoPendiente > montoOriginal) {
-        validationErrors.saldo_pendiente = 'El saldo no puede ser mayor al monto original';
-      }
-
-      // Validar descripción
-      if (!formData.descripcion.trim()) {
-        validationErrors.descripcion = 'La descripción es requerida';
-      }
-
-      // Validar fecha de vencimiento
-      if (!formData.fecha_vencimiento) {
-        validationErrors.fecha_vencimiento = 'La fecha de vencimiento es requerida';
-      }
-
-      setErrors(validationErrors);
+    const validationErrors: DeudaValidationErrors = {};
+    
+    // Validar monto original
+    const montoOriginal = Number(formData.monto_original);
+    if (!formData.monto_original || isNaN(montoOriginal)) {
+      validationErrors.monto_original = 'El monto es requerido';
+    } else if (montoOriginal <= 0) {
+      validationErrors.monto_original = 'El monto debe ser mayor a 0';
     }
-  }, [formData, touched]);
+
+    // Validar saldo pendiente
+    const saldoPendiente = Number(formData.saldo_pendiente);
+    if (!formData.saldo_pendiente || isNaN(saldoPendiente)) {
+      validationErrors.saldo_pendiente = 'El saldo es requerido';
+    } else if (saldoPendiente < 0) {
+      validationErrors.saldo_pendiente = 'El saldo no puede ser negativo';
+    } else if (saldoPendiente > montoOriginal) {
+      validationErrors.saldo_pendiente = 'El saldo no puede ser mayor al monto original';
+    }
+
+    // Validar descripción
+    if (!formData.descripcion.trim()) {
+      validationErrors.descripcion = 'La descripción es requerida';
+    }
+
+    // Validar fecha de vencimiento
+    if (!formData.fecha_vencimiento) {
+      validationErrors.fecha_vencimiento = 'La fecha de vencimiento es requerida';
+    }
+
+    // Validar estado pagado con saldo 0
+    if (formData.estado_deuda === 'pagado' && saldoPendiente !== 0) {
+      validationErrors.estado_deuda = 'El saldo debe ser 0 para estado "Pagado"';
+    }
+
+    setErrors(validationErrors);
+  }, [formData]);
 
   // Manejar cambios en inputs
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
     if (name === 'monto_original' || name === 'saldo_pendiente') {
-      const formattedValue = formatCurrency(value);
+      // Permitir solo números y punto decimal
+      const numericValue = value.replace(/[^0-9.]/g, '');
       setFormData(prev => ({
         ...prev,
-        [name]: formattedValue
+        [name]: numericValue
       }));
+    } else if (name === 'estado_deuda') {
+      // Si cambiamos el estado a pagado, automáticamente ponemos el saldo pendiente a 0
+      setFormData(prev => {
+        const newData = {
+          ...prev,
+          [name]: value
+        };
+        if (value === 'pagado') {
+          newData.saldo_pendiente = '0';
+        }
+        return newData;
+      });
     } else {
       setFormData(prev => ({
         ...prev,
@@ -135,15 +173,18 @@ const UpdateDeuda: React.FC = () => {
     }));
   };
 
-  // Verificar si hubo cambios
+  // Verificar si hubo cambios REALES
   const hasChanges = (): boolean => {
     if (!deudaOriginal) return false;
     
+    // Obtener fecha original en formato YYYY-MM-DD (local)
+    const fechaOriginalLocal = toLocalDateString(new Date(deudaOriginal.fecha_vencimiento));
+    
     return (
-      parseFloat(formData.monto_original) !== parseFloat(deudaOriginal.monto_original.toString()) ||
-      parseFloat(formData.saldo_pendiente) !== parseFloat(deudaOriginal.saldo_pendiente.toString()) ||
+      Number(formData.monto_original) !== deudaOriginal.monto_original ||
+      Number(formData.saldo_pendiente) !== deudaOriginal.saldo_pendiente ||
       formData.descripcion !== deudaOriginal.descripcion ||
-      formData.fecha_vencimiento !== deudaOriginal.fecha_vencimiento.split('T')[0] ||
+      formData.fecha_vencimiento !== fechaOriginalLocal ||
       formData.estado_deuda !== deudaOriginal.estado_deuda
     );
   };
@@ -158,9 +199,14 @@ const UpdateDeuda: React.FC = () => {
     }).format(numero);
   };
 
-  // Formatear fecha
-  const formatFecha = (fecha: string) => {
-    return new Date(fecha).toLocaleDateString('es-MX');
+  // Formatear fecha en formato dd/MM/yyyy (sin hora, como fecha local)
+  const formatFecha = (fecha: string | Date) => {
+    const date = typeof fecha === 'string' ? new Date(fecha) : fecha;
+    return date.toLocaleDateString('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
 
   // Obtener texto del estado
@@ -177,7 +223,7 @@ const UpdateDeuda: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Verificar si hay cambios
+    // Verificar si hay cambios REALES
     if (!hasChanges()) {
       Swal.fire({
         icon: 'info',
@@ -206,20 +252,23 @@ const UpdateDeuda: React.FC = () => {
       return;
     }
 
-    // Confirmar actualización
+    // Obtener fecha original en formato YYYY-MM-DD (local) para comparar
+    const fechaOriginalLocal = deudaOriginal ? toLocalDateString(new Date(deudaOriginal.fecha_vencimiento)) : '';
+    
     const result = await Swal.fire({
       title: '¿Confirmar actualización?',
       html: `
         <div style="text-align: left;">
           <h5>Cambios a realizar:</h5>
-          ${parseFloat(formData.monto_original) !== parseFloat(deudaOriginal!.monto_original.toString()) ? 
+          ${Number(formData.monto_original) !== deudaOriginal!.monto_original ? 
             `<p><strong>Monto:</strong> ${formatMoneda(deudaOriginal!.monto_original)} → ${formatMoneda(formData.monto_original)}</p>` : ''}
-          ${parseFloat(formData.saldo_pendiente) !== parseFloat(deudaOriginal!.saldo_pendiente.toString()) ? 
+          ${Number(formData.saldo_pendiente) !== deudaOriginal!.saldo_pendiente ? 
             `<p><strong>Saldo:</strong> ${formatMoneda(deudaOriginal!.saldo_pendiente)} → ${formatMoneda(formData.saldo_pendiente)}</p>` : ''}
           ${formData.estado_deuda !== deudaOriginal!.estado_deuda ? 
             `<p><strong>Estado:</strong> ${getEstadoText(deudaOriginal!.estado_deuda)} → ${getEstadoText(formData.estado_deuda)}</p>` : ''}
-          ${formData.fecha_vencimiento !== deudaOriginal!.fecha_vencimiento.split('T')[0] ? 
-            `<p><strong>Vencimiento:</strong> ${formatFecha(deudaOriginal!.fecha_vencimiento)} → ${formatFecha(formData.fecha_vencimiento)}</p>` : ''}
+          ${formData.fecha_vencimiento !== fechaOriginalLocal ? 
+            // MOSTRAR FECHA CON 24 HORAS AGREGADAS
+            `<p><strong>Vencimiento:</strong> ${formatFecha(deudaOriginal!.fecha_vencimiento)} → ${formatFecha(add24HoursToDateForDisplay(formData.fecha_vencimiento))}</p>` : ''}
         </div>
       `,
       icon: 'question',
@@ -238,17 +287,18 @@ const UpdateDeuda: React.FC = () => {
       // Preparar solo los campos que cambiaron
       const dataToSend: any = {};
       
-      if (parseFloat(formData.monto_original) !== parseFloat(deudaOriginal!.monto_original.toString())) {
-        dataToSend.monto_original = parseFloat(formData.monto_original);
+      if (Number(formData.monto_original) !== deudaOriginal!.monto_original) {
+        dataToSend.monto_original = Number(formData.monto_original);
       }
-      if (parseFloat(formData.saldo_pendiente) !== parseFloat(deudaOriginal!.saldo_pendiente.toString())) {
-        dataToSend.saldo_pendiente = parseFloat(formData.saldo_pendiente);
+      if (Number(formData.saldo_pendiente) !== deudaOriginal!.saldo_pendiente) {
+        dataToSend.saldo_pendiente = Number(formData.saldo_pendiente);
       }
       if (formData.descripcion !== deudaOriginal!.descripcion) {
         dataToSend.descripcion = formData.descripcion;
       }
-      if (formData.fecha_vencimiento !== deudaOriginal!.fecha_vencimiento.split('T')[0]) {
-        dataToSend.fecha_vencimiento = formData.fecha_vencimiento;
+      if (formData.fecha_vencimiento !== fechaOriginalLocal) {
+        // Aplicar corrección: agregar 24 horas a la fecha seleccionada (para API)
+        dataToSend.fecha_vencimiento = add24HoursToDateForAPI(formData.fecha_vencimiento);
       }
       if (formData.estado_deuda !== deudaOriginal!.estado_deuda) {
         dataToSend.estado_deuda = formData.estado_deuda;
@@ -265,12 +315,17 @@ const UpdateDeuda: React.FC = () => {
 
       navigate('/tenant/deudas');
     } catch (error: any) {
-      console.error('Error:', error);
+      console.error('Error detallado:', error.response?.data || error);
+      
+      let errorMessage = 'No se pudo actualizar la deuda';
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      }
       
       Swal.fire({
         icon: 'error',
         title: 'Error al actualizar',
-        text: error.response?.data?.error || 'No se pudo actualizar la deuda',
+        text: errorMessage,
         confirmButtonColor: '#d33'
       });
     } finally {
@@ -390,7 +445,7 @@ const UpdateDeuda: React.FC = () => {
                   <div className="invalid-feedback">{errors.saldo_pendiente}</div>
                 )}
                 <small className="form-text text-muted">
-                  Monto pagado: {formatMoneda(parseFloat(formData.monto_original) - parseFloat(formData.saldo_pendiente))}
+                  Monto pagado: {formatMoneda(Number(formData.monto_original) - Number(formData.saldo_pendiente))}
                 </small>
               </div>
               
@@ -415,7 +470,7 @@ const UpdateDeuda: React.FC = () => {
               <div className="client-udp__form-group">
                 <label className="client-udp__form-label">Estado *</label>
                 <select
-                  className="client-udp__form-control"
+                  className={`client-udp__form-control ${touched.estado_deuda && errors.estado_deuda ? 'is-invalid' : ''}`}
                   name="estado_deuda"
                   value={formData.estado_deuda}
                   onChange={handleInputChange}
@@ -426,6 +481,9 @@ const UpdateDeuda: React.FC = () => {
                   <option value="pagado">Pagada</option>
                   <option value="vencido">Vencida</option>
                 </select>
+                {touched.estado_deuda && errors.estado_deuda && (
+                  <div className="invalid-feedback">{errors.estado_deuda}</div>
+                )}
               </div>
               
               {/* Descripción de la Deuda */}

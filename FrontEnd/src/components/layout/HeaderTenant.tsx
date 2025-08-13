@@ -51,6 +51,11 @@ const HeaderTenant: React.FC<HeaderTenantProps> = ({
           </Link>
         </li>
         <li>
+          <Link to="/tenant/suscripcion/gestion" className="dropdown-item">
+            <i className="fas fa-credit-card me-2"></i> Mi Suscripción
+          </Link>
+        </li>
+        <li>
           <Link to="/tenant/configuracion" className="dropdown-item">
             <i className="fas fa-cog me-2"></i> Configuración
           </Link>

@@ -31,6 +31,8 @@ export interface Pasarela {
   pasarela: 'stripe' | 'paypal';
   credenciales_api: string;
   client_secret?: string;
+  webhook_secret?: string;  
+  webhook_id?: string;   
   fecha_registro: string;
   fecha_actualizacion?: string;
   estado: 'ACTIVO' | 'INACTIVO';
@@ -64,6 +66,8 @@ export const upsertPasarela = (data: {
   pasarela: 'stripe' | 'paypal';
   credenciales_api: string;
   client_secret?: string;
+  webhook_secret?: string;    
+  webhook_id?: string;         
 }) => api.post<{ message: string; pasarela: Pasarela }>('/tenant/settings/pasarelas', data);
 
 export const updateEstadoPasarela = (tipo: 'stripe' | 'paypal', data: {

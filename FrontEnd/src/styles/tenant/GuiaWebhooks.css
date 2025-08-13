@@ -1,0 +1,279 @@
+.guia {
+  --color-primary: #141416;
+  --color-secondary: #F07177;
+  --color-light: #f8f9fa;
+  --color-white: #ffffff;
+  --color-border: #e0e0e0;
+  --color-success: #28a745;
+  --color-info: #17a2b8;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545;
+  --color-gray: #6c757d;
+  background-color: #f8f9fa;
+}
+
+/* Header de página */
+.guia__page-header {
+  background-color: var(--color-white);
+  padding: 2rem;
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.guia__page-title {
+  font-size: 1.75rem;
+  margin: 0;
+  color: var(--color-primary);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.guia__title-icon {
+  color: var(--color-secondary);
+}
+
+.guia__page-subtitle {
+  margin: 0.5rem 0 0 0;
+  color: var(--color-gray);
+  font-size: 0.95rem;
+}
+
+/* Tabs */
+.guia__tabs-container {
+  background-color: var(--color-white);
+  padding: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.guia__tabs {
+  display: flex;
+  padding: 0 2rem;
+}
+
+.guia__tab {
+  background: transparent;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-gray);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.guia__tab--active {
+  color: var(--color-secondary);
+  border-bottom: 3px solid var(--color-secondary);
+}
+
+/* Sección principal */
+.guia__main-section {
+  padding: 0;
+}
+
+/* Sección de configuración - sin márgenes ni bordes redondeados */
+.guia__config-section {
+  background-color: var(--color-white);
+  padding: 2rem;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.guia__section-title {
+  font-size: 1.3rem;
+  color: var(--color-primary);
+  margin-bottom: 1.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.guia__section-icon {
+  color: var(--color-secondary);
+  font-size: 1.5rem;
+}
+
+/* Pasos */
+.guia__step {
+  margin-bottom: 2rem;
+}
+
+.guia__step-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.guia__step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: var(--color-secondary);
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.guia__step-list {
+  padding-left: 1.5rem;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.guia__step-list li {
+  margin-bottom: 0.75rem;
+}
+
+.guia__step-list strong {
+  color: var(--color-primary);
+}
+
+/* Grupo para copiar URL */
+.guia__copy-group {
+  display: flex;
+  margin: 1rem 0;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.guia__copy-input {
+  flex-grow: 1;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: #f9f9f9;
+  font-size: 0.9rem;
+}
+
+.guia__copy-btn {
+  background: var(--color-light);
+  border: none;
+  border-left: 1px solid var(--color-border);
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.guia__copy-btn--copied {
+  background: var(--color-success);
+  color: white;
+}
+
+.guia__copy-icon {
+  font-size: 0.9rem;
+}
+
+/* Lista de eventos */
+.guia__event-list {
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+}
+
+.guia__event-list li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.guia__event-list code {
+  background: #f8f9fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #eaeaea;
+  font-family: monospace;
+}
+
+/* Botón de continuar */
+.guia__step-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.guia__btn {
+  padding: 0.75rem 1.75rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.guia__btn--primary {
+  background: linear-gradient(135deg, var(--color-secondary), #e26066);
+  color: white;
+}
+
+.guia__btn--primary:hover {
+  background: linear-gradient(135deg, #e26066, #d85a60);
+  box-shadow: 0 5px 15px rgba(240, 113, 119, 0.3);
+  transform: translateY(-2px);
+}
+
+.guia__btn-icon {
+  margin-left: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .guia__page-header {
+    padding: 1.5rem;
+  }
+  
+  .guia__tabs {
+    padding: 0 1rem;
+    flex-direction: column;
+  }
+  
+  .guia__config-section {
+    padding: 1.5rem;
+  }
+  
+  .guia__tab {
+    width: 100%;
+    justify-content: center;
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+  
+  .guia__tab--active {
+    border-bottom: none;
+    border-left: 3px solid var(--color-secondary);
+  }
+  
+  .guia__copy-group {
+    flex-direction: column;
+  }
+  
+  .guia__copy-btn {
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    justify-content: center;
+  }
+}

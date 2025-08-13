@@ -13,10 +13,9 @@ import '../../styles/tenant/TenantLayout.css';
 const TenantLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate        = useNavigate();
-  const [userPhoto, setUserPhoto] = useState<string | undefined>(undefined); // Nuevo estado para la foto
+  const [userPhoto, setUserPhoto] = useState<string | undefined>(undefined); 
 
   useEffect(() => {
-    // Obtener foto del usuario
     const fetchUserPhoto = async () => {
       try {
         const response = await getPerfil();
@@ -70,7 +69,7 @@ const TenantLayout: React.FC = () => {
         <HeaderTenant
           toggleSidebar={toggleSidebar}
           userName={user?.nombre ?? ''}
-          userPhoto={userPhoto} // Pasar la foto como prop
+          userPhoto={userPhoto}
           onLogout={handleLogout}
         />
 

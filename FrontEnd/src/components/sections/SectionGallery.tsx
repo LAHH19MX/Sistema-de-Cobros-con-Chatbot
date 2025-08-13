@@ -2,7 +2,7 @@ import '../../styles/site/SectionGallery.css';
 
 export interface SectionGalleryProps {
   title: string;
-  images: string[]; // Mantenemos el nombre original de la prop
+  images: string[]; 
 }
 
 // Función para extraer el ID de YouTube de diferentes formatos de URL

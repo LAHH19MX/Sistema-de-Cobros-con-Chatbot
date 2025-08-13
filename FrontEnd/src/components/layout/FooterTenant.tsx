@@ -1,4 +1,3 @@
-// src/components/tenant/footer/FooterTenant.tsx
 import '../../styles/tenant/FooterTenant.css';
 
 const FooterTenant: React.FC = () => (

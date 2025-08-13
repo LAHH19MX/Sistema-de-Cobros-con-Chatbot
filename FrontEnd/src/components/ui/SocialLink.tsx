@@ -8,7 +8,6 @@ interface SocialLinkProps {
 }
 
 const SocialLink: React.FC<SocialLinkProps> = ({ href, icon, className = '' }) => {
-  // Mapeo de nombres a clases de Font Awesome (todo en minúsculas)
   const iconMap: Record<string, string> = {
     'facebook': 'fab fa-facebook-f',
     'twitter': 'fab fa-twitter',
@@ -23,7 +22,7 @@ const SocialLink: React.FC<SocialLinkProps> = ({ href, icon, className = '' }) =
   // Convertir a minúsculas para el mapeo
   const iconClass = iconMap[icon.toLowerCase()] || `fab fa-${icon.toLowerCase()}`;
   
-  console.log(`SocialLink - Icon: ${icon}, IconClass: ${iconClass}`); // Debug
+  console.log(`SocialLink - Icon: ${icon}, IconClass: ${iconClass}`);
 
   return (
     <a 

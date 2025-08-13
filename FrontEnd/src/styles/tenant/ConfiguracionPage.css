@@ -302,3 +302,45 @@
     text-align: center;
   }
 }
+
+.client-config__form-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+/* Campos de mitad de ancho */
+.client-config__form-group--half {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Botón de enlace para configuración */
+.client-config__btn--link {
+  background: transparent;
+  border: none;
+  color: var(--color-secondary);
+  padding: 0;
+  margin-left: 0.3rem;
+  font-size: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.client-config__btn--link:hover {
+  color: #e26066;
+  text-decoration: none;
+}
+
+/* Ajustes responsive */
+@media (max-width: 992px) {
+  .client-config__form-row {
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+  
+  .client-config__form-group--half {
+    width: 100%;
+  }
+}

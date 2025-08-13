@@ -1,67 +1,77 @@
 import React, { useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import {  useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import '../../styles/tenant/ExitoPage.css';
 
 const ExitoPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
-    // Opcional: verificar el estado de la suscripción después de 3 segundos
+    // Redirección usando React Router
     const timer = setTimeout(() => {
-      window.location.href = '/tenant/dashboard';
+      navigate('/tenant/dashboard', { replace: true });
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigate]);
+
+  const handleGoToDashboard = () => {
+    navigate('/tenant/dashboard', { replace: true });
+  };
+
+  const handleGoToSubscription = () => {
+    navigate('/tenant/suscripcion');
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+    <div className="pg-exito">
+      <div className="pg-exito__container">
+        <div className="pg-exito__card">
           {/* Success Icon */}
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-            <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="pg-exito__icon-wrapper">
+            <svg className="pg-exito__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
 
           {/* Content */}
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="pg-exito__title">
             ¡Suscripción Exitosa!
           </h1>
           
-          <p className="text-gray-600 mb-6">
+          <p className="pg-exito__description">
             ¡Bienvenido {user?.nombre}! Tu suscripción ha sido activada correctamente. 
             Ya puedes acceder a todas las funcionalidades de tu plan.
           </p>
 
           {sessionId && (
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="pg-exito__session-id">
               ID de sesión: {sessionId}
             </p>
           )}
 
           {/* Actions */}
-          <div className="space-y-4">
-            <Link
-              to="/tenant/dashboard"
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 font-medium inline-block"
+          <div className="pg-exito__actions">
+            <button
+              onClick={handleGoToDashboard}
+              className="pg-exito__btn pg-exito__btn--primary"
             >
               Ir al Dashboard
-            </Link>
+            </button>
             
-            <Link
-              to="/tenant/suscripcion"
-              className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition duration-200 font-medium inline-block"
+            <button
+              onClick={handleGoToSubscription}
+              className="pg-exito__btn pg-exito__btn--secondary"
             >
               Ver mi Suscripción
-            </Link>
+            </button>
           </div>
 
           {/* Auto redirect message */}
-          <p className="text-xs text-gray-400 mt-6">
+          <p className="pg-exito__redirect-message">
             Serás redirigido automáticamente al dashboard en 5 segundos...
           </p>
         </div>

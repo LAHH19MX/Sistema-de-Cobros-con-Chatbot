@@ -26,7 +26,7 @@ import CancelarPage from './pages/tenant/CancelarPage.tsx'
 import DynamicPage from './pages/site/DymanicPage';
 import LoginPage from './pages/auth/LoginPage.tsx';
 import RegisterPage      from './pages/auth/RegisterPage.tsx';
-// import ResetPasswordPage from './pages/auth/ResetPasswordPage.tsx';
+
 import Error404          from './pages/Error404.tsx';
 import { PlansProvider } from './context/PlansContext.tsx';
 import DashboardTenant from './pages/tenant/DashboardTenant.tsx';
@@ -40,6 +40,11 @@ import AddDeuda from './pages/tenant/AddDeuda.tsx';
 import UpdateDeuda from './pages/tenant/UpdateDeuda.tsx';
 import ConfiguracionPage from './pages/tenant/ConfiguracionPerfil.tsx';
 import PerfilTenant from './pages/tenant/PerfilTenant.tsx';
+import SolicitarRecuperacion from './pages/auth/SolicitarRecuperacion.tsx';
+import ValidarCodigo from './pages/auth/ValidarCodigo.tsx';
+import RestablecerPassword from './pages/auth/RestablecerPassword.tsx';
+import GuiaWebhooks from './pages/tenant/GuiaWebhooks.tsx';
+import SubscriptionPage from './pages/tenant/SubscriptionPage.tsx';
 
 export default function App() {
   return (
@@ -73,7 +78,9 @@ export default function App() {
                     {/* 2. Login / Registro / Restablecer */}
                     <Route path="/login"      element={<LoginPage />} />
                     <Route path="/register"   element={<RegisterPage />} />
-                    {/* <Route path="/restablecer" element={<ResetPasswordPage />} /> */}
+                    <Route path="/solicitarRecuperacion" element={<SolicitarRecuperacion />} />
+                    <Route path="/validar-codigo" element={<ValidarCodigo />} />
+                    <Route path="/restablecer-password" element={<RestablecerPassword />} />
 
                     {/* 3. Panel de Admin */}
                     <Route element={<ProtectedRoute allowed={['admin']} />}>
@@ -100,6 +107,7 @@ export default function App() {
                         <Route element={<ProtectedRoute allowed={['inquilino']} requiresSubscription={true} />}>
                           <Route path="perfil" element={<PerfilTenant />} />
                           <Route path="configuracion" element={<ConfiguracionPage />} />
+                          <Route path="guia-webhooks/:inquilinoId" element={<GuiaWebhooks />} />
                           <Route path="dashboard" element={<DashboardTenant />} />
                           <Route path="clientes/morosos" element={<MorososTenant />} />
                           <Route path="ingresos" element={<IngresosTenant />  } />
@@ -109,6 +117,7 @@ export default function App() {
                           <Route path="deudas" element={<DeudasTenant />} />
                           <Route path="deudas/nueva" element={<AddDeuda />} />
                           <Route path="deudas/editar/:id" element={<UpdateDeuda />} />
+                          <Route path="suscripcion/gestion" element={<SubscriptionPage />} />
                           <Route path="suscripcion/exito" element={<ExitoPage />} />
                           <Route path="suscripcion/cancelar" element={<CancelarPage />} />
                         </Route>

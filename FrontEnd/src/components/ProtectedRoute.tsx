@@ -17,7 +17,7 @@ export default function ProtectedRoute({
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (!allowed.includes(user!.rol)) return <Navigate to="/error404" replace />;
   
-  // NUEVA LÓGICA: Verificar suscripción para inquilinos
+  // Verificar suscripción para inquilinos
   if (requiresSubscription && user!.rol === 'inquilino' && !user!.hasSubscription) {
     return <Navigate to="/tenant/planes" replace />;
   }

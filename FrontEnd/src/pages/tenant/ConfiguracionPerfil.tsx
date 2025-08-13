@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faEnvelope, faEye, faEyeSlash, faSave, faCog, faSyncAlt,
-  faCreditCard, faMoneyBill, 
+  faCreditCard, faMoneyBill, faClock, faInfoCircle
 } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2';
 import { 
@@ -12,10 +13,16 @@ import {
   upsertPasarela,
   updateEstadoPasarela,
 } from '../../api/settingsTenant';
+import { useAuth } from '../../context/AuthContext';
 import type { ConfiguracionMensajes, Pasarela } from '../../api/settingsTenant';
 import '../../styles/tenant/ConfiguracionPage.css';
 
 const ConfiguracionPage = () => {
+  const { signin, isAuthenticated, user } = useAuth();
+
+  const navigate = useNavigate();
+  const inquilinoId = user?.id;
+
   // Estados para la configuración
   const [config, setConfig] = useState<ConfiguracionMensajes | null>(null);
   const [pasarelas, setPasarelas] = useState<Pasarela[]>([]);
@@ -28,21 +35,40 @@ const ConfiguracionPage = () => {
   // Estados para visibilidad de contraseñas
   const [showStripePublic, setShowStripePublic] = useState(false);
   const [showStripeSecret, setShowStripeSecret] = useState(false);
+  const [showStripeWebhook, setShowStripeWebhook] = useState(false);
   const [showPaypalClient, setShowPaypalClient] = useState(false);
   const [showPaypalSecret, setShowPaypalSecret] = useState(false);
+  const [showPaypalWebhook, setShowPaypalWebhook] = useState(false);
   
   // Estados para datos editables
   const [stripeData, setStripeData] = useState({
     credenciales_api: '',
     client_secret: '',
+    webhook_secret: '',
     estado: 'ACTIVO' as 'ACTIVO' | 'INACTIVO'
   });
   
   const [paypalData, setPaypalData] = useState({
     credenciales_api: '',
     client_secret: '',
+    webhook_id: '',
     estado: 'ACTIVO' as 'ACTIVO' | 'INACTIVO'
   });
+
+  // Función para abrir la guía de webhooks
+  const abrirGuiaWebhooks = () => {
+    navigate(`/tenant/guia-webhooks/${inquilinoId}`);
+  };
+
+  // Opciones de frecuencia
+  const frecuenciaOpciones = [
+    { label: '1 día', value: 24 },
+    { label: '3 días', value: 72 },
+    { label: '5 días', value: 120 },
+    { label: '1 semana', value: 168 },
+    { label: '2 semanas', value: 336 },
+    { label: '1 mes', value: 720 }
+  ];
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -65,6 +91,7 @@ const ConfiguracionPage = () => {
           setStripeData({
             credenciales_api: stripe.credenciales_api,
             client_secret: stripe.client_secret || '',
+            webhook_secret: stripe.webhook_secret || '',
             estado: stripe.estado
           });
         }
@@ -73,6 +100,7 @@ const ConfiguracionPage = () => {
           setPaypalData({
             credenciales_api: paypal.credenciales_api,
             client_secret: paypal.client_secret || '',
+            webhook_id: paypal.webhook_id || '',
             estado: paypal.estado
           });
         }
@@ -93,8 +121,10 @@ const ConfiguracionPage = () => {
     switch(campo) {
       case 'stripePublic': setShowStripePublic(!showStripePublic); break;
       case 'stripeSecret': setShowStripeSecret(!showStripeSecret); break;
+      case 'stripeWebhook': setShowStripeWebhook(!showStripeWebhook); break;
       case 'paypalClient': setShowPaypalClient(!showPaypalClient); break;
       case 'paypalSecret': setShowPaypalSecret(!showPaypalSecret); break;
+      case 'paypalWebhook': setShowPaypalWebhook(!showPaypalWebhook); break;
     }
   };
 
@@ -134,7 +164,8 @@ const ConfiguracionPage = () => {
       const response = await upsertPasarela({
         pasarela: 'stripe',
         credenciales_api: stripeData.credenciales_api,
-        client_secret: stripeData.client_secret
+        client_secret: stripeData.client_secret,
+        webhook_secret: stripeData.webhook_secret
       });
       
       // Actualizar estado local
@@ -146,7 +177,8 @@ const ConfiguracionPage = () => {
       setStripeData({
         ...stripeData,
         credenciales_api: response.data.pasarela.credenciales_api,
-        client_secret: response.data.pasarela.client_secret || ''
+        client_secret: response.data.pasarela.client_secret || '',
+        webhook_secret: response.data.pasarela.webhook_secret || ''
       });
       
       // Mostrar SweetAlert de éxito
@@ -170,7 +202,8 @@ const ConfiguracionPage = () => {
       const response = await upsertPasarela({
         pasarela: 'paypal',
         credenciales_api: paypalData.credenciales_api,
-        client_secret: paypalData.client_secret
+        client_secret: paypalData.client_secret,
+        webhook_id: paypalData.webhook_id
       });
       
       // Actualizar estado local
@@ -182,7 +215,8 @@ const ConfiguracionPage = () => {
       setPaypalData({
         ...paypalData,
         credenciales_api: response.data.pasarela.credenciales_api,
-        client_secret: response.data.pasarela.client_secret || ''
+        client_secret: response.data.pasarela.client_secret || '',
+        webhook_id: response.data.pasarela.webhook_id || ''
       });
       
       // Mostrar SweetAlert de éxito
@@ -260,16 +294,40 @@ const ConfiguracionPage = () => {
               Configuración de Correos Automáticos
             </h3>
 
-            <div className="client-config__form-group">
-              <label className="client-config__form-label">Título del Correo</label>
-              <input 
-                type="text" 
-                className="client-config__form-control" 
-                placeholder="Ej: Recordatorio de Pago - [Nombre de tu empresa]" 
-                value={config.motivo}
-                onChange={(e) => setConfig({ ...config, motivo: e.target.value })}
-              />
-              <small className="client-config__form-text">Este título aparecerá en el asunto de todos los correos automáticos</small>
+            {/* Título y frecuencia en misma línea */}
+            <div className="client-config__form-row">
+              <div className="client-config__form-group client-config__form-group--half">
+                <label className="client-config__form-label">Título del Correo</label>
+                <input 
+                  type="text" 
+                  className="client-config__form-control" 
+                  placeholder="Ej: Recordatorio de Pago - [Nombre de tu empresa]" 
+                  value={config.motivo}
+                  onChange={(e) => setConfig({ ...config, motivo: e.target.value })}
+                />
+                <small className="client-config__form-text">Este título aparecerá en el asunto de todos los correos automáticos</small>
+              </div>
+
+              <div className="client-config__form-group client-config__form-group--half">
+                <label className="client-config__form-label">
+                  <FontAwesomeIcon icon={faClock} className="me-2" />
+                  Frecuencia de envío
+                </label>
+                <select 
+                  className="client-config__form-control"
+                  value={config.frecuencia}
+                  onChange={(e) => setConfig({ ...config, frecuencia: Number(e.target.value) })}
+                >
+                  {frecuenciaOpciones.map(opcion => (
+                    <option key={opcion.value} value={opcion.value}>
+                      Cada {opcion.label}
+                    </option>
+                  ))}
+                </select>
+                <small className="client-config__form-text">
+                  Los mensajes se enviarán automáticamente según esta frecuencia
+                </small>
+              </div>
             </div>
             
             <div className="client-config__messages-container">
@@ -331,12 +389,12 @@ const ConfiguracionPage = () => {
             </h3>
 
             <div className="client-config__form-group">
-              <label className="client-config__form-label">Clave Pública</label>
+              <label className="client-config__form-label">API Key</label>
               <div className="client-config__input-group">
                 <input 
                   type={showStripePublic ? "text" : "password"}
                   className="client-config__form-control" 
-                  placeholder="pk_live_..." 
+                  placeholder="sk_test_... o sk_live_..." 
                   value={stripeData.credenciales_api}
                   onChange={(e) => setStripeData({ ...stripeData, credenciales_api: e.target.value })}
                 />
@@ -350,13 +408,21 @@ const ConfiguracionPage = () => {
               </div>
             </div>
 
+            {/* Campo Secret con leyenda opcional */}
             <div className="client-config__form-group">
-              <label className="client-config__form-label">Clave Secreta</label>
+              <label className="client-config__form-label">
+                Secret (Opcional)
+                <FontAwesomeIcon 
+                  icon={faInfoCircle} 
+                  className="ms-2 text-info" 
+                  title="Campo opcional para configuraciones específicas"
+                />
+              </label>
               <div className="client-config__input-group">
                 <input 
                   type={showStripeSecret ? "text" : "password"}
                   className="client-config__form-control" 
-                  placeholder="sk_live_..." 
+                  placeholder="whsec_..." 
                   value={stripeData.client_secret}
                   onChange={(e) => setStripeData({ ...stripeData, client_secret: e.target.value })}
                 />
@@ -368,6 +434,43 @@ const ConfiguracionPage = () => {
                   <FontAwesomeIcon icon={showStripeSecret ? faEyeSlash : faEye} />
                 </button>
               </div>
+            </div>
+
+            <div className="client-config__form-group">
+              <label className="client-config__form-label">
+                Webhook Secret 
+                <FontAwesomeIcon 
+                  icon={faInfoCircle} 
+                  className="ms-2 text-info" 
+                  title="Obténlo al configurar el webhook en Stripe Dashboard"
+                />
+              </label>
+              <div className="client-config__input-group">
+                <input 
+                  type={showStripeWebhook ? "text" : "password"}
+                  className="client-config__form-control" 
+                  placeholder="whsec_..." 
+                  value={stripeData.webhook_secret}
+                  onChange={(e) => setStripeData({ ...stripeData, webhook_secret: e.target.value })}
+                />
+                <button 
+                  className="client-config__btn-toggle-visibility" 
+                  type="button"
+                  onClick={() => toggleVisibilidad('stripeWebhook')}
+                >
+                  <FontAwesomeIcon icon={showStripeWebhook ? faEyeSlash : faEye} />
+                </button>
+              </div>
+              {/* Mensaje de configuración con navegación */}
+              <small className="client-config__form-text">
+                Para configurar sus credenciales ingrese a nuestro apartado de integraciones.
+                <button 
+                  className="client-config__btn client-config__btn--link ms-1"
+                  onClick={abrirGuiaWebhooks}
+                >
+                  Configurar
+                </button>
+              </small>
             </div>
 
             {/* Activación y actualización */}
@@ -463,6 +566,43 @@ const ConfiguracionPage = () => {
                   <FontAwesomeIcon icon={showPaypalSecret ? faEyeSlash : faEye} />
                 </button>
               </div>
+            </div>
+
+            <div className="client-config__form-group">
+              <label className="client-config__form-label">
+                Webhook ID
+                <FontAwesomeIcon 
+                  icon={faInfoCircle} 
+                  className="ms-2 text-info" 
+                  title="Obténlo al configurar el webhook en PayPal Developer"
+                />
+              </label>
+              <div className="client-config__input-group">
+                <input 
+                  type={showPaypalWebhook ? "text" : "password"}
+                  className="client-config__form-control" 
+                  placeholder="WH-..." 
+                  value={paypalData.webhook_id}
+                  onChange={(e) => setPaypalData({ ...paypalData, webhook_id: e.target.value })}
+                />
+                <button 
+                  className="client-config__btn-toggle-visibility" 
+                  type="button"
+                  onClick={() => toggleVisibilidad('paypalWebhook')}
+                >
+                  <FontAwesomeIcon icon={showPaypalWebhook ? faEyeSlash : faEye} />
+                </button>
+              </div>
+              {/* Mensaje de configuración con navegación */}
+              <small className="client-config__form-text">
+                Para configurar sus credenciales ingrese a nuestro apartado de integraciones.
+                <button 
+                  className="client-config__btn client-config__btn--link ms-1"
+                  onClick={abrirGuiaWebhooks}
+                >
+                  Configurar
+                </button>
+              </small>
             </div>
 
             {/* Activación y actualización */}

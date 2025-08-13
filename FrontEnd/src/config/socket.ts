@@ -4,7 +4,6 @@ let socket: Socket | null = null
 
 export const initializeSocket = () => {
   if (!socket) {
-    // Quitar '/api' de la URL para Socket.io
     const baseURL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3000'
     
     socket = io(baseURL, {

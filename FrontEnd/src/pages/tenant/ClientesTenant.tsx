@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { getClientes, deleteCliente } from '../../api/clientesTenant';
 import { getSocket } from '../../config/socket';
-import type { ClienteTenant, ClientesResponse } from '../../api/clientesTenant';
+import type { ClienteTenant } from '../../api/clientesTenant';
 import '../../styles/tenant/ClientesTenant.css';
 
 const ClientesTenant: React.FC = () => {
@@ -224,7 +224,7 @@ const ClientesTenant: React.FC = () => {
             <table className="table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  <th>#</th>
                   <th>Nombre</th>
                   <th>Apellidos</th>
                   <th>Dirección</th>

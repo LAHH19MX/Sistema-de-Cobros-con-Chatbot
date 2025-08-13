@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import type { CellDef, RowInput } from 'jspdf-autotable'
+import { utils, writeFile } from 'xlsx';
 import { getDeudas, getWidgetsDeudas, generarReporteDeudas } from '../../api/deudasTenant';
 import { getSocket } from '../../config/socket';
-import type { Deuda, DeudasResponse, WidgetsDeudas } from '../../api/deudasTenant';
+import type { Deuda, WidgetsDeudas, ReporteDeudas } from '../../api/deudasTenant';
 import '../../styles/tenant/DeudasTenant.css';
+
+// Extender jsPDF para incluir autoTable
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF;
+    lastAutoTable: { finalY: number };
+  }
+}
 
 const DeudasTenant: React.FC = () => {
   const navigate = useNavigate();
@@ -165,37 +177,274 @@ const DeudasTenant: React.FC = () => {
     });
   };
 
+  // Generar reporte PDF
+  const generarReportePDF = (data: ReporteDeudas, filtros: any) => {
+    try {
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      // Configuración de márgenes
+      const margin = 15;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let currentY = margin;
+      
+      // Título de la empresa (centrado)
+      doc.setFontSize(20);
+      doc.setTextColor(40, 40, 40);
+      doc.setFont('helvetica', 'bold');
+      const title = data.empresa?.nombre || 'Mi Empresa';
+      const titleWidth = doc.getTextWidth(title);
+      doc.text(title, (pageWidth - titleWidth) / 2, currentY);
+      currentY += 10;
+      
+      // Primera línea: Reporte de deudas y Formato PDF
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      
+      // Izquierda: "Reporte de deudas"
+      doc.text('Reporte de deudas', margin, currentY);
+      
+      // Derecha: "Formato PDF"
+      const formatoText = 'Formato PDF';
+      const formatoWidth = doc.getTextWidth(formatoText);
+      doc.text(formatoText, pageWidth - margin - formatoWidth, currentY);
+      currentY += 8;
+      
+      // Segunda línea: Por: [nombre] y Generado el: [fecha]
+      const generadoPor = `Por: ${data.inquilino.nombre} ${data.inquilino.apellidoPaterno} ${data.inquilino.apellidoMaterno}`;
+      const fechaGeneracion = `Generado el: ${formatFecha(data.fechaGeneracion)}`;
+      doc.text(generadoPor, margin, currentY);
+      
+      const fechaWidth = doc.getTextWidth(fechaGeneracion);
+      doc.text(fechaGeneracion, pageWidth - margin - fechaWidth, currentY);
+      currentY += 15;
+      
+      // Tabla con bordes negros
+      const headers: CellDef[] = [
+        { content: 'Cliente', styles: { fontStyle: 'bold', fillColor: [41, 128, 185], textColor: 255 } },
+        { content: 'Email', styles: { fontStyle: 'bold', fillColor: [41, 128, 185], textColor: 255 } },
+        { content: 'Fecha Emisión', styles: { fontStyle: 'bold', fillColor: [41, 128, 185], textColor: 255 } },
+        { content: 'Fecha Vencimiento', styles: { fontStyle: 'bold', fillColor: [41, 128, 185], textColor: 255 } },
+        { content: 'Monto Original', styles: { fontStyle: 'bold', fillColor: [41, 128, 185], textColor: 255 } },
+        { content: 'Pagado', styles: { fontStyle: 'bold', fillColor: [41, 128, 185], textColor: 255 } },
+        { content: 'Estado', styles: { fontStyle: 'bold', fillColor: [41, 128, 185], textColor: 255 } }
+      ];
+      
+      const body: RowInput[] = data.datos.map(deuda => [
+        `${deuda.nombre} ${deuda.apellidoPaterno} ${deuda.apellidoMaterno}`,
+        deuda.email,
+        formatFecha(deuda.fechaEmision),
+        formatFecha(deuda.fechaVencimiento),
+        formatMoneda(deuda.monto),
+        formatMoneda(deuda.pagado),
+        getEstadoText(deuda.estado)
+      ]);
+      
+      autoTable(doc, {
+        head: [headers],
+        body: body,
+        startY: currentY,
+        theme: 'grid', // Bordes completos
+        styles: {
+          fontSize: 9,
+          cellPadding: 3,
+          lineColor: [0, 0, 0], // Bordes negros
+          lineWidth: 0.2,
+          textColor: [0, 0, 0]
+        },
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          fontStyle: 'bold',
+          lineWidth: 0.3
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245]
+        },
+        margin: { left: margin, right: margin }
+      });
+      
+      // Resumen al final
+      const finalY = doc.lastAutoTable.finalY + 10;
+      const totalMonto = data.datos.reduce((sum, deuda) => sum + deuda.monto, 0);
+      const totalPagado = data.datos.reduce((sum, deuda) => sum + deuda.pagado, 0);
+      const totalPendiente = totalMonto - totalPagado;
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('RESUMEN FINAL', margin, finalY);
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Total de deudas: ${data.datos.length}`, margin, finalY + 8);
+      doc.text(`Monto total: ${formatMoneda(totalMonto)}`, margin, finalY + 16);
+      doc.text(`Total pagado: ${formatMoneda(totalPagado)}`, margin, finalY + 24);
+      doc.text(`Total pendiente: ${formatMoneda(totalPendiente)}`, margin, finalY + 32);
+      
+      // Descargar PDF
+      const fileName = `reporte-deudas-${filtros.desde}-${filtros.hasta}.pdf`;
+      doc.save(fileName);
+      
+    } catch (error) {
+      console.error('Error en generarReportePDF:', error);
+      throw error;
+    }
+  };
+
+    const generarReporteExcel = (data: ReporteDeudas, filtros: any) => {
+    try {
+      // Calcular totales
+      const totalMonto = data.datos.reduce((sum, deuda) => sum + deuda.monto, 0);
+      const totalPagado = data.datos.reduce((sum, deuda) => sum + deuda.pagado, 0);
+      const totalPendiente = totalMonto - totalPagado;
+      
+      // Crear libro de trabajo
+      const wb = utils.book_new();
+      const ws = utils.aoa_to_sheet([]);
+      
+      // 1. Encabezado principal
+      utils.sheet_add_aoa(ws, [[data.empresa?.nombre || "Mi Empresa"]], { origin: "A1" });
+      utils.sheet_add_aoa(ws, [["Reporte de Deudas"]], { origin: "A2" });
+      
+      // 2. Información de generación
+      utils.sheet_add_aoa(ws, [
+        ["Generado por:", `${data.inquilino.nombre} ${data.inquilino.apellidoPaterno} ${data.inquilino.apellidoMaterno}`],
+        ["Generado el:", formatFecha(data.fechaGeneracion)],
+        ["Período:", `${formatFecha(filtros.desde)} - ${formatFecha(filtros.hasta)}`],
+        ["Formato:", "Excel"]
+      ], { origin: "A4" });
+      
+      // 3. Espacio antes de la tabla
+      utils.sheet_add_aoa(ws, [[]], { origin: "A8" });
+      
+      // 4. Encabezados de tabla
+      const headers = [
+        "Cliente", 
+        "Email", 
+        "Fecha Emisión", 
+        "Fecha Vencimiento", 
+        "Monto Original", 
+        "Monto Pagado", 
+        "Saldo Pendiente", 
+        "Estado"
+      ];
+      utils.sheet_add_aoa(ws, [headers], { origin: "A9" });
+      
+      // 5. Datos de deudas
+      const rowData = data.datos.map(deuda => [
+        `${deuda.nombre} ${deuda.apellidoPaterno} ${deuda.apellidoMaterno}`,
+        deuda.email,
+        formatFecha(deuda.fechaEmision),
+        formatFecha(deuda.fechaVencimiento),
+        deuda.monto,
+        deuda.pagado,
+        deuda.monto - deuda.pagado,
+        getEstadoText(deuda.estado)
+      ]);
+      
+      utils.sheet_add_aoa(ws, rowData, { origin: "A10" });
+      
+      // 6. Resumen final
+      const startSummaryRow = 10 + rowData.length + 2;
+      utils.sheet_add_aoa(ws, [
+        ["RESUMEN FINAL", "", "", "", "", "", "", ""],
+        ["Total de deudas:", "", "", "", "", "", data.datos.length],
+        ["Monto total:", "", "", "", "", "", totalMonto],
+        ["Total pagado:", "", "", "", "", "", totalPagado],
+        ["Total pendiente:", "", "", "", "", "", totalPendiente]
+      ], { origin: `A${startSummaryRow}` });
+      
+      // 7. Aplicar estilos (solo formato de moneda, estilos completos requieren Pro)
+      // Formato de moneda para columnas numéricas
+      const range = utils.decode_range(ws['!ref'] || "A1:Z100");
+      
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const cell_address = {c: C, r: R};
+          const cell_ref = utils.encode_cell(cell_address);
+          
+          if (!ws[cell_ref]) ws[cell_ref] = {t: 's', v: ''};
+          
+          // Formato de moneda para columnas numéricas
+          if ([4, 5, 6].includes(C) && R >= 10) {
+            if (!ws[cell_ref].z) ws[cell_ref].z = '"$"#,##0.00_);[Red]("$"#,##0.00)';
+          }
+        }
+      }
+      
+      // 8. Ajustar anchos de columna
+      ws['!cols'] = [
+        { wch: 30 }, // Cliente
+        { wch: 35 }, // Email
+        { wch: 15 }, // Fecha Emisión
+        { wch: 15 }, // Fecha Vencimiento
+        { wch: 15 }, // Monto Original
+        { wch: 15 }, // Monto Pagado
+        { wch: 15 }, // Saldo Pendiente
+        { wch: 12 }  // Estado
+      ];
+      
+      // 9. Combinar celdas para títulos
+      ws['!merges'] = [
+        // Combinar empresa (A1:H1)
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
+        // Combinar título (A2:H2)
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } },
+        // Combinar RESUMEN FINAL (A[startSummaryRow]:H[startSummaryRow])
+        { s: { r: startSummaryRow - 1, c: 0 }, e: { r: startSummaryRow - 1, c: 7 } }
+      ];
+      
+      // 10. Añadir hoja al libro y descargar
+      utils.book_append_sheet(wb, ws, 'Reporte de Deudas');
+      const fileName = `reporte-deudas-${filtros.desde}-${filtros.hasta}.xlsx`;
+      writeFile(wb, fileName);
+      
+    } catch (error) {
+      console.error('Error en generarReporteExcel:', error);
+      throw error;
+    }
+  };
+
   // Generar reporte
   const handleGenerarReporte = async () => {
+    // Paso 1: Solicitar filtros
     const { value: formValues } = await Swal.fire({
       title: 'Generar Reporte de Deudas',
       html: `
         <div style="text-align: left;">
-          <label for="swal-desde" style="display: block; margin-bottom: 5px;">Fecha desde:</label>
-          <input id="swal-desde" type="date" class="swal2-input" required>
+          <label for="swal-desde" style="display: block; margin-bottom: 5px; font-weight: bold;">Fecha desde:</label>
+          <input id="swal-desde" type="date" class="swal2-input" required style="margin-bottom: 10px;">
           
-          <label for="swal-hasta" style="display: block; margin-bottom: 5px; margin-top: 15px;">Fecha hasta:</label>
-          <input id="swal-hasta" type="date" class="swal2-input" required>
+          <label for="swal-hasta" style="display: block; margin-bottom: 5px; font-weight: bold;">Fecha hasta:</label>
+          <input id="swal-hasta" type="date" class="swal2-input" required style="margin-bottom: 10px;">
           
-          <label for="swal-estado" style="display: block; margin-bottom: 5px; margin-top: 15px;">Estado:</label>
-          <select id="swal-estado" class="swal2-input">
-            <option value="todos">Todos</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="pagado">Pagado</option>
+          <label for="swal-estado" style="display: block; margin-bottom: 5px; font-weight: bold;">Estado:</label>
+          <select id="swal-estado" class="swal2-input" style="margin-bottom: 10px;">
+            <option value="todos">Todos los estados</option>
+            <option value="pendiente">Solo pendientes</option>
+            <option value="pagado">Solo pagadas</option>
           </select>
+          
+          <label for="swal-cliente" style="display: block; margin-bottom: 5px; font-weight: bold;">Cliente específico (opcional):</label>
+          <input id="swal-cliente" type="text" class="swal2-input" placeholder="ID del cliente (opcional)">
         </div>
       `,
       showCancelButton: true,
-      confirmButtonText: 'Generar',
+      confirmButtonText: 'Continuar',
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#3085d6',
+      width: '500px',
       preConfirm: () => {
         const desde = (document.getElementById('swal-desde') as HTMLInputElement).value;
         const hasta = (document.getElementById('swal-hasta') as HTMLInputElement).value;
         const estado = (document.getElementById('swal-estado') as HTMLSelectElement).value;
+        const cliente = (document.getElementById('swal-cliente') as HTMLInputElement).value;
         
         if (!desde || !hasta) {
-          Swal.showValidationMessage('Por favor complete todos los campos');
+          Swal.showValidationMessage('Por favor complete las fechas');
           return false;
         }
         
@@ -204,31 +453,89 @@ const DeudasTenant: React.FC = () => {
           return false;
         }
         
-        return { desde, hasta, estado };
+        return { desde, hasta, estado, cliente: cliente || undefined };
       }
     });
 
-    if (formValues) {
-      try {
-        setGeneratingReport(true);
-        const response = await generarReporteDeudas({
-          desde: formValues.desde,
-          hasta: formValues.hasta,
-          estado: formValues.estado === 'todos' ? undefined : formValues.estado
-        });
+    if (!formValues) return;
 
-        // Aquí podrías mostrar el reporte o descargarlo
+    // Paso 2: Solicitar formato con botones específicos
+    const formatoResult = await Swal.fire({
+      title: 'Seleccionar Formato',
+      text: '¿En qué formato desea generar el reporte?',
+      icon: 'question',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'PDF',
+      denyButtonText: 'Excel',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#e74c3c',
+      denyButtonColor: '#27ae60'
+    });
+
+    // Si cancela, salir
+    if (formatoResult.isDismissed) return;
+
+    // Determinar formato: true = PDF, false = Excel
+    const formatoPDF = formatoResult.isConfirmed;
+
+    try {
+      setGeneratingReport(true);
+      
+      console.log('Generando reporte con filtros:', formValues);
+      
+      // Obtener datos del reporte
+      const response = await generarReporteDeudas({
+        desde: formValues.desde,
+        hasta: formValues.hasta,
+        estado: formValues.estado === 'todos' ? undefined : formValues.estado,
+        id_cliente: formValues.cliente
+      });
+
+      console.log('Datos recibidos:', response.data);
+
+      if (response.data.datos.length === 0) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Sin resultados',
+          text: 'No se encontraron deudas con los filtros seleccionados',
+          confirmButtonColor: '#3085d6'
+        });
+        return;
+      }
+
+      // Generar reporte según formato seleccionado
+      try {
+        if (formatoPDF) {
+          console.log('Generando PDF...');
+          generarReportePDF(response.data, formValues);
+        } else {
+          console.log('Generando Excel...');
+          generarReporteExcel(response.data, formValues);
+        }
+
         await Swal.fire({
           icon: 'success',
           title: 'Reporte generado',
-          text: `Se encontraron ${response.data.datos.length} deudas en el período seleccionado`,
+          text: `Se generó el reporte ${formatoPDF ? 'PDF' : 'Excel'} con ${response.data.datos.length} deudas. El archivo se ha descargado automáticamente.`,
           confirmButtonColor: '#3085d6'
         });
-      } catch (error) {
-        Swal.fire('Error', 'No se pudo generar el reporte', 'error');
-      } finally {
-        setGeneratingReport(false);
+
+      } catch (generationError) {
+        console.error('Error generando archivo:', generationError);
+        throw new Error('Error al generar el archivo');
       }
+
+    } catch (error) {
+      console.error('Error completo:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `No se pudo generar el reporte: ${error instanceof Error ? error.message : 'Error desconocido'}`,
+        confirmButtonColor: '#3085d6'
+      });
+    } finally {
+      setGeneratingReport(false);
     }
   };
 
@@ -410,17 +717,17 @@ const DeudasTenant: React.FC = () => {
       </div>
 
       {/* Tabla de deudas */}
-      <div className="tenant-deudas__table">
+      <div className="tenant-deudas__table mb-5">
         <div className="table-responsive">
           <table className="tenant-deudas-table table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Nombre</th>
                 <th>Fecha Límite</th>
                 <th>Estado</th>
                 <th>Concepto</th>
-                <th>Importe</th>
+                <th>Monto</th>
                 <th className='text-center'>Acciones</th>
               </tr>
             </thead>
@@ -434,7 +741,7 @@ const DeudasTenant: React.FC = () => {
               ) : (
                 deudasFiltradas.map((deuda, index) => (
                   <tr key={deuda.id_deuda}>
-                    <td data-label="ID">DEB-{(currentPage - 1) * limit + index + 1}</td>
+                    <td data-label="ID">{(currentPage - 1) * limit + index + 1}</td>
                     <td data-label="Nombre">
                       {deuda.Cliente?.nombre_cliente} {deuda.Cliente?.apellido_paterno}
                     </td>
@@ -445,7 +752,7 @@ const DeudasTenant: React.FC = () => {
                       </span>
                     </td>
                     <td data-label="Concepto">{deuda.descripcion}</td>
-                    <td data-label="Importe">{formatMoneda(Number(deuda.saldo_pendiente))}</td>
+                    <td data-label="Importe">{formatMoneda(Number(deuda.monto_original))}</td>
                     <td data-label="Acciones">
                       <div className="tenant-deudas-actionsbtn">
                         <button 

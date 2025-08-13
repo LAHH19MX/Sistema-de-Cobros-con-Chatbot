@@ -132,7 +132,7 @@ const PreciosPage = () => {
                 <p className="plan-card__tag">
                   {plan.nombre_plan.includes('Básico') && 'Perfecto para empezar'}
                   {plan.nombre_plan.includes('Pro') && 'Para crecer rápido'}
-                  {plan.nombre_plan.includes('Premium') && 'Máxima potencia'}
+                  {plan.nombre_plan.includes('Enterprise') && 'Máxima potencia'}
                   {plan.nombre_plan.includes('Élite') && 'Todo sin límites'}
                 </p>
               </div>

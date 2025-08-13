@@ -9,15 +9,15 @@ export interface Contenido {
   id_seccion: string;
 }
 
-// 1. GET /contenidos/:seccionId Trae a todos los contenidos de una seccion
+// Trae a todos los contenidos de una seccion
 export const getContenidosBySeccion = (seccionId: string): Promise<AxiosResponse<Contenido[]>> =>
   api.get(`/contenidos/${seccionId}`);
 
-// 2. GET /contenido/:id Trae a un contenido por su id
+// Trae a un contenido por su id
 export const getContenidoById = (id: string): Promise<AxiosResponse<Contenido>> =>
   api.get(`/contenido/${id}`);
 
-// 3. POST /contenidoCre/:seccionId Crea un contenido pasando el id de la seccion que pertenecera
+// Crea un contenido pasando el id de la seccion que pertenecera
 export const createContenido = (
   seccionId: string,
   data: {
@@ -28,7 +28,7 @@ export const createContenido = (
 ): Promise<AxiosResponse<Contenido>> =>
   api.post(`/contenidoCre/${seccionId}`, data);
 
-// 4. PUT /contenidoUpd/:id Actualiza a un contenido por su id
+// Actualiza a un contenido por su id
 export const updateContenido = (
   id: string,
   data: {
@@ -39,6 +39,6 @@ export const updateContenido = (
 ): Promise<AxiosResponse<Contenido>> =>
   api.put(`/contenidoUpd/${id}`, data);
 
-// 5. DELETE /contenidoDel/:id Elimina a un contenido por su id
+// Elimina a un contenido por su id
 export const deleteContenido = (id: string): Promise<AxiosResponse<void>> =>
   api.delete(`/contenidoDel/${id}`);

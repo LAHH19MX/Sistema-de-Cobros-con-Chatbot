@@ -33,14 +33,14 @@ interface SiteDataContextType {
   // Operaciones de apartados
   loadApartados: () => Promise<void>;
   loadApartado: (id: string) => Promise<void>;
-  createApartado: (data: Omit<Apartado, 'id_apartado' | 'fecha_creacion'>) => Promise<void>; // Cambiado a Promise<void>
+  createApartado: (data: Omit<Apartado, 'id_apartado' | 'fecha_creacion'>) => Promise<void>; 
   updateApartado: (id: string, data: ApartadoUpdateFields) => Promise<void>;
   deleteApartado: (id: string) => Promise<void>;
   
   // Operaciones de categorías
   loadCategorias: (apartadoId: string) => Promise<void>;
   loadCategoria: (id: string) => Promise<void>;
-  createCategoria: (apartadoId: string, data: Omit<Categoria, 'id_categoria' | 'fecha_creacion' | 'id_apartado'>) => Promise<void>; // Cambiado a Promise<void>
+  createCategoria: (apartadoId: string, data: Omit<Categoria, 'id_categoria' | 'fecha_creacion' | 'id_apartado'>) => Promise<void>; 
   updateCategoria: (id: string, data: CategoriaUpdateFields) => Promise<void>;
   deleteCategoria: (id: string) => Promise<void>;
 }
@@ -140,16 +140,12 @@ export const SiteDataProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // ========== Operaciones de Categorías ==========
   const loadCategorias = async (apartadoId: string) => {
     setLoading(true);
     try {
       const res = await categoriasApi.getCategoriasByApartado(apartadoId);
-      // En lugar de reemplazar, acumula las categorías
       setCategorias(prevCategorias => {
-        // Filtra las categorías existentes del mismo apartado
         const otherCategorias = prevCategorias.filter(c => c.id_apartado !== apartadoId);
-        // Combina con las nuevas
         return [...otherCategorias, ...res.data];
       });
     } catch (err) {
@@ -178,7 +174,6 @@ export const SiteDataProvider = ({ children }: { children: ReactNode }) => {
     try {
       const res = await categoriasApi.createCategoria(apartadoId, data);
       setCategorias([...categorias, res.data]);
-      // Se eliminó el return res.data
     } catch (err) {
       setError('Error al crear categoría');
       throw err;
@@ -239,13 +234,11 @@ export const SiteDataProvider = ({ children }: { children: ReactNode }) => {
         currentCategoria,
         loading,
         error,
-        // Apartados
         loadApartados,
         loadApartado,
         createApartado,
         updateApartado,
         deleteApartado,
-        // Categorias
         loadCategorias,
         loadCategoria,
         createCategoria,

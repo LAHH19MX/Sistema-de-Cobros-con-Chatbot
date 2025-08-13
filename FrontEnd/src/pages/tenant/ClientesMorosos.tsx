@@ -1,22 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import type { CellDef, RowInput } from 'jspdf-autotable';
+import { utils, writeFile } from 'xlsx';
 import { 
   getMorosos, 
-  enviarNotificacionMoroso
+  enviarNotificacionMoroso,
+  generarReporteMorosos
 } from '../../api/morososTenant';
-import type { ClienteMoroso } from '../../api/morososTenant';
+import type { ClienteMoroso, ReporteMorosos } from '../../api/morososTenant';
 import '../../styles/tenant/MorososTenant.css';
 
+// Extender jsPDF para incluir autoTable
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF;
+    lastAutoTable: { finalY: number };
+  }
+}
+
 const MorososTenant: React.FC = () => {
-  const navigate = useNavigate();
   const [morosos, setMorosos] = useState<ClienteMoroso[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [generatingReport, setGeneratingReport] = useState(false);
   const [filtros, setFiltros] = useState({
-    dias_retraso: '0',
-    monto_min: '0',
-    monto_max: '0',
+    dias_retraso: '',
+    rango_monto: '0',
     orden: 'mayor_deuda'
   });
   const [pagination, setPagination] = useState({
@@ -26,31 +37,66 @@ const MorososTenant: React.FC = () => {
     totalPages: 1
   });
 
-  // Cargar morosos al montar o cambiar filtros/página
   useEffect(() => {
     const cargarMorosos = async () => {
       try {
         setLoading(true);
-        
-        // Convertir filtros a números y preparar parámetros
         const params: Record<string, any> = {
           page: pagination.page,
           limit: pagination.limit
         };
 
-        // Solo agregar parámetros numéricos si no son '0'
-        if (filtros.dias_retraso !== '0') {
+        // Filtro de días de atraso
+        if (filtros.dias_retraso && filtros.dias_retraso !== '') {
           params.dias_retraso = Number(filtros.dias_retraso);
         }
-        if (filtros.monto_min !== '0') {
-          params.monto_min = Number(filtros.monto_min);
+
+        // Filtro de rango de monto
+        if (filtros.rango_monto && filtros.rango_monto !== '0') {
+          switch (filtros.rango_monto) {
+            case '1': // $0 - $5,000
+              params.monto_max = 5000;
+              break;
+            case '2': // $5,001 - $15,000
+              params.monto_min = 5001;
+              params.monto_max = 15000;
+              break;
+            case '3': // $15,001 - $30,000
+              params.monto_min = 15001;
+              params.monto_max = 30000;
+              break;
+            case '4': // Más de $30,000
+              params.monto_min = 30001;
+              break;
+          }
         }
-        if (filtros.monto_max !== '0') {
-          params.monto_max = Number(filtros.monto_max);
-        }
+
+        console.log('Parámetros enviados al backend:', params);
         
         const response = await getMorosos(params);
-        setMorosos(response.data.data);
+        
+        // Ordenar en el frontend según la opción seleccionada
+        let morososOrdenados = [...response.data.data];
+        
+        switch (filtros.orden) {
+          case 'mayor_deuda':
+            morososOrdenados.sort((a, b) => b.montoTotal - a.montoTotal);
+            break;
+          case 'menor_deuda':
+            morososOrdenados.sort((a, b) => a.montoTotal - b.montoTotal);
+            break;
+          case 'mas_dias':
+            morososOrdenados.sort((a, b) => b.diasRetrasoMaximo - a.diasRetrasoMaximo);
+            break;
+          case 'menos_dias':
+            morososOrdenados.sort((a, b) => a.diasRetrasoMaximo - b.diasRetrasoMaximo);
+            break;
+          default:
+            // No ordenar, mantener orden del backend
+            break;
+        }
+        
+        setMorosos(morososOrdenados);
         setPagination(response.data.pagination);
       } catch (err) {
         setError('Error cargando clientes morosos');
@@ -63,23 +109,414 @@ const MorososTenant: React.FC = () => {
     cargarMorosos();
   }, [filtros, pagination.page]);
 
-  // Manejadores de cambios en filtros
+  // Formatear fecha
+  const formatFecha = (fecha: string) => {
+    return new Date(fecha).toLocaleDateString('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  // Formatear moneda
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN'
+    }).format(amount);
+  };
+
+  // Generar reporte PDF
+ const generarReportePDF = (data: ReporteMorosos, filtros: any) => {
+    try {
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      // Configuración de márgenes
+      const margin = 15;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let currentY = margin;
+      
+      // Título de la empresa (centrado)
+      doc.setFontSize(20);
+      doc.setTextColor(40, 40, 40);
+      doc.setFont('helvetica', 'bold');
+      const title = data.empresa?.nombre || 'Mi Empresa';
+      const titleWidth = doc.getTextWidth(title);
+      doc.text(title, (pageWidth - titleWidth) / 2, currentY);
+      currentY += 10;
+      
+      // Primera línea: Reporte de morosos y Formato PDF
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      
+      // Izquierda: "Reporte de clientes morosos"
+      doc.text('Reporte de clientes morosos', margin, currentY);
+      
+      // Derecha: "Formato PDF"
+      const formatoText = 'Formato PDF';
+      const formatoWidth = doc.getTextWidth(formatoText);
+      doc.text(formatoText, pageWidth - margin - formatoWidth, currentY);
+      currentY += 8;
+      
+      // Segunda línea: Por: [nombre] y Generado el: [fecha]
+      const generadoPor = `Por: ${data.inquilino.nombre} ${data.inquilino.apellidoPaterno} ${data.inquilino.apellidoMaterno}`;
+      const fechaGeneracion = `Generado el: ${formatFecha(data.fechaGeneracion)}`;
+      doc.text(generadoPor, margin, currentY);
+      
+      const fechaWidth = doc.getTextWidth(fechaGeneracion);
+      doc.text(fechaGeneracion, pageWidth - margin - fechaWidth, currentY);
+      currentY += 15;
+      
+      // Información de filtros aplicados
+      let yPos = currentY;
+      if (filtros.desde && filtros.hasta) {
+        doc.text(`Período: ${formatFecha(filtros.desde)} - ${formatFecha(filtros.hasta)}`, margin, yPos);
+        yPos += 5;
+      }
+      if (filtros.dias_retraso) {
+        doc.text(`Días mínimos de atraso: ${filtros.dias_retraso}`, margin, yPos);
+        yPos += 5;
+      }
+      if (filtros.monto_min) {
+        doc.text(`Monto mínimo: ${formatCurrency(filtros.monto_min)}`, margin, yPos);
+        yPos += 5;
+      }
+      
+      // Tabla con bordes negros
+      const headers: CellDef[] = [
+        { content: 'Cliente', styles: { fontStyle: 'bold', fillColor: [220, 53, 69], textColor: 255 } },
+        { content: 'Email', styles: { fontStyle: 'bold', fillColor: [220, 53, 69], textColor: 255 } },
+        { content: 'Fecha Vencimiento', styles: { fontStyle: 'bold', fillColor: [220, 53, 69], textColor: 255 } },
+        { content: 'Días Atraso', styles: { fontStyle: 'bold', fillColor: [220, 53, 69], textColor: 255 } },
+        { content: 'Monto Adeudado', styles: { fontStyle: 'bold', fillColor: [220, 53, 69], textColor: 255 } }
+      ];
+      
+      const body: RowInput[] = data.datos.map(moroso => [
+        `${moroso.nombre} ${moroso.apellidoPaterno} ${moroso.apellidoMaterno}`,
+        moroso.email,
+        formatFecha(moroso.fechaVencimiento),
+        `${moroso.diasRetraso} días`,
+        formatCurrency(moroso.monto)
+      ]);
+      
+      autoTable(doc, {
+        head: [headers],
+        body: body,
+        startY: yPos + 5,
+        theme: 'grid', // Bordes completos
+        styles: {
+          fontSize: 9,
+          cellPadding: 3,
+          lineColor: [0, 0, 0], // Bordes negros
+          lineWidth: 0.2,
+          textColor: [0, 0, 0]
+        },
+        headStyles: {
+          fillColor: [220, 53, 69],
+          textColor: 255,
+          fontStyle: 'bold',
+          lineWidth: 0.3
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245]
+        },
+        margin: { left: margin, right: margin }
+      });
+      
+      // Resumen al final
+      const finalY = doc.lastAutoTable.finalY + 10;
+      const totalMonto = data.datos.reduce((sum, moroso) => sum + moroso.monto, 0);
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('RESUMEN FINAL', margin, finalY);
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Total de morosos: ${data.datos.length}`, margin, finalY + 8);
+      doc.text(`Total adeudado: ${formatCurrency(totalMonto)}`, margin, finalY + 16);
+      
+      // Descargar PDF
+      const fileName = `reporte-morosos-${filtros.desde || 'todos'}-${filtros.hasta || 'todos'}.pdf`;
+      doc.save(fileName);
+      
+    } catch (error) {
+      console.error('Error en generarReportePDF:', error);
+      throw error;
+    }
+  };
+
+  // Generar reporte Excel
+  const generarReporteExcel = (data: ReporteMorosos, filtros: any) => {
+    try {
+      // Calcular totales
+      const totalMonto = data.datos.reduce((sum, moroso) => sum + moroso.monto, 0);
+      
+      // Crear libro de trabajo
+      const wb = utils.book_new();
+      const ws = utils.aoa_to_sheet([]);
+      
+      // 1. Encabezado principal
+      utils.sheet_add_aoa(ws, [[data.empresa?.nombre || "Mi Empresa"]], { origin: "A1" });
+      utils.sheet_add_aoa(ws, [["Reporte de Clientes Morosos"]], { origin: "A2" });
+      
+      // 2. Información de generación
+      utils.sheet_add_aoa(ws, [
+        ["Generado por:", `${data.inquilino.nombre} ${data.inquilino.apellidoPaterno} ${data.inquilino.apellidoMaterno}`],
+        ["Generado el:", formatFecha(data.fechaGeneracion)],
+        ["Formato:", "Excel"]
+      ], { origin: "A4" });
+      
+      // 3. Filtros aplicados
+      utils.sheet_add_aoa(ws, [["FILTROS APLICADOS"]], { origin: "A7" });
+      let row = 8;
+      
+      if (filtros.desde && filtros.hasta) {
+        utils.sheet_add_aoa(ws, [[`Período: ${formatFecha(filtros.desde)} - ${formatFecha(filtros.hasta)}`]], { origin: `A${row}` });
+        row++;
+      }
+      if (filtros.dias_retraso) {
+        utils.sheet_add_aoa(ws, [[`Días mínimos de atraso: ${filtros.dias_retraso}`]], { origin: `A${row}` });
+        row++;
+      }
+      if (filtros.monto_min) {
+        utils.sheet_add_aoa(ws, [[`Monto mínimo: ${formatCurrency(filtros.monto_min)}`]], { origin: `A${row}` });
+        row++;
+      }
+      
+      // 4. Espacio antes de la tabla
+      row += 2;
+      
+      // 5. Encabezados de tabla
+      const headers = [
+        "Cliente", 
+        "Email", 
+        "Fecha Vencimiento", 
+        "Días de Atraso", 
+        "Monto Adeudado"
+      ];
+      utils.sheet_add_aoa(ws, [headers], { origin: `A${row}` });
+      row++;
+      
+      // 6. Datos de morosos
+      const rowData = data.datos.map(moroso => [
+        `${moroso.nombre} ${moroso.apellidoPaterno} ${moroso.apellidoMaterno}`,
+        moroso.email,
+        formatFecha(moroso.fechaVencimiento),
+        moroso.diasRetraso,
+        moroso.monto
+      ]);
+      
+      utils.sheet_add_aoa(ws, rowData, { origin: `A${row}` });
+      row += rowData.length + 2;
+      
+      // 7. Resumen final
+      utils.sheet_add_aoa(ws, [
+        ["RESUMEN FINAL", "", "", "", ""],
+        ["Total de morosos:", "", "", "", data.datos.length],
+        ["Total adeudado:", "", "", "", totalMonto]
+      ], { origin: `A${row}` });
+      
+      // 8. Aplicar formatos
+      const range = utils.decode_range(ws['!ref'] || "A1:Z100");
+      
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const cell_address = {c: C, r: R};
+          const cell_ref = utils.encode_cell(cell_address);
+          
+          if (!ws[cell_ref]) ws[cell_ref] = {t: 's', v: ''};
+          
+          // Formato de moneda para montos
+          if (C === 4 && R >= row - 3) {
+            if (!ws[cell_ref].z) ws[cell_ref].z = '"$"#,##0.00_);[Red]("$"#,##0.00)';
+          }
+        }
+      }
+      
+      // 9. Ajustar anchos de columna
+      ws['!cols'] = [
+        { wch: 30 }, // Cliente
+        { wch: 30 }, // Email
+        { wch: 15 }, // Fecha Vencimiento
+        { wch: 15 }, // Días de Atraso
+        { wch: 15 }  // Monto Adeudado
+      ];
+      
+      // 10. Combinar celdas para títulos
+      ws['!merges'] = [
+        // Combinar empresa (A1:E1)
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+        // Combinar título (A2:E2)
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
+        // Combinar RESUMEN FINAL (A[row]:E[row])
+        { s: { r: row - 1, c: 0 }, e: { r: row - 1, c: 4 } }
+      ];
+      
+      // 11. Añadir hoja al libro y descargar
+      utils.book_append_sheet(wb, ws, 'Reporte de Morosos');
+      const fileName = `reporte-morosos-${filtros.desde || 'todos'}-${filtros.hasta || 'todos'}.xlsx`;
+      writeFile(wb, fileName);
+      
+    } catch (error) {
+      console.error('Error en generarReporteExcel:', error);
+      throw error;
+    }
+  };
+
+  // Generar reporte
+  const handleGenerarReporte = async () => {
+    // Paso 1: Solicitar filtros
+    const { value: formValues } = await Swal.fire({
+      title: 'Generar Reporte de Morosos',
+      html: `
+        <div style="text-align: left;">
+          <label for="swal-desde" style="display: block; margin-bottom: 5px; font-weight: bold;">Fecha vencimiento desde (opcional):</label>
+          <input id="swal-desde" type="date" class="swal2-input" style="margin-bottom: 10px;">
+          
+          <label for="swal-hasta" style="display: block; margin-bottom: 5px; font-weight: bold;">Fecha vencimiento hasta (opcional):</label>
+          <input id="swal-hasta" type="date" class="swal2-input" style="margin-bottom: 10px;">
+          
+          <label for="swal-dias" style="display: block; margin-bottom: 5px; font-weight: bold;">Días mínimos de atraso:</label>
+          <select id="swal-dias" class="swal2-input" style="margin-bottom: 10px;">
+            <option value="">Todos</option>
+            <option value="30">Mínimo 30 días</option>
+            <option value="60">Mínimo 60 días</option>
+            <option value="90">Mínimo 90 días</option>
+          </select>
+          
+          <label for="swal-monto" style="display: block; margin-bottom: 5px; font-weight: bold;">Monto mínimo adeudado:</label>
+          <input id="swal-monto" type="number" class="swal2-input" placeholder="Ej: 5000" min="0">
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Continuar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3085d6',
+      width: '500px',
+      preConfirm: () => {
+        const desde = (document.getElementById('swal-desde') as HTMLInputElement).value;
+        const hasta = (document.getElementById('swal-hasta') as HTMLInputElement).value;
+        const dias = (document.getElementById('swal-dias') as HTMLSelectElement).value;
+        const monto = (document.getElementById('swal-monto') as HTMLInputElement).value;
+        
+        if (desde && hasta && new Date(desde) > new Date(hasta)) {
+          Swal.showValidationMessage('La fecha desde no puede ser mayor que la fecha hasta');
+          return false;
+        }
+        
+        return { 
+          desde: desde || undefined, 
+          hasta: hasta || undefined,
+          dias_retraso: dias ? Number(dias) : undefined,
+          monto_min: monto ? Number(monto) : undefined
+        };
+      }
+    });
+
+    if (!formValues) return;
+
+    // Paso 2: Solicitar formato
+    const formatoResult = await Swal.fire({
+      title: 'Seleccionar Formato',
+      text: '¿En qué formato desea generar el reporte?',
+      icon: 'question',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'PDF',
+      denyButtonText: 'Excel',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#e74c3c',
+      denyButtonColor: '#27ae60'
+    });
+
+    if (formatoResult.isDismissed) return;
+
+    const formatoPDF = formatoResult.isConfirmed;
+
+    try {
+      setGeneratingReport(true);
+      
+      console.log('Generando reporte de morosos con filtros:', formValues);
+      
+      // Obtener datos del reporte
+      const response = await generarReporteMorosos({
+        desde: formValues.desde,
+        hasta: formValues.hasta,
+        dias_retraso: formValues.dias_retraso,
+        monto_min: formValues.monto_min
+      });
+
+      console.log('Datos de morosos recibidos:', response.data);
+
+      if (response.data.datos.length === 0) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Sin resultados',
+          text: 'No se encontraron clientes morosos con los filtros seleccionados',
+          confirmButtonColor: '#3085d6'
+        });
+        return;
+      }
+
+      // Generar reporte según formato seleccionado
+      try {
+        if (formatoPDF) {
+          console.log('Generando PDF de morosos...');
+          generarReportePDF(response.data, formValues);
+        } else {
+          console.log('Generando Excel de morosos...');
+          generarReporteExcel(response.data, formValues);
+        }
+
+        await Swal.fire({
+          icon: 'success',
+          title: 'Reporte generado',
+          text: `Se generó el reporte ${formatoPDF ? 'PDF' : 'Excel'} con ${response.data.datos.length} clientes morosos. El archivo se ha descargado automáticamente.`,
+          confirmButtonColor: '#3085d6'
+        });
+
+      } catch (generationError) {
+        console.error('Error generando archivo:', generationError);
+        throw new Error('Error al generar el archivo');
+      }
+
+    } catch (error) {
+      console.error('Error completo:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: `No se pudo generar el reporte: ${error instanceof Error ? error.message : 'Error desconocido'}`,
+        confirmButtonColor: '#3085d6'
+      });
+    } finally {
+      setGeneratingReport(false);
+    }
+  };
+
   const handleFiltroChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
+    console.log('Filtro cambiado:', name, value);
+    
     setFiltros(prev => ({
       ...prev,
       [name]: value
     }));
+    
+    // Resetear a página 1 cuando cambian los filtros
+    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
-  // Cambiar página
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
       setPagination(prev => ({ ...prev, page: newPage }));
     }
   };
 
-  // Generar números de página con puntos suspensivos
   const generatePageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
@@ -115,15 +552,6 @@ const MorososTenant: React.FC = () => {
     return pages;
   };
 
-  // Formatear moneda
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN'
-    }).format(amount);
-  };
-
-  // Enviar notificación
   const handleNotificar = async (id: string, nombre: string) => {
     try {
       const result = await Swal.fire({
@@ -145,9 +573,50 @@ const MorososTenant: React.FC = () => {
     }
   };
 
-  // Ver detalles
-  const verDetalles = (id: string) => {
-    navigate(`/tenant/morosos/${id}`);
+  // Ver detalles del moroso (CON deudas detalladas)
+  const verDetalles = (moroso: ClienteMoroso) => {
+    const htmlContent = `
+      <div style="text-align: left;">
+        <h5 style="margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+          Información del Cliente
+        </h5>
+        <p><strong>Nombre:</strong> ${moroso.cliente.nombreCompleto}</p>
+        <p><strong>Email:</strong> ${moroso.cliente.email}</p>
+        <p><strong>Teléfono:</strong> ${moroso.cliente.telefono || 'N/A'}</p>
+        <p><strong>Total Adeudado:</strong> ${formatCurrency(moroso.montoTotal)}</p>
+        <p><strong>Cantidad de Deudas:</strong> ${moroso.cantidadDeudas}</p>
+        <p><strong>Días Máximos de Atraso:</strong> ${moroso.diasRetrasoMaximo} días</p>
+        
+        <hr style="margin: 20px 0; border-top: 1px solid #eee;">
+        
+        <h5 style="margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+          Detalle de Deudas
+        </h5>
+        
+        <div style="max-height: 300px; overflow-y: auto;">
+          ${moroso.deudas.map(deuda => `
+            <div style="background: #f9f9f9; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
+              <p><strong>Descripción:</strong> ${deuda.descripcion}</p>
+              <p><strong>Monto:</strong> ${formatCurrency(deuda.monto)}</p>
+              <p><strong>Fecha Vencimiento:</strong> ${formatFecha(deuda.fechaVencimiento)}</p>
+              <p><strong>Días de Atraso:</strong> ${deuda.diasRetraso} días</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    Swal.fire({
+      title: 'Detalles del Cliente Moroso',
+      html: htmlContent,
+      width: '700px',
+      confirmButtonText: 'Cerrar',
+      confirmButtonColor: '#3085d6',
+      customClass: {
+        popup: 'moroso-details-popup',
+        container: 'moroso-details-container'
+      }
+    });
   };
 
   if (error) {
@@ -174,49 +643,71 @@ const MorososTenant: React.FC = () => {
         <h1 className="tenant-mor__title">Clientes Morosos</h1>
         <p className="tenant-mor__subtitle">
           {pagination.total} cliente{pagination.total !== 1 ? 's' : ''} con pagos vencidos
+          {(filtros.dias_retraso || filtros.rango_monto !== '0' || filtros.orden !== 'mayor_deuda') && (
+            <span className="ms-2 badge bg-primary">
+              Filtros aplicados
+            </span>
+          )}
         </p>
       </header>
 
       <div className="tenant-mor__filters-section">
         <div className="tenant-mor__filters-header">
-          <h5 className="tenant-mor__filters-title">Filtros de búsqueda</h5>
+          <div>
+            <h5 className="tenant-mor__filters-title">Filtros de búsqueda</h5>
+            {(filtros.dias_retraso || filtros.rango_monto !== '0' || filtros.orden !== 'mayor_deuda') && (
+              <small className="text-muted">
+                <i className="fas fa-filter me-1"></i>
+                Filtros activos
+              </small>
+            )}
+          </div>
           <button
             className="tenant-mor__btn-report btn-report rounded"
-            data-bs-toggle="modal"
-            data-bs-target="#reportMorososModal"
+            onClick={handleGenerarReporte}
+            disabled={generatingReport}
           >
-            <i className="fas fa-download me-2"></i>Generar Reporte
+            {generatingReport ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Generando...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-download me-2"></i>Generar Reporte
+              </>
+            )}
           </button>
         </div>
         <div className="tenant-mor__filters-row">
           <div className="tenant-mor__filter-group">
-            <label>Días de atraso</label>
+            <label>Días de atraso mínimos</label>
             <select 
               name="dias_retraso"
               className="form-select"
               value={filtros.dias_retraso}
               onChange={handleFiltroChange}
             >
-              <option value="0">Todos</option>
-              <option value="30">1-30 días</option>
-              <option value="60">31-60 días</option>
-              <option value="90">61-90 días</option>
-              <option value="91">Más de 90 días</option>
+              <option value="">Todos</option>
+              <option value="1">Mínimo 1 día</option>
+              <option value="30">Mínimo 30 días</option>
+              <option value="60">Mínimo 60 días</option>
+              <option value="90">Mínimo 90 días</option>
             </select>
           </div>
           <div className="tenant-mor__filter-group">
             <label>Rango de deuda</label>
             <select 
-              name="monto_min"
+              name="rango_monto"
               className="form-select"
-              value={filtros.monto_min}
+              value={filtros.rango_monto}
               onChange={handleFiltroChange}
             >
-              <option value="0">Todos</option>
+              <option value="0">Todos los montos</option>
               <option value="1">$0 - $5,000</option>
-              <option value="5001">$5,001 - $15,000</option>
-              <option value="15001">$15,001 - $30,000</option>
-              <option value="30001">Más de $30,000</option>
+              <option value="2">$5,001 - $15,000</option>
+              <option value="3">$15,001 - $30,000</option>
+              <option value="4">Más de $30,000</option>
             </select>
           </div>
           <div className="tenant-mor__filter-group">
@@ -233,6 +724,18 @@ const MorososTenant: React.FC = () => {
               <option value="menos_dias">Menos días de atraso</option>
             </select>
           </div>
+          <div className="tenant-mor__filter-group">
+            <label>Acciones</label>
+            <button
+              className="form-control btn btn-secondary"
+              onClick={() => {
+                setFiltros({ dias_retraso: '', rango_monto: '0', orden: 'mayor_deuda' });
+                setPagination(prev => ({ ...prev, page: 1 }));
+              }}
+            >
+              <i className="fas fa-times me-2"></i>Limpiar Filtros
+            </button>
+          </div>
         </div>
       </div>
 
@@ -246,7 +749,6 @@ const MorososTenant: React.FC = () => {
                 <th>Email</th>
                 <th>Teléfono</th>
                 <th>Monto Adeudado</th>
-                <th>Deudas</th>
                 <th>Días de Atraso</th>
                 <th className="text-center">Acciones</th>
               </tr>
@@ -254,7 +756,7 @@ const MorososTenant: React.FC = () => {
             <tbody>
               {morosos.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-4">
+                  <td colSpan={6} className="text-center py-4">
                     No se encontraron clientes morosos
                   </td>
                 </tr>
@@ -269,7 +771,6 @@ const MorososTenant: React.FC = () => {
                     <td className="tenant-mor__debt-amount">
                       {formatCurrency(moroso.montoTotal)}
                     </td>
-                    <td>{moroso.cantidadDeudas}</td>
                     <td>
                       <span className="tenant-mor__days-overdue">
                         {moroso.diasRetrasoMaximo} días
@@ -288,7 +789,7 @@ const MorososTenant: React.FC = () => {
                         </button>
                         <button
                           className="tenant-mor__btn-action tenant-mor__btn-action--detail"
-                          onClick={() => verDetalles(moroso.cliente.id_cliente)}
+                          onClick={() => verDetalles(moroso)}
                         >
                           <i className="fas fa-eye me-1"></i> Detalles
                         </button>
@@ -390,10 +891,6 @@ const MorososTenant: React.FC = () => {
                       <i className="fas fa-money-bill-wave me-2"></i>
                       {formatCurrency(moroso.montoTotal)}
                     </div>
-                    <div>
-                      <i className="fas fa-file-invoice me-2"></i>
-                      {moroso.cantidadDeudas} deuda{moroso.cantidadDeudas !== 1 ? 's' : ''}
-                    </div>
                   </div>
                   
                   <div className="tenant-mor__mobile-actions">
@@ -408,7 +905,7 @@ const MorososTenant: React.FC = () => {
                     </button>
                     <button
                       className="btn btn-sm btn-primary"
-                      onClick={() => verDetalles(moroso.cliente.id_cliente)}
+                      onClick={() => verDetalles(moroso)}
                     >
                       <i className="fas fa-eye me-1"></i> Detalles
                     </button>

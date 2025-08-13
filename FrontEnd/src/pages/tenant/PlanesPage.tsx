@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getPlanes, createCheckout } from '../../api/plans';
 import type { Plan } from '../../api/plans';
 import Spinner from '../../components/ui/Spinner';
-import '../../styles/tenant/PlanesPage.css'
+import '../../styles/tenant/PlanesPage.css';
+import Swal from 'sweetalert2';
 
 const PlanesPage: React.FC = () => {
   const [planes, setPlanes] = useState<Plan[]>([]);
@@ -42,24 +43,47 @@ const PlanesPage: React.FC = () => {
       if (data.success && data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       } else {
-        alert(data.message || 'Error al crear checkout');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error en el pago',
+          text: data.message || 'Ocurrió un error al procesar tu suscripción',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#3085d6',
+        });
       }
     } catch (err: any) {
       console.error('Error creating checkout:', err);
       
       if (err.response?.status === 401) {
-        alert('Debes iniciar sesión para suscribirte');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Sesión requerida',
+          text: 'Debes iniciar sesión para suscribirte',
+          confirmButtonText: 'Iniciar sesión',
+          confirmButtonColor: '#3085d6',
+        });
       } else if (err.response?.status === 400) {
-        alert(err.response.data.message || 'Ya tienes una suscripción activa');
+        Swal.fire({
+          icon: 'info',
+          title: 'Suscripción activa',
+          text: err.response.data.message || 'Ya tienes una suscripción activa',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#3085d6',
+        });
       } else {
-        alert('Error de conexión. Inténtalo de nuevo.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudo conectar al servidor. Inténtalo nuevamente.',
+          confirmButtonText: 'Reintentar',
+          confirmButtonColor: '#3085d6',
+        });
       }
     } finally {
       setSubscribing(null);
     }
   };
 
-  // Función para formatear el precio
   const formatPrice = (price: number) => {
     return price.toLocaleString('es-MX', {
       style: 'currency',
@@ -68,7 +92,6 @@ const PlanesPage: React.FC = () => {
     }).replace('MX$', '');
   };
 
-  // Función para obtener los beneficios del plan
   const getPlanBenefits = (plan: Plan) => {
     const baseBenefits = [
       `${plan.limites_whatsapp} WhatsApp incluidos`,
@@ -85,7 +108,6 @@ const PlanesPage: React.FC = () => {
     return baseBenefits;
   };
 
-  // Obtener etiqueta según el nombre del plan
   const getPlanTag = (planName: string) => {
     if (planName.includes('Básico')) return 'Perfecto para empezar';
     if (planName.includes('Pro')) return 'Para crecer rápido';

@@ -29,17 +29,49 @@ export interface MorososResponse {
   };
 }
 
+export interface MorosoDetalle {
+  cliente: {
+    id_cliente: string;
+    nombre_cliente: string;
+    apellido_paterno: string;
+    apellido_materno: string;
+    email_cliente: string;
+    telefono_cliente: string;
+    nombreCompleto: string;
+  };
+  resumen: {
+    cantidadDeudas: number;
+    montoTotal: number;
+    diasRetrasoPromedio: number;
+  };
+  deudas: Array<{
+    id_deuda: string;
+    descripcion: string;
+    monto_original: number;
+    saldo_pendiente: number;
+    fecha_emision: string;
+    fecha_vencimiento: string;
+    estado_deuda: string;
+    diasRetraso: number;
+  }>;
+}
+
 export interface ReporteMorosos {
   empresa: {
     nombre: string;
     logo: string;
   } | null;
-  inquilino: string;
+  inquilino: {
+    nombre: string;
+    apellidoPaterno: string;
+    apellidoMaterno: string;
+  };
   fechaGeneracion: string;
   datos: Array<{
-    nombreCompleto: string;
+    nombre: string;
+    apellidoPaterno: string;
+    apellidoMaterno: string;
     email: string;
-    descripcion: string;
     fechaEmision: string;
     fechaVencimiento: string;
     diasRetraso: number;
@@ -47,7 +79,7 @@ export interface ReporteMorosos {
   }>;
 }
 
-// Listar morosos
+// Listar morosos con filtros
 export const getMorosos = (params?: {
   page?: number;
   limit?: number;
@@ -59,13 +91,13 @@ export const getMorosos = (params?: {
 
 // Obtener moroso por ID
 export const getMorosoById = (id: string) =>
-  api.get(`/tenant/morosos/${id}`);
+  api.get<MorosoDetalle>(`/tenant/morosos/${id}`);
 
-// Enviar notificación
+// Enviar notificación a moroso
 export const enviarNotificacionMoroso = (id: string) =>
   api.post(`/tenant/morosos/${id}/notificar`);
 
-// Generar reporte
+// Generar reporte de morosos
 export const generarReporteMorosos = (params: {
   desde?: string;
   hasta?: string;
@@ -73,4 +105,4 @@ export const generarReporteMorosos = (params: {
   monto_min?: number;
   monto_max?: number;
   id_cliente?: string;
-}) => api.get<ReporteMorosos>('/tenant/morosos/reporte', { params });
+}) => api.get<ReporteMorosos>('/tenant/moroso/reporte', { params });

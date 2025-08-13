@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(userData);
     setIsAuthenticated(true);
 
-    // Redirección simple sin delays
+    // Redirección 
     if (userData.rol === 'admin') {
       window.location.href = '/admin';
     } else if (userData.rol === 'inquilino') {

@@ -1,6 +1,3 @@
-// src/types/index.ts
-// Centraliza todos los tipos aquí y exporta desde un solo lugar
-
 export interface Empresa {
   id_empresa: string;
   nombre_empresa: string;

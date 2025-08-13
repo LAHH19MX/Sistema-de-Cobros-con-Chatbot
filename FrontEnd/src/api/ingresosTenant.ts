@@ -28,12 +28,14 @@ export interface PagoCompletado {
   deuda: {
     descripcion: string;
     montoOriginal: number;
+    montoNeto: number; 
   };
   pago: {
     fechaPago: string;
     importe: number;
     referencia: string;
     concepto: string;
+    Neto: string;
     observaciones: string;
   };
 }
@@ -73,14 +75,14 @@ export interface ReporteIngresos {
   }>;
 }
 
-// Obtener datos para gráfica
+// Obtener datos para gráfica de ingresos
 export const getIngresosGrafica = (params: {
   periodo: 'mensual' | 'trimestral' | 'anual';
   año?: number;
   mes?: number;
 }) => api.get<DatosGrafica>('/tenant/ingresos/grafica', { params });
 
-// Obtener pagos completados
+// Obtener pagos completados con paginación
 export const getPagosCompletados = (params?: {
   desde?: string;
   hasta?: string;
@@ -89,7 +91,7 @@ export const getPagosCompletados = (params?: {
   limit?: number;
 }) => api.get<PagosResponse>('/tenant/ingresos/pagos', { params });
 
-// Generar reporte
+// Generar reporte de ingresos
 export const generarReporteIngresos = (params: {
   desde: string;
   hasta: string;

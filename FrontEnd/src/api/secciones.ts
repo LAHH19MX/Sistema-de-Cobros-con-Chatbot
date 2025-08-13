@@ -12,15 +12,15 @@ export interface Seccion {
   id_categoria: string;
 }
 
-// 1. GET /secciones/:categoriaId Obtiene a todas las secciones por su categoria
+// Obtiene a todas las secciones por su categoria
 export const getSeccionesByCategoria = (categoriaId: string): Promise<AxiosResponse<Seccion[]>> =>
   api.get(`/secciones/${categoriaId}`);
 
-// 2. GET /seccion/:id Obtiene a una seccion por su id
+// Obtiene a una seccion por su id
 export const getSeccionById = (id: string): Promise<AxiosResponse<Seccion>> =>
   api.get(`/seccion/${id}`);
 
-// 3. POST /seccionCre/:categoriaId Crea una seccion, apartir del id de la categoria que pretenecera
+// Crea una seccion, apartir del id de la categoria que pretenecera
 export const createSeccion = (
   categoriaId: string,
   data: {
@@ -33,7 +33,7 @@ export const createSeccion = (
 ): Promise<AxiosResponse<Seccion>> =>
   api.post(`/seccionCre/${categoriaId}`, data);
 
-// 4. PUT /seccionUpd/:id Actualiza a una seccion apartir de su id
+// Actualiza a una seccion apartir de su id
 export const updateSeccion = (
   id: string,
   data: {
@@ -46,6 +46,6 @@ export const updateSeccion = (
 ): Promise<AxiosResponse<Seccion>> =>
   api.put(`/seccionUpd/${id}`, data);
 
-// 5. DELETE /seccionDel/:id Elimina a una seccion apartir de su id
+// Elimina a una seccion apartir de su id
 export const deleteSeccion = (id: string): Promise<AxiosResponse<void>> =>
   api.delete(`/seccionDel/${id}`);

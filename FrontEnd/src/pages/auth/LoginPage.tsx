@@ -1,4 +1,3 @@
-// src/pages/auth/LoginPage.tsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -166,13 +165,9 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {/* Recordarme y Forgot Password */}
+              {/* Forgot Password */}
               <div className="form-options">
-                <label className="remember-me">
-                  <input type="checkbox" disabled={isLoading} />
-                  <span>Recordarme</span>
-                </label>
-                <Link to="/restablecer" className="forgot-password">
+                <Link to="/solicitarRecuperacion" className="forgot-password">
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>

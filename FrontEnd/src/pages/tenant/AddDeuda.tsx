@@ -17,7 +17,6 @@ const AddDeuda: React.FC = () => {
   const [clienteSeleccionado, setClienteSeleccionado] = useState<ClienteTenant | null>(null);
   const [busquedaCliente, setBusquedaCliente] = useState('');
   const [mostrarResultados, setMostrarResultados] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [loadingClientes, setLoadingClientes] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -33,6 +32,20 @@ const AddDeuda: React.FC = () => {
   
   const [errors, setErrors] = useState<DeudaValidationErrors>({});
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
+
+  // Función para agregar 24 horas a una fecha y convertirla a UTC
+  const add24HoursToDate = (dateString: string): string => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return new Date(date.getTime() + 24 * 60 * 60 * 1000).toISOString();
+  };
+
+  // Función para mostrar fecha con 24 horas agregadas
+  const add24HoursForDisplay = (dateString: string): Date => {
+    if (!dateString) return new Date();
+    const date = new Date(dateString);
+    return new Date(date.getTime() + 24 * 60 * 60 * 1000);
+  };
 
   useEffect(() => {
     cargarClientes();
@@ -118,6 +131,15 @@ const AddDeuda: React.FC = () => {
     }).format(numero);
   };
 
+  // Función para formatear fecha en formato dd/MM/yyyy
+  const formatFecha = (fecha: Date) => {
+    return fecha.toLocaleDateString('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
   // CORRECCIÓN PRINCIPAL: Conversión de tipos para el backend
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,7 +170,7 @@ const AddDeuda: React.FC = () => {
           <p><strong>Cliente:</strong> ${clienteSeleccionado?.nombre_cliente} ${clienteSeleccionado?.apellido_paterno}</p>
           <p><strong>Monto:</strong> ${formatMoneda(formData.monto_original)}</p>
           <p><strong>Concepto:</strong> ${formData.descripcion}</p>
-          <p><strong>Vencimiento:</strong> ${new Date(formData.fecha_vencimiento).toLocaleDateString('es-MX')}</p>
+          <p><strong>Vencimiento:</strong> ${formatFecha(add24HoursForDisplay(formData.fecha_vencimiento))}</p>
         </div>
       `,
       icon: 'question',
@@ -177,7 +199,9 @@ const AddDeuda: React.FC = () => {
         
         // Convertir fechas a formato ISO
         fecha_emision: new Date(formData.fecha_emision).toISOString(),
-        fecha_vencimiento: new Date(formData.fecha_vencimiento).toISOString(),
+        
+        // Aplicar corrección de 24 horas a la fecha de vencimiento
+        fecha_vencimiento: add24HoursToDate(formData.fecha_vencimiento),
         
         // Mantener ID cliente
         id_cliente: formData.id_cliente,

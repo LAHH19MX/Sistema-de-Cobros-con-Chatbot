@@ -12,8 +12,8 @@ export interface Contenido {
   id_contenido: string;
   id_seccion: string;
   titulo_contenido: string;
-  texto_contenido?: string; // Hacer opcional
-  multimedia_url?: string;  // Hacer opcional
+  texto_contenido?: string; 
+  multimedia_url?: string; 
 }
 
 export interface Seccion {

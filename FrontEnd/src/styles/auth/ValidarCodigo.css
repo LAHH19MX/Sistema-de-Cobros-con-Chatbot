@@ -1,0 +1,233 @@
+/* src/styles/auth/validar-codigo.css */
+.vista-vc {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  font-family: var(--text-normal);
+  padding: 1rem;
+}
+
+.vista-vc__container {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vista-vc__form-section {
+  padding: 2rem;
+}
+
+.vista-vc__form-wrapper {
+  width: 100%;
+}
+
+.vista-vc__header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.vista-vc__title {
+  color: var(--color-white);
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.vista-vc__subtitle {
+  color: var(--color-textContent);
+  font-size: 0.9rem;
+}
+
+.vista-vc__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.vista-vc__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.vista-vc__form-label {
+  color: var(--color-white);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.vista-vc__code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.vista-vc__code-input {
+  width: 3rem;
+  height: 3.5rem;
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--color-white);
+  transition: all 0.3s ease;
+}
+
+.vista-vc__code-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 2px var(--color-hover-btn);
+  transform: scale(1.05);
+}
+
+.vista-vc__code-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 1.25rem;
+}
+
+.vista-vc__code-input::-webkit-outer-spin-button,
+.vista-vc__code-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.vista-vc__code-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.vista-vc__error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.625rem 0.875rem;
+  background: rgba(240, 113, 119, 0.1);
+  border: 1px solid rgba(240, 113, 119, 0.3);
+  border-radius: 6px;
+  color: var(--color-secondary);
+  font-size: 0.85rem;
+}
+
+.vista-vc__button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.vista-vc__submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem;
+  background: var(--color-secondary);
+  border: none;
+  border-radius: 8px;
+  color: var(--color-white);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.vista-vc__submit-button:hover:not(:disabled) {
+  background: var(--secondary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px -3px rgba(240, 113, 119, 0.4);
+}
+
+.vista-vc__submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.vista-vc__resend-button {
+  background: transparent;
+  border: 1px solid var(--color-secondary);
+  color: var(--color-secondary);
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.vista-vc__resend-button:hover:not(:disabled) {
+  background: rgba(240, 113, 119, 0.1);
+}
+
+.vista-vc__back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-textContent);
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.vista-vc__back-button:hover {
+  color: var(--color-white);
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: translateX(-3px);
+}
+
+.vista-vc__back-button i {
+  font-size: 0.9rem;
+}
+
+.vista-vc__back-button span {
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .vista-vc {
+    padding: 0.5rem;
+  }
+  
+  .vista-vc__container {
+    max-width: 100%;
+  }
+
+  .vista-vc__form-section {
+    padding: 1.5rem;
+  }
+
+  .vista-vc__title {
+    font-size: 1.5rem;
+  }
+  
+  .vista-vc__code-input {
+    width: 2.5rem;
+    height: 3rem;
+    font-size: 1.5rem;
+  }
+  
+  .vista-vc__code-inputs {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .vista-vc__code-input {
+    width: 2.2rem;
+    height: 2.7rem;
+    font-size: 1.3rem;
+  }
+}

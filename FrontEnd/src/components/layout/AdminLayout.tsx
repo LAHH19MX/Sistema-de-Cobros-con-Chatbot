@@ -1,4 +1,3 @@
-// src/components/layout/AdminLayout.tsx
 import '../../styles/admin/AdminLayout.css'; 
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
@@ -48,7 +47,7 @@ const AdminLayout: React.FC = () => {
       {/* Barra lateral */}
       <aside className="admin__sidebar">
         <div className="admin__logo">
-          <img src="https://cdn-icons-png.flaticon.com/512/187/187863.png" alt="Logo Empresa" />
+          <img src="https://res.cloudinary.com/dca3qcakg/image/upload/v1753827209/LogoEmpresaSitio_oqfbzh.png" alt="Logo Empresa" />
         </div>
         <nav className="admin-nav">
           <ul className="admin-nav__list">

@@ -49,15 +49,15 @@ export const updateEmpresa = (
 
 
 //REDES SOCIALES//
-// GET Trae todas las redes
+// Trae todas las redes
 export const getAllRedes = (): Promise<AxiosResponse<RedSocial[]>> =>
   api.get('/redes');
 
-// GET Trae datos de una red por id
+// Trae datos de una red por id
 export const getRedSocialById = (id: string): Promise<AxiosResponse<RedSocial>> =>
   api.get(`/redes/${id}`);
 
-// POST Crea una nueva red social
+// Crea una nueva red social
 export const createRedSocial = (
   empresaId: string,
   data: {
@@ -68,7 +68,7 @@ export const createRedSocial = (
 ): Promise<AxiosResponse<RedSocial>> =>
   api.post(`/redesCre/${empresaId}`, data);
 
-// PUT Actualiza una red social por id
+// Actualiza una red social por id
 export const updateRedSocial = (
   id: string,
   data: {
@@ -80,6 +80,6 @@ export const updateRedSocial = (
 ): Promise<AxiosResponse<RedSocial>> =>
   api.put(`/redesUpd/${id}`, data);
 
-// DELETE Elimina una red social por su id
+// Elimina una red social por su id
 export const deleteRedSocial = (id: string): Promise<AxiosResponse<void>> =>
   api.delete(`/redesDel/${id}`);

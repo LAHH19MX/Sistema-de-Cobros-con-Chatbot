@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import '../../styles/tenant/SideBar.css';          // no se altera la ruta
+import '../../styles/tenant/SideBar.css';         
 
 export interface SideBarTenantProps {
   isOpen: boolean;
@@ -98,20 +98,6 @@ const SideBarTenant: React.FC<SideBarTenantProps> = ({ isOpen, closeSidebar }) =
               <i className="fas fa-box"></i> Planes
             </Link>
           </li>
-
-          {/* {user?.hasSubscription && (
-            <li className="tenant-sidebar__item nav-item">
-              <Link
-                to="/tenant/suscripcion"
-                onClick={handleLinkClick}
-                className={`tenant-sidebar__link nav-link ${
-                  location.pathname === '/tenant/suscripcion' ? 'tenant-sidebar__link--active' : ''
-                }`}
-              >
-                <i className="fas fa-credit-card"></i> Mi&nbsp;Suscripción
-              </Link>
-            </li>
-          )} */}
         </ul>
       </nav>
     </div>

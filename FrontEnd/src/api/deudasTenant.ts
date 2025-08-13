@@ -40,12 +40,17 @@ export interface ReporteDeudas {
     nombre: string;
     logo: string;
   } | null;
-  inquilino: string;
+  inquilino: {
+    nombre: string;
+    apellidoPaterno: string;
+    apellidoMaterno: string;
+  };
   fechaGeneracion: string;
   datos: Array<{
-    nombreCompleto: string;
+    nombre: string;
+    apellidoPaterno: string;
+    apellidoMaterno: string;
     email: string;
-    descripcion: string;
     fechaEmision: string;
     fechaVencimiento: string;
     monto: number;
@@ -53,6 +58,7 @@ export interface ReporteDeudas {
     estado: string;
   }>;
 }
+
 
 // Widgets de deudas
 export const getWidgetsDeudas = () =>
@@ -90,4 +96,4 @@ export const generarReporteDeudas = (params: {
   hasta: string;
   estado?: string;
   id_cliente?: string;
-}) => api.get<ReporteDeudas>('/tenant/deudas/reporte', { params });
+}) => api.get<ReporteDeudas>('/tenant/deuda/reporte', { params });

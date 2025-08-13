@@ -56,7 +56,7 @@ export const InquilinosProvider = ({ children }: { children: ReactNode }) => {
   try {
     const res = await api.updateInquilino(id, data);
     
-    // Actualizar listado (versión simplificada y segura)
+    // Actualizar listado 
     setInquilinos(prev => prev.map(inq => {
       if (inq.id !== id) return inq;
       
