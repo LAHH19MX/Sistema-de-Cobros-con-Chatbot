@@ -116,13 +116,17 @@ export const verify = async (req: Request, res: Response) => {
         return res.status(401).json({ message: "No autorizado" });
       }
 
-      // NUEVO: Verificar si tiene suscripción activa
+      const hoy = new Date();
+
       const suscripcion = await prisma.suscripciones.findFirst({
         where: {
           id_inquilino: inquilino.id_inquilino,
-          estado_suscripcion: {
-            in: ['activa', 'pago_vencido'] // Incluir período de gracia
-          }
+          OR: [
+            { estado_suscripcion: { in: ['activa', 'pago_vencido'] } },
+            {
+              fecha_renovacion: { gte: hoy },
+            }
+          ]
         }
       });
       

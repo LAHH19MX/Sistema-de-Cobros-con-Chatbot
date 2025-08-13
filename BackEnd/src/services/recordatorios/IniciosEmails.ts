@@ -14,11 +14,14 @@ export async function primerEmail(
     where: { id_cliente: idCliente },
   });
   if (!cliente) throw new Error('Cliente no encontrado');
+  
+  const mensajeExtra = "\n\nPara consultar más información ingrese al WhatsApp a través de la siguiente URL: https://wa.me/123123123 o enviando un mensaje al número +52 123 123 123.";
+  const mensajeFinal = cfg.mensaje_pre_vencimiento + mensajeExtra;
 
   await sendEmail(
     cliente.email_cliente,
     cfg.motivo,
-    cfg.mensaje_pre_vencimiento
+    mensajeFinal
   );
   
   const ahora = new Date();

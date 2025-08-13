@@ -1,8 +1,6 @@
 import { Router } from 'express';
 import {
-  // getAllPlans,
   getPlanById,
-  // createPlan,
   updatePlan,
   deletePlan
 } from '../controller/plans.controller';
@@ -14,15 +12,7 @@ import { getActivePlans } from '../controller/plans.controller';
 
 const router = Router();
 
-// router.get('/allplans/', getAllPlans);
 router.get('/planbyid/:id', authRequiered, adminOnly, getPlanById);
-// router.post(
-//   '/',
-//   authRequiered,
-//   adminOnly,
-//   validateSchema(CreatePlanSchema),
-//   createPlan
-// );
 router.get('/allplans', getActivePlans);
 
 router.put(

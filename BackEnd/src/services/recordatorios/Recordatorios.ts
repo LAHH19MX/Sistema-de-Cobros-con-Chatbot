@@ -31,11 +31,15 @@ export async function runRecordatorios() {
                 ahora > deuda.fecha_vencimiento
                     ? r.Configuracion.mensaje_post_vencimiento
                     : r.Configuracion.mensaje_pre_vencimiento;
+                
+                const mensajeExtra = "\n\nPara consultar más información ingrese al WhatsApp a través de la siguiente URL: https://wa.me/123123123 o enviando un mensaje al número +52 123 123 123.";
+
+                const mensajeFinal = plantilla + mensajeExtra;
 
                 await sendEmail(
                     r.Cliente.email_cliente,
                     r.Configuracion.motivo,
-                    plantilla
+                    mensajeFinal
                 );
 
                 const freq = Number(r.Configuracion.frecuencia);

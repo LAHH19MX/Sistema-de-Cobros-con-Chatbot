@@ -263,31 +263,30 @@ export const updateDeuda = async (req: Request, res: Response) => {
 
 export const generarReporteDeudas = async (req: Request, res: Response) => {
   try {
-    const id_inquilino = (req as any).user.id
-    const { desde, hasta, estado, id_cliente } = req.query
-    
+    const id_inquilino = (req as any).user.id;
+    const { desde, hasta, estado, id_cliente } = req.query;
+
     // Construir filtros
     const where: any = {
       Cliente: { id_inquilino },
-      estado_deuda: { not: 'vencido' }  // ← EXCLUIR VENCIDAS
-    }
-    
+      estado_deuda: { not: 'vencido' }
+    };
+
     if (desde && hasta) {
       where.fecha_emision = {
         gte: new Date(desde as string),
         lte: new Date(hasta as string)
-      }
+      };
     }
-    
-    // Si especifica estado, sobrescribir el filtro
+
     if (estado && estado !== 'todos') {
-      where.estado_deuda = estado
+      where.estado_deuda = estado;
     }
-    
+
     if (id_cliente) {
-      where.id_cliente = id_cliente
+      where.id_cliente = id_cliente;
     }
-    
+
     // Obtener info del inquilino
     const inquilino = await prisma.inquilino.findUnique({
       where: { id_inquilino },
@@ -296,20 +295,20 @@ export const generarReporteDeudas = async (req: Request, res: Response) => {
         apellido_paterno: true,
         apellido_materno: true
       }
-    })
-    
+    });
+
     if (!inquilino) {
-      return res.status(404).json({ error: 'Inquilino no encontrado' })
+      return res.status(404).json({ error: 'Inquilino no encontrado' });
     }
-    
-    // Obtener empresa (si solo hay una)
+
+    // Obtener empresa
     const empresa = await prisma.empresa.findFirst({
       select: {
         nombre_empresa: true,
         logo_empresa: true
       }
-    })
-    
+    });
+
     // Obtener deudas
     const deudas = await prisma.deuda.findMany({
       where,
@@ -324,31 +323,36 @@ export const generarReporteDeudas = async (req: Request, res: Response) => {
         }
       },
       orderBy: { fecha_emision: 'desc' }
-    })
-    
-    // Formatear datos
+    });
+
+    // Formatear datos (SIN DESCRIPCIÓN)
     const datosReporte = deudas.map(deuda => ({
-      nombreCompleto: `${deuda.Cliente.nombre_cliente} ${deuda.Cliente.apellido_paterno} ${deuda.Cliente.apellido_materno || ''}`.trim(),
+      nombre: deuda.Cliente.nombre_cliente,
+      apellidoPaterno: deuda.Cliente.apellido_paterno,
+      apellidoMaterno: deuda.Cliente.apellido_materno || '',
       email: deuda.Cliente.email_cliente,
-      descripcion: deuda.descripcion,
       fechaEmision: deuda.fecha_emision,
       fechaVencimiento: deuda.fecha_vencimiento,
       monto: Number(deuda.monto_original),
       pagado: Number(deuda.monto_original) - Number(deuda.saldo_pendiente),
       estado: deuda.estado_deuda
-    }))
-    
+    })); 
+
     res.json({
       empresa: empresa ? {
         nombre: empresa.nombre_empresa,
         logo: empresa.logo_empresa
       } : null,
-      inquilino: `${inquilino.nombre_inquilino} ${inquilino.apellido_paterno} ${inquilino.apellido_materno || ''}`.trim(),
+      inquilino: {
+        nombre: inquilino.nombre_inquilino,
+        apellidoPaterno: inquilino.apellido_paterno,
+        apellidoMaterno: inquilino.apellido_materno || ''
+      },
       fechaGeneracion: new Date(),
       datos: datosReporte
-    })
+    });
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: 'Error generando reporte de deudas' })
+    console.error(error);
+    res.status(500).json({ error: 'Error generando reporte de deudas' });
   }
-}
+};

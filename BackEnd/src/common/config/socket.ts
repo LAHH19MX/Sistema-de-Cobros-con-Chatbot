@@ -15,11 +15,8 @@ export const initializeSocket = (server: HTTPServer) => {
   // Middleware de autenticación
   io.use(async (socket, next) => {
     try {
-      // Cookie-parser ya procesó las cookies en Express
-      // Pero Socket.io necesita parsearlas manualmente
       const cookieString = socket.handshake.headers.cookie || ''
       
-      // Parsear manualmente la cookie token
       const tokenMatch = cookieString.match(/token=([^;]+)/)
       const token = tokenMatch ? tokenMatch[1] : null
       

@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Definimos el esquema base sin .refine() para el middleware
 const baseSchema = z.object({
   nombre_inquilino: z.string({
     required_error: 'El nombre es requerido',
@@ -74,8 +73,6 @@ const baseSchema = z.object({
   .optional()
 });
 
-// Exportamos el esquema base para el middleware
 export const updateInquilinoSchema = baseSchema;
 
-// Tipo TypeScript para inferencia
 export type UpdateInquilinoInput = z.infer<typeof baseSchema>;

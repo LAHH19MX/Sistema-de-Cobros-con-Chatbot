@@ -60,7 +60,6 @@ export const stripeWebhook = async (req: Request, res: Response) => {
         break;
         
       default:
-        console.log(`Unhandled Stripe event type: ${event.type}`);
     }
 
     res.json({ received: true });
@@ -74,9 +73,6 @@ export const stripeWebhook = async (req: Request, res: Response) => {
 export const paypalWebhook = async (req: Request, res: Response) => {
   try {
     const event = req.body;
-    
-    // Para PayPal, la verificación es más compleja, por ahora omitimos la verificación en sandbox
-    console.log(`Received PayPal webhook: ${event.event_type}`);
 
     // Manejar diferentes tipos de eventos
     switch (event.event_type) {

@@ -57,7 +57,7 @@ export const solicitarRecuperacion = async (req: Request, res: Response) => {
 
     // Generar nuevo código
     const codigo = generarCodigo();
-    const fechaExpiracion = new Date(Date.now() + 60 * 1000); // 1 minuto
+    const fechaExpiracion = new Date(Date.now() + 60 * 1000); 
 
     // Guardar código en BD
     await prisma.codigo_recuperacion.create({
@@ -93,13 +93,12 @@ export const validarCodigo = async (req: Request, res: Response) => {
         codigo,
         usado: false,
         fecha_expiracion: {
-          gt: new Date() // Mayor que la fecha actual
+          gt: new Date() 
         }
       }
     });
 
     if (!codigoRecuperacion) {
-      // Incrementar intentos si existe un código para este email
       await prisma.codigo_recuperacion.updateMany({
         where: {
           email,
@@ -159,7 +158,7 @@ export const reenviarCodigo = async (req: Request, res: Response) => {
 
     // Generar nuevo código
     const codigo = generarCodigo();
-    const fechaExpiracion = new Date(Date.now() + 60 * 1000); // 1 minuto
+    const fechaExpiracion = new Date(Date.now() + 60 * 1000);
 
     // Guardar nuevo código
     await prisma.codigo_recuperacion.create({
@@ -216,14 +215,14 @@ export const restablecerPassword = async (req: Request, res: Response) => {
       if (codigoRecuperacion.tipo_usuario === 'admin') {
         await prisma.admin.update({
           where: { 
-            email_admin: email  // Usar el nombre de campo correcto
+            email_admin: email  
           },
           data: { password: hashedPassword }
         });
       } else {
         await prisma.inquilino.update({
           where: { 
-            email_inquilino: email  // Usar el nombre de campo correcto
+            email_inquilino: email 
           },
           data: { password: hashedPassword }
         });

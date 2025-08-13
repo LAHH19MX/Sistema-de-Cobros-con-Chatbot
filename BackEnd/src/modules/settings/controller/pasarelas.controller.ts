@@ -8,7 +8,7 @@ export const getPasarelas = async (req: Request, res: Response) => {
     
     const pasarelas = await prisma.clave_pasarelas.findMany({
       where: { id_inquilino },
-      orderBy: { pasarela: 'desc' } // stripe viene antes que paypal alfabéticamente al revés
+      orderBy: { pasarela: 'desc' } 
     })
     
     res.json(pasarelas)
@@ -25,13 +25,28 @@ export const upsertPasarela = async (req: Request, res: Response) => {
     const {
       pasarela,
       credenciales_api,
-      client_secret
+      client_secret,
+      webhook_secret,  
+      webhook_id       
     } = req.body
     
     // Validar requerimientos según tipo de pasarela
     if (pasarela === 'paypal' && !client_secret) {
       return res.status(400).json({ 
         error: 'PayPal requiere tanto credenciales API como client secret' 
+      })
+    }
+    
+    // Validar webhook fields
+    if (pasarela === 'stripe' && !webhook_secret) {
+      return res.status(400).json({ 
+        error: 'Stripe requiere webhook secret para recibir notificaciones de pago' 
+      })
+    }
+    
+    if (pasarela === 'paypal' && !webhook_id) {
+      return res.status(400).json({ 
+        error: 'PayPal requiere webhook ID para recibir notificaciones de pago' 
       })
     }
     
@@ -52,6 +67,8 @@ export const upsertPasarela = async (req: Request, res: Response) => {
         data: {
           credenciales_api,
           client_secret,
+          webhook_secret,     
+          webhook_id,        
           estado: 'ACTIVO',
           fecha_actualizacion: new Date()
         }
@@ -64,6 +81,8 @@ export const upsertPasarela = async (req: Request, res: Response) => {
           pasarela,
           credenciales_api,
           client_secret,
+          webhook_secret,
+          webhook_id,         
           estado: 'ACTIVO'
         }
       })
@@ -79,7 +98,7 @@ export const upsertPasarela = async (req: Request, res: Response) => {
   }
 }
 
-// Actualizar estado de pasarela (activar/desactivar)
+// Actualizar estado de pasarela 
 export const updateEstadoPasarela = async (req: Request, res: Response) => {
   try {
     const { tipo } = req.params 

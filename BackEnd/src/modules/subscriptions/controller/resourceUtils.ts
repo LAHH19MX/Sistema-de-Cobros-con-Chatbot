@@ -90,7 +90,7 @@ export const incrementResourceUsage = async (
         return {
           success: true,
           currentUsage: currentUsage + 1,
-          limit: -1 // -1 indica ilimitado
+          limit: -1 
         };
       }
     }

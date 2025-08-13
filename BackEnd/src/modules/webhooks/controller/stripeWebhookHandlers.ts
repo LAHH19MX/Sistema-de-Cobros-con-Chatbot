@@ -127,8 +127,6 @@ export const handleStripeSubscriptionUpdated = async (event: Stripe.Event) => {
           : {})
       }
     });
-
-    console.log('Stripe subscription updated successfully:', suscripcionExistente.id_suscripcion);
     
   } catch (error) {
     console.error('Error handling Stripe subscription updated:', error);
@@ -168,7 +166,7 @@ export const handleStripeSubscriptionDeleted = async (event: Stripe.Event) => {
 
 export const handleStripePaymentSucceeded = async (event: Stripe.Event) => {
   try {
-    const invoice = event.data.object as any; // Cast a any para acceder a subscription
+    const invoice = event.data.object as any;
     
     console.log('Processing Stripe payment succeeded:', invoice.id);
     
@@ -206,7 +204,6 @@ export const handleStripePaymentSucceeded = async (event: Stripe.Event) => {
         fecha_inicio: now,
         fecha_renovacion: nuevaFechaRenovacion,
         actualizado_en: now,
-        // Si había un plan siguiente programado, aplicarlo
         ...(suscripcion.id_plan_siguiente ? {
           id_plan: suscripcion.id_plan_siguiente,
           id_plan_siguiente: null
@@ -238,7 +235,7 @@ export const handleStripePaymentSucceeded = async (event: Stripe.Event) => {
 
 export const handleStripePaymentFailed = async (event: Stripe.Event) => {
   try {
-    const invoice = event.data.object as any; // Cast a any para acceder a subscription
+    const invoice = event.data.object as any; 
     
     console.log('Processing Stripe payment failed:', invoice.id);
     

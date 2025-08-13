@@ -1,4 +1,3 @@
-// src/common/middlewares/validator.middleware.ts
 import { AnyZodObject, ZodError } from 'zod'
 import { Request, Response, NextFunction } from 'express'
 

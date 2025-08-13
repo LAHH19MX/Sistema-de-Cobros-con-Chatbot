@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Esquema base sin .refine() para evitar problemas de tipo
 const basePlanSchema = z.object({
   nombre_plan: z.string({
     required_error: 'El nombre del plan es requerido',
@@ -33,10 +32,10 @@ const basePlanSchema = z.object({
   paypal_plan_id: z.string().optional()
 });
 
-// Para creación - todos los campos requeridos
+// todos los campos requeridos
 export const CreatePlanSchema = basePlanSchema;
 
-// Para actualización - todos los campos opcionales
+//Todos los campos opcionales
 export const UpdatePlanSchema = basePlanSchema.partial(); 
 
 // Tipos TypeScript

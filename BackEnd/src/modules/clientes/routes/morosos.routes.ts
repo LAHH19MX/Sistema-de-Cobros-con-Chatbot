@@ -10,5 +10,5 @@ const router = Router()
 router.get('/morosos', authRequiered, inquilinoOnly, getMorosos)
 router.get('/morosos/:id', authRequiered, inquilinoOnly, getMorosoById)
 router.post('/morosos/:id/notificar', authRequiered, inquilinoOnly, enviarNotificacionMoroso)
-router.get('/morosos/reporte', authRequiered, inquilinoOnly, generarReporteMorosos)
+router.get('/moroso/reporte', authRequiered, inquilinoOnly, generarReporteMorosos)
 export default router

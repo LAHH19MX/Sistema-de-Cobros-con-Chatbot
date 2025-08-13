@@ -9,7 +9,7 @@ export const getStats = async (req: Request, res: Response) => {
     const currentDate = new Date()
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
     
-    // 1. Total clientes registrados este mes
+    // Total clientes registrados este mes
     const totalClientes = await prisma.cliente.count({
       where: {
         id_inquilino,
@@ -19,7 +19,7 @@ export const getStats = async (req: Request, res: Response) => {
       }
     })
 
-    // 2. Pagos cobrados este mes
+    // Pagos cobrados este mes
     const pagosCobrados = await prisma.historialPago.count({
       where: {
         Cliente: {
@@ -32,7 +32,7 @@ export const getStats = async (req: Request, res: Response) => {
       }
     })
 
-    // 3. Deudas pendientes de este mes
+    // Deudas pendientes de este mes
     const deudasPendientes = await prisma.deuda.count({
       where: {
         Cliente: {
@@ -40,9 +40,6 @@ export const getStats = async (req: Request, res: Response) => {
         },
         saldo_pendiente: {
           gt: 0
-        },
-        fecha_emision: {
-          gte: firstDayOfMonth
         }
       }
     })

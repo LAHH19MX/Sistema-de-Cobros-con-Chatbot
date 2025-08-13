@@ -6,19 +6,18 @@ export const handlePayPalSubscriptionCreated = async (event: any) => {
     
     console.log('Processing PayPal subscription created:', subscription.id);
     
-    // PayPal envía los datos de manera diferente según el tipo de pago
     // Buscar custom_id en diferentes ubicaciones posibles
     let customId = null;
     
-    // Opción 1: En el recurso directo
+    // En el recurso directo
     if (subscription.custom_id) {
       customId = subscription.custom_id;
     }
-    // Opción 2: En purchase_units (para ordenes de pago único)
+    // En purchase_units (para ordenes de pago único)
     else if (subscription.purchase_units && subscription.purchase_units[0]?.custom_id) {
       customId = subscription.purchase_units[0].custom_id;
     }
-    // Opción 3: En plan.custom_id
+    // En plan.custom_id
     else if (subscription.plan?.custom_id) {
       customId = subscription.plan.custom_id;
     }
@@ -28,7 +27,7 @@ export const handlePayPalSubscriptionCreated = async (event: any) => {
       return;
     }
 
-    // Parsear custom_id: "inquilinoId|planId|paypal"
+    // Parsear custom_id
     const parts = customId.split('|');
     if (parts.length !== 3 || parts[2] !== 'paypal') {
       console.error('Invalid custom_id format:', customId);
@@ -65,7 +64,7 @@ export const handlePayPalSubscriptionCreated = async (event: any) => {
     // Crear suscripción en nuestra BD
     const nuevaSuscripcion = await prisma.suscripciones.create({
       data: {
-        estado_suscripcion: 'activa', // PayPal subscription created = activa
+        estado_suscripcion: 'activa', 
         fecha_inicio: new Date(),
         fecha_renovacion: fechaRenovacion,
         id_suscripcion_externa: subscription.id,
@@ -207,7 +206,6 @@ export const handlePayPalPaymentCompleted = async (event: any) => {
         fecha_inicio: now,
         fecha_renovacion: nuevaFechaRenovacion,
         actualizado_en: now,
-        // Aplicar cambio de plan si existe
         ...(suscripcion.id_plan_siguiente ? {
           id_plan: suscripcion.id_plan_siguiente,
           id_plan_siguiente: null

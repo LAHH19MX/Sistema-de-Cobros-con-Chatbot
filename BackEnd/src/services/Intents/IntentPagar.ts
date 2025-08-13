@@ -16,9 +16,9 @@ const respuestasSinDeudaPagar: string[] = [
 ];
 
 const respuestasSeleccionPasarela: string[] = [
-  "Tienes una deuda de $${saldo}. ¿Con qué método prefieres pagar?\n\n1._ Stripe (tarjeta)\n2._ PayPal\n\nEscribe 'stripe' o 'paypal'",
-  "Tu saldo pendiente es de $${saldo}. Selecciona tu método de pago:\n\n Stripe\n PayPal\n\nResponde con 'stripe' o 'paypal'",
-  "Debes $${saldo}. ¿Cómo quieres pagar?\n\n• Stripe (tarjeta de crédito/débito)\nPayPal\n\nEscribe tu preferencia: 'stripe' o 'paypal'"
+  "Tienes una deuda de $${saldo}. ¿Con qué método prefieres pagar?(Dame una de las siguientes respuestas exactas)\n\n1._ Quiero pagar con stripe \n2._ Quiero pagar con paypal'",
+  "Tu saldo pendiente es de $${saldo}. Selecciona tu método de pago(Dame una de las siguientes respuestas exactas):\n\n 1._ Quiero pagar con stripe \n 2._ Quiero pagar con paypal\n\n'",
+  "Debes $${saldo}. ¿Cómo quieres pagar?(Dame una de las siguientes respuestas exactas)\n\n• 1._ Quiero pagar con stripe\n• 2._ Quiero pagar con paypal\n\nEscribe tu preferencia"
 ];
 
 const respuestasConDeudaPagar: string[] = [
@@ -48,6 +48,14 @@ export async function handleIntentPagar(req: Request, res: Response) {
   const session = req.body.session as string;
   const idCliente: string = contextoIdentificado?.parameters?.id_cliente;
   const userMessage = req.body.queryResult?.queryText?.toLowerCase() || '';
+  const parameters = req.body.queryResult?.parameters || {};
+  const intentName = req.body.queryResult?.intent?.displayName || '';
+
+  // Logs para debug
+  console.log('Intent recibido:', intentName);
+  console.log('Parámetros:', parameters);
+  console.log('Mensaje del usuario:', userMessage);
+  console.log('Contexto selección pago:', contextoSeleccionPago?.parameters);
 
   if (!idCliente) {
     return res.json({
@@ -62,10 +70,16 @@ export async function handleIntentPagar(req: Request, res: Response) {
     });
   }
 
+  // CAMBIO: Incluir tanto deudas "pendientes" como "vencidas"
   const deudasCliente = await prisma.deuda.findMany({
     where: {
       id_cliente: idCliente,
-      estado_deuda: "PENDIENTE"  
+      estado_deuda: {
+        in: ["pendiente", "vencido"]
+      },
+      saldo_pendiente: {
+        gt: 0  // Solo deudas con saldo pendiente mayor a 0
+      }
     }
   });
 
@@ -74,32 +88,45 @@ export async function handleIntentPagar(req: Request, res: Response) {
     return res.json({ fulfillmentText: textoAleatorio });
   }
 
+  // Mantener lógica original: solo la deuda MÁS RECIENTE
   const deudaReciente = deudasCliente.reduce((prev, curr) =>
     curr.fecha_vencimiento > prev.fecha_vencimiento ? curr : prev
   );
 
-  // Verificar si ya seleccionó método de pago
-  if (contextoSeleccionPago) {
-    const pasarelaSeleccionada = contextoSeleccionPago.parameters?.pasarela_elegida;
-    
-    if (pasarelaSeleccionada) {
-      // Ya tiene seleccionada la pasarela, generar enlace
-      let enlacePago: string;
-      try {
-        if (pasarelaSeleccionada === 'stripe') {
-          enlacePago = await createStripeLink(deudaReciente.id_deuda);
-        } else if (pasarelaSeleccionada === 'paypal') {
-          enlacePago = await createPaypalLink(deudaReciente.id_deuda);
-        } else {
-          throw new Error('Pasarela no válida');
-        }
-      } catch (err) {
-        console.error(`Error creando enlace ${pasarelaSeleccionada}:`, err);
-        return res.json({
-          fulfillmentText: 'Lo siento, hubo un problema generando tu enlace de pago. Intenta más tarde.'
-        });
+  // Detección mejorada del método de pago
+  let metodoElegido: string | null = null;
+
+  // 1. Primero verificar si viene del intent Seleccionar_Metodo_Pago
+  if (intentName === 'Seleccionar_Metodo_Pago' && parameters.metodospago) {
+    metodoElegido = parameters.metodospago.toLowerCase();
+    console.log('Método detectado desde intent Seleccionar_Metodo_Pago:', metodoElegido);
+  }
+  // 2. Verificar si ya hay una pasarela elegida en el contexto
+  else if (contextoSeleccionPago?.parameters?.pasarela_elegida) {
+    metodoElegido = contextoSeleccionPago.parameters.pasarela_elegida;
+    console.log('Método detectado desde contexto:', metodoElegido);
+  }
+  // 3. Detectar por regex en el mensaje (para el intent Pagar)
+  else if (intentName === 'Pagar') {
+    if (/(stripe|tarjeta|credito|d[ée]bito|visa|mastercard|1\b)/i.test(userMessage)) {
+      metodoElegido = 'stripe';
+      console.log('Método detectado por regex: stripe');
+    } else if (/(paypal|pay\s?pal|pp|2\b)/i.test(userMessage)) {
+      metodoElegido = 'paypal';
+      console.log('Método detectado por regex: paypal');
+    }
+  }
+
+  // Si se detectó un método, generar el enlace
+  if (metodoElegido && (metodoElegido === 'stripe' || metodoElegido === 'paypal')) {
+    let enlacePago: string;
+    try {
+      if (metodoElegido === 'stripe') {
+        enlacePago = await createStripeLink(deudaReciente.id_deuda);
+      } else {
+        enlacePago = await createPaypalLink(deudaReciente.id_deuda);
       }
-      
+
       const plantilla = randomFromArray(respuestasConDeudaPagar);
       const respuesta = plantilla.replace('${enlace}', enlacePago);
       
@@ -108,85 +135,56 @@ export async function handleIntentPagar(req: Request, res: Response) {
         outputContexts: [
           {
             name: `${session}/contexts/cliente_identificado`,
-            lifespanCount: 4,
+            lifespanCount: 2,
             parameters: { id_cliente: idCliente }
           }
         ]
       });
-    }
-  }
-
-  // DETECTAR selección de pasarela en el mensaje
-  if (userMessage.includes('stripe') || userMessage.includes('tarjeta')) {
-    let enlacePago: string;
-    try {
-      enlacePago = await createStripeLink(deudaReciente.id_deuda);
     } catch (err) {
-      console.error('Error creando enlace Stripe:', err);
+      console.error(`Error creando enlace ${metodoElegido}:`, err);
       return res.json({
-        fulfillmentText: 'Lo siento, hubo un problema generando tu enlace de Stripe. Intenta más tarde.'
+        fulfillmentText: `Lo siento, hubo un problema generando tu enlace de pago con ${metodoElegido}. Por favor intenta más tarde.`
       });
     }
-    
-    const plantilla = randomFromArray(respuestasConDeudaPagar);
-    const respuesta = plantilla.replace('${enlace}', enlacePago);
-    
-    return res.json({ 
-      fulfillmentText: respuesta,
+  }
+  // Si no se detectó método y es el intent Pagar, preguntar
+  else if (intentName === 'Pagar') {
+    const saldo = deudaReciente.saldo_pendiente.toFixed(2);
+    const plantillaSeleccion = randomFromArray(respuestasSeleccionPasarela);
+    const respuestaSeleccion = plantillaSeleccion.replace('${saldo}', saldo);
+
+    return res.json({
+      fulfillmentText: respuestaSeleccion,
       outputContexts: [
         {
           name: `${session}/contexts/cliente_identificado`,
-          lifespanCount: 4,
+          lifespanCount: 2,
           parameters: { id_cliente: idCliente }
+        },
+        {
+          name: `${session}/contexts/seleccion_pago`,
+          lifespanCount: 2,
+          parameters: { id_deuda: deudaReciente.id_deuda }
         }
       ]
     });
   }
-
-  if (userMessage.includes('paypal')) {
-    let enlacePago: string;
-    try {
-      enlacePago = await createPaypalLink(deudaReciente.id_deuda);
-    } catch (err) {
-      console.error('Error creando enlace PayPal:', err);
-      return res.json({
-        fulfillmentText: 'Lo siento, hubo un problema generando tu enlace de PayPal. Intenta más tarde.'
-      });
-    }
-    
-    const plantilla = randomFromArray(respuestasConDeudaPagar);
-    const respuesta = plantilla.replace('${enlace}', enlacePago);
-    
-    return res.json({ 
-      fulfillmentText: respuesta,
+  // Si es Seleccionar_Metodo_Pago pero no se detectó el método
+  else {
+    return res.json({
+      fulfillmentText: 'Por favor selecciona un método de pago válido: Stripe o PayPal.',
       outputContexts: [
         {
           name: `${session}/contexts/cliente_identificado`,
-          lifespanCount: 4,
+          lifespanCount: 2,
           parameters: { id_cliente: idCliente }
+        },
+        {
+          name: `${session}/contexts/seleccion_pago`,
+          lifespanCount: 2,
+          parameters: { id_deuda: deudaReciente.id_deuda }
         }
       ]
     });
   }
-
-  // PRIMERA VEZ: Preguntar método de pago
-  const saldo = deudaReciente.saldo_pendiente.toFixed(2);
-  const plantillaSeleccion = randomFromArray(respuestasSeleccionPasarela);
-  const respuestaSeleccion = plantillaSeleccion.replace('${saldo}', saldo);
-
-  return res.json({
-    fulfillmentText: respuestaSeleccion,
-    outputContexts: [
-      {
-        name: `${session}/contexts/cliente_identificado`,
-        lifespanCount: 4,
-        parameters: { id_cliente: idCliente }
-      },
-      {
-        name: `${session}/contexts/seleccion_pago`,
-        lifespanCount: 2,
-        parameters: { id_deuda: deudaReciente.id_deuda }
-      }
-    ]
-  });
 }

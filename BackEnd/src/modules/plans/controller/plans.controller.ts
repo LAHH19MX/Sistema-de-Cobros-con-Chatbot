@@ -2,21 +2,6 @@ import { Request, Response } from 'express';
 import { prisma } from '../../../db/client';
 import { CreatePlanSchema, UpdatePlanSchema } from '../schemas/plans.schemas';
 
-// export const getAllPlans = async (_: Request, res: Response) => {
-//   try {
-//     const plans = await prisma.planes.findMany({
-//       orderBy: { creado_en: 'desc' }
-//     });
-//     res.json(plans);
-//   } catch (error: any) {
-//     console.error('Error:', error.message);
-//     res.status(500).json({ 
-//       error: 'Error al obtener planes',
-//       detalles: process.env.NODE_ENV === 'development' ? error.message : undefined
-//     });
-//   }
-// };
-
 export const getPlanById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -38,31 +23,11 @@ export const getPlanById = async (req: Request, res: Response) => {
   }
 };
 
-// export const createPlan = async (req: Request, res: Response) => {
-//   try {
-//     const data = CreatePlanSchema.parse(req.body);
-//     const newPlan = await prisma.planes.create({
-//       data: {
-//         ...data,
-//         creado_en: new Date(),
-//         actualizado_en: new Date()
-//       }
-//     });
-//     res.status(201).json(newPlan);
-//   } catch (error: any) {
-//     console.error('Error al crear plan:', error.message);
-//     res.status(400).json({ 
-//       error: 'Error al crear el plan',
-//       detalles: error.message
-//     });
-//   }
-// };
-
 export const getActivePlans = async (req: Request, res: Response) => {
   try {
     const planes = await prisma.planes.findMany({
       where: {
-        estado_plan: true // Solo planes activos
+        estado_plan: true 
       },
       select: {
         id_plan: true,
@@ -77,11 +42,10 @@ export const getActivePlans = async (req: Request, res: Response) => {
         paypal_plan_id: true
       },
       orderBy: {
-        precio_plan: 'asc' // Del más barato al más caro
+        precio_plan: 'asc' 
       }
     });
 
-    // Convertir Decimal a number para el frontend
     const planesFormatted = planes.map(plan => ({
       ...plan,
       precio_plan: Number(plan.precio_plan)

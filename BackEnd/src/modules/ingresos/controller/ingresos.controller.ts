@@ -63,7 +63,7 @@ export const getIngresosGrafica = async (req: Request, res: Response) => {
     
     // Calcular totales
     const totalIngresos = pagos.reduce((sum, pago) => sum + Number(pago.importe), 0)
-    const promedioMensual = totalIngresos / 12 // Simplificado
+    const promedioMensual = totalIngresos / 12;
     
     res.json({
       periodo,
@@ -87,52 +87,52 @@ export const getIngresosGrafica = async (req: Request, res: Response) => {
 
 // Función auxiliar para agrupar por periodo
 function agruparPorPeriodo(pagos: any[], periodo: string) {
-  const grupos: { [key: string]: { label: string; total: number; cantidad: number } } = {}
-  
-  pagos.forEach(pago => {
-    const fecha = new Date(pago.fecha_pago)
-    let key: string
-    let label: string
+    const grupos: { [key: string]: { label: string; total: number; cantidad: number } } = {}
     
-    switch (periodo) {
-      case 'mensual':
-        key = `${fecha.getFullYear()}-${fecha.getMonth() + 1}`
-        label = fecha.toLocaleDateString('es-MX', { year: 'numeric', month: 'short' })
-        break
-        
-      case 'trimestral':
-        const quarter = Math.floor(fecha.getMonth() / 3) + 1
-        key = `${fecha.getFullYear()}-Q${quarter}`
-        label = `${fecha.getFullYear()} T${quarter}`
-        break
-        
-      case 'anual':
-        key = fecha.getFullYear().toString()
-        label = fecha.getFullYear().toString()
-        break
-        
-      default:
-        key = fecha.toISOString()
-        label = fecha.toLocaleDateString()
-    }
+    pagos.forEach(pago => {
+      const fecha = new Date(pago.fecha_pago)
+      let key: string
+      let label: string
+      
+      switch (periodo) {
+        case 'mensual':
+          key = `${fecha.getFullYear()}-${fecha.getMonth() + 1}`
+          label = fecha.toLocaleDateString('es-MX', { year: 'numeric', month: 'short' })
+          break
+          
+        case 'trimestral':
+          const quarter = Math.floor(fecha.getMonth() / 3) + 1
+          key = `${fecha.getFullYear()}-Q${quarter}`
+          label = `${fecha.getFullYear()} T${quarter}`
+          break
+          
+        case 'anual':
+          key = fecha.getFullYear().toString()
+          label = fecha.getFullYear().toString()
+          break
+          
+        default:
+          key = fecha.toISOString()
+          label = fecha.toLocaleDateString()
+      }
+      
+      if (!grupos[key]) {
+        grupos[key] = { label, total: 0, cantidad: 0 }
+      }
+      
+      grupos[key].total += Number(pago.importe)
+      grupos[key].cantidad += 1
+    })
     
-    if (!grupos[key]) {
-      grupos[key] = { label, total: 0, cantidad: 0 }
-    }
-    
-    grupos[key].total += Number(pago.importe)
-    grupos[key].cantidad += 1
-  })
-  
-  // Convertir a array y ordenar
-  return Object.entries(grupos)
-    .map(([key, data]) => ({
-      periodo: data.label,
-      total: data.total,
-      cantidad: data.cantidad,
-      promedio: data.total / data.cantidad
-    }))
-    .sort((a, b) => a.periodo.localeCompare(b.periodo))
+    // Convertir a array y ordenar
+    return Object.entries(grupos)
+      .map(([key, data]) => ({
+        periodo: data.label,
+        total: data.total,
+        cantidad: data.cantidad,
+        promedio: data.total / data.cantidad
+      }))
+      .sort((a, b) => a.periodo.localeCompare(b.periodo))
 }
 
 // Obtener tabla de pagos completados
@@ -182,7 +182,8 @@ export const getPagosCompletados = async (req: Request, res: Response) => {
           Deuda: {
             select: {
               descripcion: true,
-              monto_original: true
+              monto_original: true,
+              saldo_pendiente: true
             }
           }
         },
@@ -202,13 +203,15 @@ export const getPagosCompletados = async (req: Request, res: Response) => {
       },
       deuda: {
         descripcion: pago.Deuda.descripcion,
-        montoOriginal: pago.Deuda.monto_original
+        montoOriginal: pago.Deuda.monto_original,
+        montoNeto: pago.Deuda.saldo_pendiente
       },
       pago: {
         fechaPago: pago.fecha_pago,
         importe: pago.importe,
         referencia: pago.referencia_pago,
         concepto: pago.concepto,
+        Neto: pago.metodo_pago,
         observaciones: pago.observaciones
       }
     }))
@@ -306,7 +309,7 @@ export const generarReporteIngresos = async (req: Request, res: Response) => {
             id_deuda: pago.id_deuda,
             estado: 'pagado',
             pagado_en: {
-              gte: new Date(pago.fecha_pago.getTime() - 60000), // 1 minuto de margen
+              gte: new Date(pago.fecha_pago.getTime() - 60000),
               lte: new Date(pago.fecha_pago.getTime() + 60000)
             }
           },
@@ -353,3 +356,4 @@ export const generarReporteIngresos = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error generando reporte de ingresos' })
   }
 }
+

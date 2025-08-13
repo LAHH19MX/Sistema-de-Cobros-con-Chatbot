@@ -168,6 +168,8 @@ model clave_pasarelas {
   fecha_actualizacion DateTime?     @db.Timestamptz(6)
   estado              estado_cred_t @default(ACTIVO)
   client_secret       String?       @db.VarChar(120)
+  webhook_secret      String?       @db.VarChar(255)
+  webhook_id          String?       @db.VarChar(255)
   inquilinos          Inquilino     @relation(fields: [id_inquilino], references: [id_inquilino], onDelete: NoAction, onUpdate: NoAction, map: "fk_clave_inquilino")
   enlace_pago         enlace_pago[]
 }

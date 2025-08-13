@@ -87,7 +87,7 @@ export const createCliente = async (req: Request, res: Response) => {
       direccion_cliente 
     } = req.body
     
-    // VERIFICAR RECURSOS ANTES DE CREAR
+    // Verifivar rescursos antes de crear
     const canCreate = await canUseResource(id_inquilino, 'clientes')
     
     if (!canCreate.canUse) {
@@ -128,10 +128,9 @@ export const createCliente = async (req: Request, res: Response) => {
       }
     })
     
-    // INCREMENTAR USO DE RECURSOS DESPUÉS DE CREAR
     const resourceUpdate = await incrementResourceUsage(id_inquilino, 'clientes')
     
-    // NUEVO: Emitir evento Socket.io
+    // Emitir evento Socket.io
     emitToInquilino(id_inquilino, 'cliente:created', cliente)
     
     res.status(201).json({
@@ -209,7 +208,7 @@ export const updateCliente = async (req: Request, res: Response) => {
       }
     })
     
-    // NUEVO: Emitir evento Socket.io
+    // Emitir evento Socket.io
     emitToInquilino(id_inquilino, 'cliente:updated', cliente)
     
     res.json(cliente)
@@ -252,7 +251,7 @@ export const deleteCliente = async (req: Request, res: Response) => {
       where: { id_cliente: id }
     })
     
-    // NUEVO: Emitir evento Socket.io
+    // Emitir evento Socket.io
     emitToInquilino(id_inquilino, 'cliente:deleted', { id_cliente: id })
     
     res.status(204).send()

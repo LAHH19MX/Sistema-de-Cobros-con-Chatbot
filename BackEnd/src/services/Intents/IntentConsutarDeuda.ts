@@ -1,4 +1,3 @@
-// File: src/services/intents/IntentConsultarDeuda.ts
 import { Request, Response } from 'express';
 import { prisma } from '../../db/client';
 
@@ -49,10 +48,16 @@ export async function handleIntentConsultarDeuda(
     });
   }
 
+  // CAMBIO: Incluir tanto deudas "pendientes" como "vencidas"
   const deudasCliente = await prisma.deuda.findMany({
     where: {
       id_cliente: idCliente,
-      estado_deuda: "PENDIENTE" 
+      estado_deuda: {
+        in: ["pendiente", "vencido"]
+      },
+      saldo_pendiente: {
+        gt: 0 
+      }
     }
   });
 

@@ -103,7 +103,7 @@ export const createCheckout = async (req: AuthenticatedRequest, res: Response) =
           },
         ],
         mode: 'subscription',
-        success_url: `${process.env.FRONTEND_URL}/suscripcion/exito?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${process.env.FRONTEND_URL}/tenant/suscripcion/exito?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.FRONTEND_URL}/suscripcion/cancelar`,
         customer_email: inquilino.email_inquilino,
         metadata: {
@@ -133,10 +133,10 @@ export const createCheckout = async (req: AuthenticatedRequest, res: Response) =
             value: plan.precio_plan.toString()
           },
           description: `Suscripción mensual: ${plan.nombre_plan}`,
-          custom_id: `${inquilinoId}|${planId}|paypal` // ✅ Aquí está el custom_id
+          custom_id: `${inquilinoId}|${planId}|paypal`
         }],
         application_context: {
-          return_url: `${process.env.FRONTEND_URL}/suscripcion/exito`,
+          return_url: `${process.env.FRONTEND_URL}/tenant/suscripcion/exito`,
           cancel_url: `${process.env.FRONTEND_URL}/suscripcion/cancelar`,
           brand_name: 'Sistema de Cobros',
           user_action: 'PAY_NOW'
@@ -212,7 +212,7 @@ export const getSubscriptionStatus = async (req: AuthenticatedRequest, res: Resp
         Recursos: true
       },
       orderBy: {
-        creado_en: 'desc' // La más reciente
+        creado_en: 'desc'
       }
     });
 
@@ -242,7 +242,11 @@ export const getSubscriptionStatus = async (req: AuthenticatedRequest, res: Resp
     
     if (suscripcion.estado_suscripcion === 'cancelada') {
       estadoReal = 'cancelada';
-      mensaje = 'Tu suscripción ha sido cancelada';
+      if (diasRestantes > 0) {
+        mensaje = `Tu suscripción está cancelada. Mantienes acceso por ${diasRestantes} días más.`;
+      } else {
+        mensaje = 'Tu suscripción ha sido cancelada y el acceso ha expirado.';
+      }
     } else if (suscripcionVencida && suscripcion.estado_suscripcion === 'pago_vencido') {
       estadoReal = 'vencida';
       mensaje = 'Tu suscripción ha vencido. Renueva tu pago para continuar.';
@@ -261,7 +265,7 @@ export const getSubscriptionStatus = async (req: AuthenticatedRequest, res: Resp
     }
 
     // Calcular uso de recursos
-    const recursos = suscripcion.Recursos[0]; // Debería haber solo uno por suscripción
+    const recursos = suscripcion.Recursos[0]; 
     const plan = suscripcion.Planes;
 
     const usoRecursos = recursos ? {
@@ -286,6 +290,24 @@ export const getSubscriptionStatus = async (req: AuthenticatedRequest, res: Resp
         mensaje: plan.limites_api ? 'Acceso disponible' : 'Sin acceso'
       }
     } : null;
+
+    // Informacion del plan siguiente
+    let planSiguiente = null;
+    if (suscripcion.id_plan_siguiente) {
+      const planSig = await prisma.planes.findUnique({
+        where: { id_plan: suscripcion.id_plan_siguiente }
+      });
+      
+      if (planSig) {
+        planSiguiente = {
+          id: planSig.id_plan,
+          nombre: planSig.nombre_plan,
+          precio: planSig.precio_plan,
+          fechaCambio: suscripcion.fecha_renovacion,
+          mensaje: `Cambiarás a "${planSig.nombre_plan}" el ${fechaRenovacion.toLocaleDateString('es-ES')}`
+        };
+      }
+    }
 
     return res.json({
       success: true,
@@ -312,6 +334,7 @@ export const getSubscriptionStatus = async (req: AuthenticatedRequest, res: Resp
             api: plan.limites_api
           }
         },
+        planSiguiente,
         recursos: usoRecursos
       }
     });
@@ -381,99 +404,53 @@ export const cancelSubscription = async (req: AuthenticatedRequest, res: Respons
       });
     }
 
-    let cancelacionExitosa = false;
-    let errorPasarela = null;
-
     try {
-      // Cancelar en la pasarela correspondiente
-      if (suscripcion.pasarela_pago === 'stripe') {
-        // Cancelar suscripción en Stripe
-        await stripe.subscriptions.cancel(suscripcion.id_suscripcion_externa, {
-          prorate: false
-        });
-        cancelacionExitosa = true;
-
-      } else if (suscripcion.pasarela_pago === 'paypal') {
-        // Obtener token de acceso para PayPal
-        const authResponse = await fetch('https://api.sandbox.paypal.com/v1/oauth2/token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64')}`
-          },
-          body: 'grant_type=client_credentials'
-        });
-
-        const authData = await authResponse.json() as PayPalAuthResponse;
-        
-        // Cancelar suscripción
-        const cancelUrl = `https://api.sandbox.paypal.com/v1/billing/subscriptions/${suscripcion.id_suscripcion_externa}/cancel`;
-        const cancelResponse = await fetch(cancelUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authData.access_token}`
-          },
-          body: JSON.stringify({
-            reason: 'Cancelada por el usuario'
-          })
-        });
-
-        if (cancelResponse.ok) {
-          cancelacionExitosa = true;
-        } else {
-          throw new Error(`PayPal cancel failed: ${cancelResponse.status}`);
+      // Actualizar estado en la base de datos
+      const suscripcionActualizada = await prisma.suscripciones.update({
+        where: {
+          id_suscripcion: suscripcion.id_suscripcion
+        },
+        data: {
+          estado_suscripcion: 'cancelada',
+          fecha_cancelacion: new Date(),
+          actualizado_en: new Date()
+        },
+        include: {
+          Planes: true
         }
+      });
 
-      } else {
-        throw new Error('Pasarela no reconocida');
-      }
+      // Calcular días restantes del período ya pagado
+      const now = new Date();
+      const fechaRenovacion = new Date(suscripcion.fecha_renovacion);
+      const diasRestantes = Math.max(0, Math.ceil((fechaRenovacion.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
 
-    } catch (pasarelaError) {
-      console.error('Error al cancelar en la pasarela:', pasarelaError);
-      errorPasarela = pasarelaError;
+      return res.json({
+        success: true,
+        message: 'Suscripción cancelada exitosamente',
+        subscription: {
+          id: suscripcionActualizada.id_suscripcion,
+          estado: 'cancelada',
+          fechaCancelacion: suscripcionActualizada.fecha_cancelacion,
+          fechaFinAcceso: suscripcion.fecha_renovacion,
+          accesoDias: diasRestantes,
+          mensajeAcceso: diasRestantes > 0 
+            ? `Mantienes acceso por ${diasRestantes} días más hasta el ${fechaRenovacion.toLocaleDateString('es-ES')}`
+            : 'Tu acceso finaliza hoy',
+          plan: {
+            nombre: suscripcionActualizada.Planes.nombre_plan,
+            precio: suscripcionActualizada.Planes.precio_plan
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Error al cancelar suscripción:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Error al cancelar la suscripción'
+      });
     }
-
-    // Actualizar estado en la base de datos
-    const suscripcionActualizada = await prisma.suscripciones.update({
-      where: {
-        id_suscripcion: suscripcion.id_suscripcion
-      },
-      data: {
-        estado_suscripcion: 'cancelada',
-        fecha_cancelacion: new Date(),
-        actualizado_en: new Date()
-      },
-      include: {
-        Planes: true
-      }
-    });
-
-    // Calcular días restantes del período ya pagado
-    const now = new Date();
-    const fechaRenovacion = new Date(suscripcion.fecha_renovacion);
-    const diasRestantes = Math.max(0, Math.ceil((fechaRenovacion.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)));
-
-    return res.json({
-      success: true,
-      message: 'Suscripción cancelada exitosamente',
-      subscription: {
-        id: suscripcionActualizada.id_suscripcion,
-        estado: 'cancelada',
-        fechaCancelacion: suscripcionActualizada.fecha_cancelacion,
-        accesoDias: diasRestantes,
-        mensajeAcceso: diasRestantes > 0 
-          ? `Mantienes acceso por ${diasRestantes} días más (período ya pagado)`
-          : 'Tu acceso finaliza hoy',
-        plan: {
-          nombre: suscripcionActualizada.Planes.nombre_plan,
-          precio: suscripcionActualizada.Planes.precio_plan
-        }
-      },
-      warnings: !cancelacionExitosa && errorPasarela ? [
-        'La cancelación local fue exitosa, pero hubo un problema con la pasarela. El estado se sincronizará automáticamente.'
-      ] : []
-    });
 
   } catch (error) {
     console.error('Error al cancelar suscripción:', error);
@@ -483,6 +460,7 @@ export const cancelSubscription = async (req: AuthenticatedRequest, res: Respons
     });
   }
 };
+
 
 export const changePlan = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -567,70 +545,15 @@ export const changePlan = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    let cambioExitoso = false;
-    let errorPasarela = null;
-
+    // ✅ NUEVO ENFOQUE: SIEMPRE PROGRAMAR CAMBIO (STRIPE Y PAYPAL)
     try {
-      if (gateway === 'stripe') {
-        // Obtener la suscripción actual de Stripe
-        const subscription = await stripe.subscriptions.retrieve(suscripcionActual.id_suscripcion_externa);
-        
-        // Cambiar el plan en Stripe
-        await stripe.subscriptions.update(suscripcionActual.id_suscripcion_externa, {
-          items: [{
-            id: subscription.items.data[0].id,
-            price: planNuevo.stripe_price_id!,
-          }],
-          proration_behavior: 'create_prorations', // Prorratear el cambio
-          metadata: {
-            inquilino_id: inquilinoId,
-            plan_id: planId,
-            cambio_realizado: new Date().toISOString()
-          }
-        });
-
-        cambioExitoso = true;
-
-      } else if (gateway === 'paypal') {
-        // Para PayPal, necesitamos cancelar la actual y crear una nueva
-        // Esto es más complejo, por simplicidad programaremos el cambio para la próxima renovación
-        
-        // Actualizar el plan siguiente en nuestra BD
-        await prisma.suscripciones.update({
-          where: {
-            id_suscripcion: suscripcionActual.id_suscripcion
-          },
-          data: {
-            id_plan_siguiente: planId,
-            actualizado_en: new Date()
-          }
-        });
-
-        return res.json({
-          success: true,
-          message: 'Cambio de plan programado',
-          details: {
-            planActual: suscripcionActual.Planes.nombre_plan,
-            planNuevo: planNuevo.nombre_plan,
-            fechaCambio: suscripcionActual.fecha_renovacion,
-            mensaje: 'El cambio de plan se aplicará en tu próxima renovación'
-          }
-        });
-      }
-
-    } catch (pasarelaError) {
-      console.error('Error al cambiar plan en la pasarela:', pasarelaError);
-      errorPasarela = pasarelaError;
-    }
-
-    if (cambioExitoso) {
-      // Para Stripe, actualizar inmediatamente
+      // Actualizar el plan siguiente en nuestra BD (TANTO STRIPE COMO PAYPAL)
       const suscripcionActualizada = await prisma.suscripciones.update({
         where: {
           id_suscripcion: suscripcionActual.id_suscripcion
         },
         data: {
-          id_plan: planId,
+          id_plan_siguiente: planId,
           actualizado_en: new Date()
         },
         include: {
@@ -638,39 +561,25 @@ export const changePlan = async (req: AuthenticatedRequest, res: Response) => {
         }
       });
 
-      // Resetear contadores de recursos para el nuevo plan
-      await prisma.recursos.updateMany({
-        where: {
-          id_suscripcion: suscripcionActual.id_suscripcion
-        },
-        data: {
-          whatsapp_usado: 0,
-          email_usado: 0,
-          clientes_usado: 0,
-          llamadas_api_usado: 0,
-          fecha_actualizacion: new Date()
-        }
-      });
-
       return res.json({
         success: true,
-        message: 'Plan cambiado exitosamente',
+        message: 'Cambio de plan programado exitosamente',
         subscription: {
           id: suscripcionActualizada.id_suscripcion,
-          planAnterior: suscripcionActual.Planes.nombre_plan,
-          planNuevo: suscripcionActualizada.Planes.nombre_plan,
-          precioAnterior: suscripcionActual.Planes.precio_plan,
-          precioNuevo: suscripcionActualizada.Planes.precio_plan,
-          recursosReseteados: true,
-          mensaje: 'Tu plan ha sido actualizado y los contadores de recursos han sido reiniciados'
+          planActual: suscripcionActual.Planes.nombre_plan,
+          planNuevo: planNuevo.nombre_plan,
+          precioActual: suscripcionActual.Planes.precio_plan,
+          precioNuevo: planNuevo.precio_plan,
+          fechaCambio: suscripcionActual.fecha_renovacion,
+          mensaje: `El cambio a "${planNuevo.nombre_plan}" se aplicará en tu próxima renovación (${new Date(suscripcionActual.fecha_renovacion).toLocaleDateString('es-ES')})`
         }
       });
 
-    } else {
+    } catch (error) {
+      console.error('Error al programar cambio de plan:', error);
       return res.status(500).json({
         success: false,
-        message: 'Error al cambiar plan en la pasarela',
-        error: errorPasarela
+        message: 'Error al programar el cambio de plan'
       });
     }
 
@@ -681,7 +590,7 @@ export const changePlan = async (req: AuthenticatedRequest, res: Response) => {
       message: 'Error interno del servidor'
     });
   }
-};
+}
 
 export const getResourceUsage = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -708,7 +617,7 @@ export const getResourceUsage = async (req: AuthenticatedRequest, res: Response)
       where: {
         id_inquilino: inquilinoId,
         estado_suscripcion: {
-          in: ['activa', 'pago_vencido']
+          in: ['activa', 'pago_vencido','cancelada']
         }
       },
       include: {
@@ -724,7 +633,7 @@ export const getResourceUsage = async (req: AuthenticatedRequest, res: Response)
       });
     }
 
-    const recursos = suscripcion.Recursos[0]; // Debería haber solo uno
+    const recursos = suscripcion.Recursos[0]; 
     const plan = suscripcion.Planes;
 
     if (!recursos) {
@@ -754,16 +663,6 @@ export const getResourceUsage = async (req: AuthenticatedRequest, res: Response)
       return 'normal';
     };
 
-    // Función para obtener color del estado
-    const getStatusColor = (status: string) => {
-      switch (status) {
-        case 'agotado': return '#ff4444';
-        case 'critico': return '#ff8800';
-        case 'advertencia': return '#ffaa00';
-        default: return '#44bb44';
-      }
-    };
-
     const resourcesData = {
       whatsapp: {
         usado: recursos.whatsapp_usado,
@@ -771,7 +670,6 @@ export const getResourceUsage = async (req: AuthenticatedRequest, res: Response)
         restante: Math.max(0, plan.limites_whatsapp - recursos.whatsapp_usado),
         porcentaje: whatsappPorcentaje,
         status: getResourceStatus(whatsappPorcentaje),
-        color: getStatusColor(getResourceStatus(whatsappPorcentaje)),
         descripcion: 'Mensajes de WhatsApp enviados'
       },
       email: {
@@ -780,7 +678,6 @@ export const getResourceUsage = async (req: AuthenticatedRequest, res: Response)
         restante: Math.max(0, plan.limites_email - recursos.email_usado),
         porcentaje: emailPorcentaje,
         status: getResourceStatus(emailPorcentaje),
-        color: getStatusColor(getResourceStatus(emailPorcentaje)),
         descripcion: 'Emails de recordatorio enviados'
       },
       clientes: {
@@ -789,7 +686,6 @@ export const getResourceUsage = async (req: AuthenticatedRequest, res: Response)
         restante: Math.max(0, (plan.limites_clientes || 0) - recursos.clientes_usado),
         porcentaje: clientesPorcentaje,
         status: getResourceStatus(clientesPorcentaje),
-        color: getStatusColor(getResourceStatus(clientesPorcentaje)),
         descripcion: 'Clientes registrados en tu sistema'
       },
       api: {
@@ -797,7 +693,6 @@ export const getResourceUsage = async (req: AuthenticatedRequest, res: Response)
         acceso: plan.limites_api,
         limite: plan.limites_api ? 'Ilimitado' : 'Sin acceso',
         status: plan.limites_api ? 'disponible' : 'bloqueado',
-        color: plan.limites_api ? '#44bb44' : '#ff4444',
         descripcion: 'Llamadas a la API realizadas'
       }
     };
@@ -867,4 +762,3 @@ export const getResourceUsage = async (req: AuthenticatedRequest, res: Response)
     });
   }
 };
-

@@ -40,8 +40,8 @@ export const requireActiveSubscription = async (
         }
       },
       include: {
-        Planes: true, // Incluir datos del plan
-        inquilinos: true // Incluir datos del inquilino
+        Planes: true, 
+        inquilinos: true 
       }
     });
 
@@ -73,7 +73,6 @@ export const requireActiveSubscription = async (
     if (now > fechaRenovacion && suscripcion.estado_suscripcion === 'pago_vencido') {
       const diasRestantes = Math.ceil((fechaLimite.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
       
-      // Agregar advertencia a la respuesta (se puede usar en el frontend)
       res.locals.warning = {
         message: `Tu suscripción vence en ${diasRestantes} días. Actualiza tu método de pago.`,
         type: 'payment_warning',

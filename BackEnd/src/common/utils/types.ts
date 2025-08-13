@@ -20,12 +20,11 @@ export type Gateway = 'stripe' | 'paypal';
 export interface SubscriptionInfo {
   id: string;
   status: SubscriptionStatus;
-  plan: Planes; // Usar tipo exacto generado por Prisma
+  plan: Planes; 
   renewDate: Date;
   gateway: Gateway;
 }
 
-// Un solo declare global con ambas propiedades
 declare global {
   namespace Express {
     interface Request {

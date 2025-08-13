@@ -24,47 +24,15 @@ const router = Router();
 // Sección
 router.get('/seccion/:id', getSeccion);
 router.get('/secciones/:categoriaId', getAllSecciones);
-router.post(
-    '/seccionCre/:categoriaId',
-    authRequiered,
-    adminOnly,
-    validateSchema(createSeccionSchema),
-    createSeccion
-);
-router.put(
-    '/seccionUpd/:id',
-    authRequiered,
-    adminOnly,
-    validateSchema(createSeccionSchema),
-    updateSeccion
-);
-router.delete('/seccionDel/:id', 
-    authRequiered, 
-    adminOnly, 
-    deleteSeccion
-);
+router.post('/seccionCre/:categoriaId',authRequiered,adminOnly,validateSchema(createSeccionSchema),createSeccion);
+router.put('/seccionUpd/:id',authRequiered,adminOnly,validateSchema(createSeccionSchema),updateSeccion);
+router.delete('/seccionDel/:id', authRequiered, adminOnly, deleteSeccion);
 
 // Contenido
 router.get('/contenidos/:seccionId', getAllContenidos);
 router.get('/contenido/:id', getContenidoById);
-router.post(
-    '/contenidoCre/:seccionId',
-    authRequiered,
-    adminOnly,
-    validateSchema(createContenidoSchema),
-    createContenido
-);
-router.put(
-    '/contenidoUpd/:id',
-    authRequiered,
-    adminOnly,
-    validateSchema(createContenidoSchema),
-    updateContenido
-);
-router.delete('/contenidoDel/:id', 
-    authRequiered, 
-    adminOnly, 
-    deleteContenido
-);
+router.post('/contenidoCre/:seccionId', authRequiered, adminOnly, validateSchema(createContenidoSchema), createContenido);
+router.put('/contenidoUpd/:id', authRequiered, adminOnly, validateSchema(createContenidoSchema), updateContenido);
+router.delete('/contenidoDel/:id', authRequiered, adminOnly, deleteContenido);
 
 export default router;

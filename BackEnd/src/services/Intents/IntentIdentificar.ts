@@ -5,18 +5,18 @@ const randomFromArray = (arr: string[]): string =>
   arr[Math.floor(Math.random() * arr.length)];
 
 const saludosIdentificado: string[] = [
-  "¡Hola ${nombre}! ¿En qué puedo ayudarte hoy?",
+  "¡Hola ${nombre}! Soy Yara, ¿En qué puedo ayudarte hoy?",
   "Saludos ${nombre}, estoy aquí para asistirte. ¿Qué necesitas?",
-  "¡Qué gusto verte, ${nombre}! ¿Cómo puedo servirte?",
+  "¡Qué gusto verte, ${nombre}! Soy Yara, ¿Cómo puedo servirte?",
   "¡Bienvenido, ${nombre}! ¿En qué puedo apoyarte?",
-  "Hola ${nombre}, dime cómo puedo ayudarte.",
+  "Hola ${nombre}, soy Yara, dime cómo puedo ayudarte.",
   "Saludos, ${nombre}. ¿Necesitas información o ayuda?",
   "¡Hola ${nombre}! Estoy listo para atenderte.",
-  "¡Muy buenas, ${nombre}! ¿Qué deseas consultar hoy?",
+  "¡Muy buenas, ${nombre}! Soy Yara, ¿Qué deseas consultar hoy?",
   "Hola ${nombre}, cuéntame cómo puedo asistirte.",
-  "Saludos cordiales, ${nombre}. ¿En qué puedo servirte?",
+  "Saludos cordiales, ${nombre}. Soy Yara, ¿En qué puedo servirte?",
   "¡Hola ${nombre}! Aquí para ayudarte en lo que necesites.",
-  "¡Buenas, ${nombre}! ¿Qué necesitas hoy?"
+  "¡Buenas, ${nombre}! Soy Yara, ¿Qué necesitas hoy?"
 ];
 
 export async function handleIntentIdentificar(req: Request, res: Response) {
@@ -28,7 +28,7 @@ export async function handleIntentIdentificar(req: Request, res: Response) {
   if (!email && !telefono) {
     return res.json({
       fulfillmentText:
-        'No detecté un correo ni un teléfono. Por favor escríbelo nuevamente.',
+        'Por favor ingrese nuevamente su Email o su numero de telefono.',
       outputContexts: [
         {
           name: `${session}/contexts/awaiting_identificacion`,
@@ -73,7 +73,7 @@ export async function handleIntentIdentificar(req: Request, res: Response) {
     outputContexts: [
       {
         name: `${session}/contexts/cliente_identificado`,
-        lifespanCount: 5,
+        lifespanCount: 4,
         parameters: { id_cliente: clienteDB.id_cliente }
       }
     ]

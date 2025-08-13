@@ -21,7 +21,6 @@ router.get('/deudas', authRequiered, inquilinoOnly, getDeudas)
 router.get('/deudas/:id', authRequiered, inquilinoOnly, getDeudaById)
 router.post('/deudas', authRequiered, inquilinoOnly, validateSchema(createDeudaSchema), createDeuda)
 router.put('/deudas/:id', authRequiered, inquilinoOnly, validateSchema(updateDeudaSchema), updateDeuda)
-//Reporte de deudas(Pendientes y Cobrados)
-router.get('/deudas/reporte', authRequiered, inquilinoOnly, generarReporteDeudas)
+router.get('/deuda/reporte', authRequiered, inquilinoOnly, generarReporteDeudas)
 
 export default router

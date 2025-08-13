@@ -45,10 +45,16 @@ export async function handleIntentFechaLimit(req: Request, res: Response) {
     });
   }
 
+  // CAMBIO: Incluir tanto deudas "pendientes" como "vencidas"
   const deudasCliente = await prisma.deuda.findMany({
     where: {
       id_cliente: idCliente,
-      estado_deuda: "PENDIENTE" 
+      estado_deuda: {
+        in: ["pendiente", "vencido"]
+      },
+      saldo_pendiente: {
+        gt: 0  // Solo deudas con saldo pendiente mayor a 0
+      }
     }
   });
 
@@ -57,6 +63,7 @@ export async function handleIntentFechaLimit(req: Request, res: Response) {
     return res.json({ fulfillmentText: textoAleatorio });
   }
 
+  // Mantener lógica original: solo la deuda MÁS RECIENTE
   const deudaReciente = deudasCliente.reduce((prev, curr) =>
     curr.fecha_vencimiento > prev.fecha_vencimiento ? curr : prev
   );

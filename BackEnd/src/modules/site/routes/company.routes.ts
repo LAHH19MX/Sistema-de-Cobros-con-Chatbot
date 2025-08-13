@@ -17,35 +17,15 @@ const router = Router()
 
 // datos de la empresa
 router.get('/empresa/:id', getEmpresa)
-router.put(
-  '/empresaUpd/:id',
-  authRequiered,
-  adminOnly,
-  validateSchema(createCompanySchema),
-  updateEmpresa
-)
-router.post(
-  '/redesCre/:empresaId',
-  authRequiered,
-  adminOnly,
-  validateSchema(createRedSocialSchema),
-  addRedSocial
-)
+router.put('/empresaUpd/:id', authRequiered, adminOnly, validateSchema(createCompanySchema), updateEmpresa);
+router.post('/redesCre/:empresaId', authRequiered, adminOnly, validateSchema(createRedSocialSchema), addRedSocial)
 
 // para redes
 router.get('/redes', getAllRedes)
 router.get('/redes/:id', getRedSocialById)
 
-router.put(
-  '/redesUpd/:id',
-  authRequiered,
-  adminOnly,
-  validateSchema(createRedSocialSchema),
-  updateRedSocial
-)
+router.put('/redesUpd/:id', authRequiered, adminOnly, validateSchema(createRedSocialSchema), updateRedSocial);
 
-router.delete('/redesDel/:id', 
-  authRequiered, adminOnly, 
-  deleteRedSocial)
+router.delete('/redesDel/:id', authRequiered, adminOnly, deleteRedSocial);
 
 export default router

@@ -10,6 +10,7 @@ import webhookRouter  from './src/routes/webhook';
 import messagesRouter from './src/routes/messages';  
 import webhookPayment from './src/routes/webhookStripe.routes'
 import webhookPaypal from './src/routes/webhookPayPal.routes';
+import { capturePaypalOrder } from './src/services/payment/paypal';
 
 import authRouter from './src/modules/auth/routes/auth.routes'
 import recuperacionRouter from './src/modules/auth/routes/recuperacion.routes'
@@ -33,6 +34,8 @@ import perfilRoutes from './src/modules/settings/routes/perfil.routes'
 import configuracionRoutes from './src/modules/settings/routes/configuracion.routes'
 import pasarelasRoutes from './src/modules/settings/routes/pasarelas.routes'
 
+import './src/services/recordatorios/ServicioCron'
+
 const corsOptions = {
   origin: 'http://localhost:5173',
   credentials: true,
@@ -48,18 +51,57 @@ app.use(cors(corsOptions));
 
 initializeSocket(server);
 
-app.use('/api/webhooks', webhookRoutes);
+app.use('/webhook/stripe', webhookPayment); 
+app.use('/webhook/paypal', webhookPaypal); 
+app.use('/api/webhooks', webhookRoutes);   
+
 app.use(express.json());
 
-app.use('/webhook/stripe', webhookPayment);
-app.use('/webhook/paypal', webhookPaypal); 
 app.use('/api', webhookRouter);  
 app.use('/api', messagesRouter);  
-app.get('/paypal/success', (req, res) => {
-  res.send('Pago completado');
+
+app.get('/paypal/success', async (req, res) => {
+  const token = req.query.token as string;
+  
+  if (!token) {
+    return res.send('Error: No se recibió token de PayPal');
+  }
+
+  // Capturar el pago
+  const capturado = await capturePaypalOrder(token);
+  
+  if (capturado) {
+    res.send(`
+      <html>
+        <body style="font-family: Arial; text-align: center; padding: 50px;">
+          <h1>✅ Pago Completado</h1>
+          <p>Tu pago ha sido procesado exitosamente.</p>
+          <p>Puedes cerrar esta ventana.</p>
+        </body>
+      </html>
+    `);
+  } else {
+    res.send(`
+      <html>
+        <body style="font-family: Arial; text-align: center; padding: 50px;">
+          <h1>⏳ Procesando Pago</h1>
+          <p>Estamos verificando tu pago, por favor espera...</p>
+        </body>
+      </html>
+    `);
+  }
 });
+
 app.get('/paypal/cancel', (req, res) => {
-  res.send('Pago cancelado');
+  res.send(`
+    <html>
+      <body style="font-family: Arial; text-align: center; padding: 50px;">
+        <h1>❌ Pago Cancelado</h1>
+        <p>Has cancelado el proceso de pago.</p>
+        <p>Puedes cerrar esta ventana.</p>
+      </body>
+    </html>
+  `);
 });
 
 app.use('/api', authRouter);

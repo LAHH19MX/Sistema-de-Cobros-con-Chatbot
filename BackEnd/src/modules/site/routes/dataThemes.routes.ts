@@ -24,46 +24,15 @@ const router = Router();
 // Apartado
 router.get('/apartado/:id', getApartado);
 router.get('/apartados', getAllApartados);
-router.post(
-    '/apartadoCre',
-    authRequiered,
-    adminOnly,
-    validateSchema(createApartadoSchema),
-    createApartado
-);
-router.put(
-    '/apartadoUpd/:id',
-    authRequiered,
-    adminOnly,
-    validateSchema(createApartadoSchema),
-    updateApartado
-);
-router.delete('/apartadoDel/:id', 
-    authRequiered, 
-    adminOnly,
-    deleteApartado
-);
+router.post('/apartadoCre', authRequiered, adminOnly, validateSchema(createApartadoSchema), createApartado);
+router.put('/apartadoUpd/:id', authRequiered, adminOnly, validateSchema(createApartadoSchema), updateApartado);
+router.delete('/apartadoDel/:id', authRequiered, adminOnly, deleteApartado);
 
 // Categoría
 router.get('/categorias/:apartadoId', getAllCategorias);
 router.get('/categoria/:id', getCategoriaById);
-router.post(
-    '/categoriaCre/:apartadoId',
-    authRequiered,
-    adminOnly,
-    validateSchema(createCategoriaSchema),
-    createCategoria
-);
-router.put(
-    '/categoriaUpd/:id',
-    authRequiered,
-    adminOnly,
-    validateSchema(createCategoriaSchema),
-    updateCategoria
-);
-router.delete('/categoriaDel/:id', 
-    authRequiered, 
-    adminOnly, 
-    deleteCategoria);
+router.post('/categoriaCre/:apartadoId', authRequiered, adminOnly, validateSchema(createCategoriaSchema), createCategoria);
+router.put('/categoriaUpd/:id', authRequiered, adminOnly, validateSchema(createCategoriaSchema), updateCategoria);
+router.delete('/categoriaDel/:id', authRequiered, adminOnly, deleteCategoria);
 
 export default router;
