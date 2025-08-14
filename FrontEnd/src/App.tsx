@@ -28,7 +28,6 @@ import LoginPage from './pages/auth/LoginPage.tsx';
 import RegisterPage      from './pages/auth/RegisterPage.tsx';
 
 import Error404          from './pages/Error404.tsx';
-import { PlansProvider } from './context/PlansContext.tsx';
 import DashboardTenant from './pages/tenant/DashboardTenant.tsx';
 import ClientesTenant from './pages/tenant/ClientesTenant.tsx';
 import DeudasTenant from './pages/tenant/DeudasTenant.tsx';
@@ -56,7 +55,6 @@ export default function App() {
         }}>
         <CompanyProvider>
           <SiteDataProvider>
-            <PlansProvider>
               <InquilinosProvider> 
                 <ContentProvider>                       
                   <Routes>
@@ -128,8 +126,7 @@ export default function App() {
                     <Route path="*" element={<Error404 />} />
                   </Routes> 
                 </ContentProvider>
-              </InquilinosProvider>   
-            </PlansProvider>     
+              </InquilinosProvider>      
           </SiteDataProvider>
         </CompanyProvider>
       </BrowserRouter>  

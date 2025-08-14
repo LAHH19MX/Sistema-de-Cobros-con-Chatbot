@@ -207,7 +207,7 @@ const AddDeuda: React.FC = () => {
         id_cliente: formData.id_cliente,
         
         estado_deuda: 'pendiente',  // Valor por defecto
-        tasa_interes: 0              // Valor por defecto
+        tasa_interes: 0              
       };
 
       await createDeuda(dataToSend);
