@@ -82,7 +82,7 @@ PREREQUISITOS
 
 CLONAR REPOSITORIO
 ```bash
-git clone https://github.com/
+git clone https://github.com/LAHH19MX/Sistema-de-Cobros-con-Chatbot
 cd Sistema-de-Cobros-con-Chatbot
 ```
 
