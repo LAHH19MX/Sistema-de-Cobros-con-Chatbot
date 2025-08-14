@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@sendgrid/mail": "^8.1.5",
-    "dotenv": "^16.5.0",
-    "node-cron": "^4.1.0"
-  }
-}
